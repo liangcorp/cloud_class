@@ -1,6 +1,7 @@
 pub mod app;
 pub mod error_template;
-pub mod examadmin;
+pub mod admin;
+pub mod landing;
 
 #[cfg(feature = "ssr")]
 pub mod fileserv;

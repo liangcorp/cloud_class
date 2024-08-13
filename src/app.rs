@@ -1,5 +1,8 @@
 use crate::error_template::{AppError, ErrorTemplate};
-use crate::examadmin::LoginPage;
+use crate::landing::HomePage;
+use crate::admin::LoginPage;
+
+// use crate::landing::LoginPage;
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
@@ -17,7 +20,7 @@ pub fn App() -> impl IntoView {
         <Stylesheet id="leptos" href="/pkg/cloud-class.css"/>
 
         // sets the document title
-        <Title text="Welcome to Leptos"/>
+        <Title text="浩天云学院"/>
 
         // content for this welcome page
         <Router fallback=|| {
@@ -30,22 +33,11 @@ pub fn App() -> impl IntoView {
         }>
             <main>
                 <Routes>
-                    <Route path="/examadmin" view=LoginPage/>
+                    <Route path="/" view=HomePage/>
+                    <Route path="/admin" view=LoginPage/>
                 </Routes>
             </main>
         </Router>
     }
 }
 
-/// Renders the home page of your application.
-#[component]
-fn HomePage() -> impl IntoView {
-    // Creates a reactive value to update the button
-    let (count, set_count) = create_signal(0);
-    let on_click = move |_| set_count.update(|count| *count += 1);
-
-    view! {
-        <h1>"Welcome to Leptos!"</h1>
-        <button on:click=on_click>"Click Me: " {count}</button>
-    }
-}

@@ -1,4 +1,5 @@
 use leptos::*;
+use leptos_meta::*;
 
 /// 提供登陆页
 #[component]
@@ -41,6 +42,10 @@ pub fn LoginPage() -> impl IntoView {
     };
 
     view! {
+
+        // sets the document title
+        <Title text="浩天数智化教学辅助系统"/>
+
         <form on:submit=on_submit> // on_submit defined below
             <table class="login">
                 // <tr><td><p>"用户名是: " {username}</p></td></tr>

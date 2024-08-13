@@ -1,7 +1,8 @@
 pub mod app;
 pub mod error_template;
-pub mod admin;
 pub mod landing;
+pub mod admin;
+pub mod login;
 
 #[cfg(feature = "ssr")]
 pub mod fileserv;

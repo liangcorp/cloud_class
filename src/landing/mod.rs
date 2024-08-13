@@ -3,7 +3,6 @@ use leptos::*;
 /// Renders the home page of your application.
 #[component]
 pub fn HomePage() -> impl IntoView {
-
     view! {
         <div class="contents">
             <div class="header">
@@ -37,12 +36,12 @@ pub fn HomePage() -> impl IntoView {
                         <a href="#" class="header">就业招聘</a>
                     </td>
 
-                    <td class="header_login"><a href="/admin" class="header">登陆</a></td>
+                    <td class="header_login"><a href="/login" class="header">登陆</a></td>
                     <td class="header_login"><a href="#" class="header">注册</a></td>
                 </tr>
                 </table>
             </div>
-            <div></div>
         </div>
+        <div><img src="images/banners/3.财务会计banner.jpg" class="banner"/></div>
     }
 }

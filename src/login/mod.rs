@@ -3,7 +3,7 @@ use leptos_meta::*;
 
 /// 提供登陆页
 #[component]
-pub fn AdminPage() -> impl IntoView {
+pub fn LoginPage() -> impl IntoView {
     // 制作一个reactive值去更新提交按钮
     let (username, set_username) = create_signal("".to_string());
     let (password, set_password) = create_signal("".to_string());

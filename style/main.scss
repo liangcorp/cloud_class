@@ -1,6 +1,5 @@
 body {
 	font-family: sans-serif;
-	text-align: center;
     background-color: #FAFAFA;
 }
 
@@ -25,12 +24,19 @@ td.header_login {
   padding:20px;
 }
 
-a.header:hover {
-  background-color: yellow;
+a.header {
+  color: black;
+  text-decoration-line: none;
 }
 
-a.header:active {
-  background-color: yellow;
+a.header:hover {
+  color: #0F7ED0;
+  text-decoration-line: underline;
+}
+
+a.header:focus {
+  color: #0F7ED0;
+  text-decoration-line: underline;
 }
 
 .login {

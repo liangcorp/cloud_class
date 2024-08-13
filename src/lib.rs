@@ -1,6 +1,6 @@
 pub mod app;
 pub mod error_template;
-pub mod landing;
+pub mod home;
 pub mod admin;
 pub mod login;
 

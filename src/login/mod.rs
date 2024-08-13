@@ -44,41 +44,71 @@ pub fn LoginPage() -> impl IntoView {
     view! {
 
         // sets the document title
-        <Title text="浩天数智化教学辅助系统"/>
+        <Title text="浩天数智化教学"/>
 
-        <form on:submit=on_submit> // on_submit defined below
-            <table class="login">
-                // <tr><td><p>"用户名是: " {username}</p></td></tr>
-                <tr><td style="padding:25px"><h2 style="color:#000000">浩天数智化教学辅助系统</h2></td></tr>
-                <tr style="display:none;color:red">
-                <td>
-                <h4>用户名或者密码不正确</h4>
-                </td>
-                </tr>
-                <tr>
-                <td><b style="padding:10px;border:0px;font-size:20px">
-                    账号<input placeholder="请输入账号" style="padding:10px;border:0px;font-size:20px" type="text"
-                        value=username
-                        node_ref=input_username
-                    />
+        <div class="full-height">
+        <div class="login_div">
+        <div align="center">
+        <table>
+        <tr>
+            <td style="padding: 20px">
+            <hr width="300px" size="1" color="#BFBFBF" noshade />
+            </td>
+            <td>
+            <img src="images/logo1.png"/>
+            </td>
+            <td style="padding: 20px">
+            <hr width="400px" size="1" color="#BFBFBF" noshade />
+            </td>
+        </tr>
+        </table>
+        </div>
 
-                </b></td>
-                </tr>
-                <tr><td></td></tr>
-                <tr>
-                <td style="padding:10px"><b style="padding:10px;border:0px;font-size:20px">
-                    密码<input placeholder="请输入密码" style="padding:10px;border:0px;font-size:20px" type="password"
-                        value=password
-                        node_ref=input_password
+        <div>
+            <table>
+            <tr>
+            <td>
+            <form on:submit=on_submit> // on_submit defined below
+                <table>
+                    // <tr><td><p>"用户名是: " {username}</p></td></tr>
+                    <tr style="display:none;color:red">
+                    <td>
+                    <h4>用户名或者密码不正确</h4>
+                    </td>
+                    </tr>
+                    <tr>
+                    <td><b style="padding:10px;border:0px;font-size:20px">
+                        账号<input placeholder="请输入账号" style="padding:10px;border:0px;font-size:20px" type="text"
+                            value=username
+                            node_ref=input_username
                         />
-                </b></td>
-                </tr>
-                <tr>
-                <td style="padding:10px">
-                    <input style="border:0px;background-color:#333333;color:white;font-size:20px" type="submit" value="登陆"/>
-                </td>
-                </tr>
+
+                    </b></td>
+                    </tr>
+                    <tr><td></td></tr>
+                    <tr>
+                    <td style="padding:10px"><b style="padding:10px;border:0px;font-size:20px">
+                        密码<input placeholder="请输入密码" style="padding:10px;border:0px;font-size:20px" type="password"
+                            value=password
+                            node_ref=input_password
+                            />
+                    </b></td>
+                    </tr>
+                    <tr>
+                    <td style="padding:10px">
+                        <input style="border:0px;background-color:#333333;color:white;font-size:20px" type="submit" value="登陆"/>
+                    </td>
+                    </tr>
+                </table>
+            </form>
+            </td>
+            <td>
+            right side
+            </td>
+            </tr>
             </table>
-        </form>
+            </div>
+        </div>
+        </div>
     }
 }

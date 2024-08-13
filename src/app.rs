@@ -1,9 +1,8 @@
 use crate::error_template::{AppError, ErrorTemplate};
-use crate::landing::HomePage;
+use crate::home::HomePage;
 use crate::login::LoginPage;
 use crate::admin::AdminPage;
 
-// use crate::landing::LoginPage;
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;

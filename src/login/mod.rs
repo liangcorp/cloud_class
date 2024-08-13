@@ -87,7 +87,7 @@ pub fn LoginPage() -> impl IntoView {
                     </tr>
                     <tr><td></td></tr>
                     <tr>
-                    <td style="padding:10px"><b style="padding:10px;border:0px;font-size:20px">
+                    <td><b style="padding:10px;border:0px;font-size:20px">
                         密码<input placeholder="请输入密码" style="padding:10px;border:0px;font-size:20px" type="password"
                             value=password
                             node_ref=input_password
@@ -102,8 +102,9 @@ pub fn LoginPage() -> impl IntoView {
                 </table>
             </form>
             </td>
-            <td>
-            right side
+            <td align="center" style="padding:20px">
+                <p>微信扫描二维码登录</p>
+                <img src="images/QR/showQrCode.png" />
             </td>
             </tr>
             </table>

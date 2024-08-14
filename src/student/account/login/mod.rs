@@ -40,8 +40,7 @@ fn LoginLayer() -> impl IntoView {
         set_password.set(password_value);
     };
 
-    view!{
-        <div>
+    view! {
             <form on:submit=on_submit> // on_submit defined below
                 <table>
                     // <tr><td><p>"用户名是: " {username}</p></td></tr>
@@ -92,34 +91,26 @@ fn LoginLayer() -> impl IntoView {
                     </tr>
                 </table>
             </form>
-        </div>
     }
 }
 
 #[component]
 fn QRLayer() -> impl IntoView {
-
-    view!{
-        <div align="center">
-            <p>微信扫描二维码登陆</p>
-            <img src="images/winxinlogo.png" />
-            <img src="images/QR/showQrCode.png" />
-        </div>
+    view! {
+        <p>微信扫描二维码登陆</p>
+        <img src="images/winxinlogo.png" />
+        <img src="images/QR/showQrCode.png" />
     }
 }
 
 #[component]
 fn RegisterLayer() -> impl IntoView {
-
-    view!{
-
-    }
+    view! {}
 }
 
 /// 提供登陆页
 #[component]
 pub fn LoginPage() -> impl IntoView {
-
     view! {
 
         // sets the document title
@@ -130,23 +121,33 @@ pub fn LoginPage() -> impl IntoView {
             <table>
             <tr>
                 <td style="padding: 20px">
-                <hr width="300px" size="1" color="#BFBFBF" noshade />
+                <hr width="350px" size="1" color="#BFBFBF" noshade />
                 </td>
                 <td>
                 <img src="images/logo1.png"/>
                 </td>
                 <td style="padding: 20px">
-                <hr width="400px" size="1" color="#BFBFBF" noshade />
+                <hr width="350px" size="1" color="#BFBFBF" noshade />
                 </td>
             </tr>
 
             <tr>
                 <td>
+                    <div style="padding:20px">
+                        <a href="#" class="login_switch">密码登录</a>
+                        <a href="#" class="login_switch">短信登录</a>
+                    </div>
+
+                    <div>
                     <LoginLayer/>
+                    </div>
+
+                    <div>
                     <RegisterLayer/>
+                    </div>
                 </td>
                 <td></td>
-                <td>
+                <td align="center">
                     <QRLayer/>
                 </td>
             </tr>

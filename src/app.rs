@@ -1,6 +1,6 @@
 use crate::error_template::{AppError, ErrorTemplate};
 use crate::home::HomePage;
-use crate::login::LoginPage;
+use crate::student::account::login::LoginPage;
 use crate::admin::AdminPage;
 
 use leptos::*;

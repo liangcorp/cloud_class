@@ -53,6 +53,20 @@ a.header:focus {
   text-decoration-line: underline;
 }
 
+a.login_switch {
+  color: #333333;
+  text-decoration-line: none;
+  padding-right: 30px;
+}
+
+a.login_switch:hover {
+  color: #0F7ED0;
+}
+
+a.login_switch:focus {
+  color: #0F7ED0;
+}
+
 div.full-height {
   position: absolute;
   top: 0px;
@@ -103,7 +117,7 @@ input.register_button {
 }
 
 input:focus {
-  outline: none;
+  /* outline: none; */
 }
 
 img.banner {

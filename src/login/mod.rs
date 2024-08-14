@@ -1,9 +1,8 @@
 use leptos::*;
 use leptos_meta::*;
 
-/// 提供登陆页
 #[component]
-pub fn LoginPage() -> impl IntoView {
+fn LoginLayer() -> impl IntoView {
     // 制作一个reactive值去更新提交按钮
     let (username, set_username) = create_signal("".to_string());
     let (password, set_password) = create_signal("".to_string());
@@ -41,33 +40,8 @@ pub fn LoginPage() -> impl IntoView {
         set_password.set(password_value);
     };
 
-    view! {
-
-        // sets the document title
-        <Title text="浩天数智化教学"/>
-
-        <div class="full-height">
-        <div class="login_div">
-        <div align="center">
-        <table>
-        <tr>
-            <td style="padding: 20px">
-            <hr width="300px" size="1" color="#BFBFBF" noshade />
-            </td>
-            <td>
-            <img src="images/logo1.png"/>
-            </td>
-            <td style="padding: 20px">
-            <hr width="400px" size="1" color="#BFBFBF" noshade />
-            </td>
-        </tr>
-        </table>
-        </div>
-
+    view!{
         <div>
-            <table>
-            <tr>
-            <td>
             <form on:submit=on_submit> // on_submit defined below
                 <table>
                     // <tr><td><p>"用户名是: " {username}</p></td></tr>
@@ -77,8 +51,8 @@ pub fn LoginPage() -> impl IntoView {
                     </td>
                     </tr>
                     <tr>
-                    <td><b style="padding:10px;border:0px;font-size:20px">
-                        账号<input placeholder="请输入账号" style="padding:10px;border:0px;font-size:20px" type="text"
+                    <td><b class="login_box">
+                        账号<input placeholder="请输入账号" class="login_form" type="text"
                             value=username
                             node_ref=input_username
                         />
@@ -87,28 +61,96 @@ pub fn LoginPage() -> impl IntoView {
                     </tr>
                     <tr><td></td></tr>
                     <tr>
-                    <td><b style="padding:10px;border:0px;font-size:20px">
-                        密码<input placeholder="请输入密码" style="padding:10px;border:0px;font-size:20px" type="password"
+                    <td><b class="login_box">
+                        密码<input placeholder="请输入密码" class="login_form" type="password"
                             value=password
                             node_ref=input_password
                             />
                     </b></td>
                     </tr>
+                </table>
+
+                <table>
+                    <tr>
+                        <td style="padding: 10px">
+                            <input type="checkbox"/>记住账号
+                        </td>
+                        <td style="padding: 10px">
+                            忘记密码
+                        </td>
+                    </tr>
+                </table>
+
+                <table>
                     <tr>
                     <td style="padding:10px">
-                        <input style="border:0px;background-color:#333333;color:white;font-size:20px" type="submit" value="登陆"/>
+                        <input class="submit_button" type="submit" value="登陆"/>
+                    </td>
+                    <td style="padding:10px">
+                        <input class="register_button" type="submit" value="注册"/>
                     </td>
                     </tr>
                 </table>
             </form>
-            </td>
-            <td align="center" style="padding:20px">
-                <p>微信扫描二维码登录</p>
-                <img src="images/QR/showQrCode.png" />
-            </td>
+        </div>
+    }
+}
+
+#[component]
+fn QRLayer() -> impl IntoView {
+
+    view!{
+        <div align="center">
+            <p>微信扫描二维码登陆</p>
+            <img src="images/winxinlogo.png" />
+            <img src="images/QR/showQrCode.png" />
+        </div>
+    }
+}
+
+#[component]
+fn RegisterLayer() -> impl IntoView {
+
+    view!{
+
+    }
+}
+
+/// 提供登陆页
+#[component]
+pub fn LoginPage() -> impl IntoView {
+
+    view! {
+
+        // sets the document title
+        <Title text="浩天数智化教学"/>
+
+        <div class="full-height">
+        <div class="login_div" align="center">
+            <table>
+            <tr>
+                <td style="padding: 20px">
+                <hr width="300px" size="1" color="#BFBFBF" noshade />
+                </td>
+                <td>
+                <img src="images/logo1.png"/>
+                </td>
+                <td style="padding: 20px">
+                <hr width="400px" size="1" color="#BFBFBF" noshade />
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <LoginLayer/>
+                    <RegisterLayer/>
+                </td>
+                <td></td>
+                <td>
+                    <QRLayer/>
+                </td>
             </tr>
             </table>
-            </div>
         </div>
         </div>
     }

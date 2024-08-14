@@ -1,8 +1,8 @@
 pub mod app;
 pub mod error_template;
-pub mod home;
-pub mod admin;
-pub mod login;
+pub mod home;   // 主页
+pub mod admin;  // 管理员页
+pub mod login;  // 用户登陆页
 
 #[cfg(feature = "ssr")]
 pub mod fileserv;

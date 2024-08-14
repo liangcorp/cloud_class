@@ -50,22 +50,23 @@ fn LoginLayer() -> impl IntoView {
                     </td>
                     </tr>
                     <tr>
-                    <td><b class="login_box">
-                        账号<input placeholder="请输入账号" class="login_form" type="text"
+                    <td>
+                        <b class="login_box">账号:</b>
+                        <input placeholder="请输入账号" class="login_form" type="text"
                             value=username
                             node_ref=input_username
                         />
-
-                    </b></td>
+                    </td>
                     </tr>
                     <tr><td></td></tr>
                     <tr>
-                    <td><b class="login_box">
-                        密码<input placeholder="请输入密码" class="login_form" type="password"
+                    <td>
+                        <b class="login_box">密码:</b>
+                        <input placeholder="请输入密码" class="login_form" type="password"
                             value=password
                             node_ref=input_password
                             />
-                    </b></td>
+                    </td>
                     </tr>
                 </table>
 
@@ -134,8 +135,12 @@ pub fn LoginPage() -> impl IntoView {
             <tr>
                 <td>
                     <div style="padding:20px">
-                        <a href="#" class="login_switch">密码登录</a>
-                        <a href="#" class="login_switch">短信登录</a>
+                        <table>
+                        <tr>
+                        <td style="padding-right:30px;"><a href="#" class="login_switch">密码登录</a></td>
+                        <td><a href="#" class="login_switch">短信登录</a></td>
+                        </tr>
+                        </table>
                     </div>
 
                     <div>

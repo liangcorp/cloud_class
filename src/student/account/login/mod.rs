@@ -50,9 +50,8 @@ fn UsernameLoginLayer() -> impl IntoView {
                     </td>
                 </tr>
                 <tr>
-                    <td>
-                        <b class="login_box">账号:</b>
-                        <input placeholder="请输入账号" class="login_form" type="text"
+                    <td style="padding-left:10px">
+                        <input placeholder="请输入账号" class="login_form" style="width:100%" type="text"
                             value=username
                             node_ref=input_username
                         />
@@ -60,9 +59,8 @@ fn UsernameLoginLayer() -> impl IntoView {
                 </tr>
                 <tr><td></td></tr>
                 <tr>
-                    <td>
-                        <b class="login_box">密码:</b>
-                        <input placeholder="请输入密码" class="login_form" type="password"
+                    <td style="padding-left:10px">
+                        <input placeholder="请输入密码" class="login_form" style="width:100%" type="password"
                             value=password
                             node_ref=input_password
                             />

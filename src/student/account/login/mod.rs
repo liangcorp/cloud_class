@@ -6,6 +6,7 @@ fn UsernameLoginLayer() -> impl IntoView {
     // 制作一个reactive值去更新提交按钮
     let (username, set_username) = create_signal("".to_string());
     let (password, set_password) = create_signal("".to_string());
+    let (auth_success, set_auth_success) = create_signal("none");
 
     let input_username: NodeRef<html::Input> = create_node_ref();
     let input_password: NodeRef<html::Input> = create_node_ref();
@@ -25,7 +26,6 @@ fn UsernameLoginLayer() -> impl IntoView {
             // this means we can call`HtmlInputElement::value()`
             // to get the current value of the input
             .value();
-        set_username.set(username_value);
 
         let password_value = input_password
             .get()
@@ -37,14 +37,22 @@ fn UsernameLoginLayer() -> impl IntoView {
             // this means we can call`HtmlInputElement::value()`
             // to get the current value of the input
             .value();
-        set_password.set(password_value);
+
+        if username_value != "user".to_string() || password_value != "password".to_string() {
+            set_auth_success.set("inline");
+        } else {
+            set_auth_success.set("none");
+            set_username.set(username_value);
+            set_password.set(password_value);
+        }
     };
 
     view! {
         <form on:submit=on_submit> // on_submit defined below
             <table>
                 // <tr><td><p>"用户名是: " {username}</p></td></tr>
-                <tr style="display:none;color:red">
+                // <tr><td><p>"密码名是: " {password}</p></td></tr>
+                <tr style:display=move || auth_success.get() style="color:red">
                     <td>
                     <h4>用户名或者密码不正确</h4>
                     </td>

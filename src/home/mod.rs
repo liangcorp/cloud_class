@@ -37,7 +37,7 @@ pub fn HomePage() -> impl IntoView {
                     </td>
 
                     <td class="header_login"><a href="/login" class="header" style="padding-top:10px;padding-bottom:10px;padding-left:20px;padding-right:20px;color:#FAFAFA;background-color: #333333;">登陆</a></td>
-                    <td class="header_login"><a href="#" class="header" >注册</a></td>
+                    <td class="header_login"><a href="/register" class="header" >注册</a></td>
                 </tr>
                 </table>
             </div>

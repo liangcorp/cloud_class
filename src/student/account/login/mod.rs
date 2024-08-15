@@ -45,28 +45,28 @@ fn UsernameLoginLayer() -> impl IntoView {
             <table>
                 // <tr><td><p>"用户名是: " {username}</p></td></tr>
                 <tr style="display:none;color:red">
-                <td>
-                <h4>用户名或者密码不正确</h4>
-                </td>
+                    <td>
+                    <h4>用户名或者密码不正确</h4>
+                    </td>
                 </tr>
                 <tr>
-                <td>
-                    <b class="login_box">账号:</b>
-                    <input placeholder="请输入账号" class="login_form" type="text"
-                        value=username
-                        node_ref=input_username
-                    />
-                </td>
+                    <td>
+                        <b class="login_box">账号:</b>
+                        <input placeholder="请输入账号" class="login_form" type="text"
+                            value=username
+                            node_ref=input_username
+                        />
+                    </td>
                 </tr>
                 <tr><td></td></tr>
                 <tr>
-                <td>
-                    <b class="login_box">密码:</b>
-                    <input placeholder="请输入密码" class="login_form" type="password"
-                        value=password
-                        node_ref=input_password
-                        />
-                </td>
+                    <td>
+                        <b class="login_box">密码:</b>
+                        <input placeholder="请输入密码" class="login_form" type="password"
+                            value=password
+                            node_ref=input_password
+                            />
+                    </td>
                 </tr>
             </table>
 
@@ -136,41 +136,38 @@ fn MobileLoginLayer() -> impl IntoView {
 
     view! {
         <form on:submit=on_submit> // on_submit defined below
-            <table>
+            <table style="padding-left:10px">
                 // <tr><td><p>"用户名是: " {username}</p></td></tr>
+                <tr><td style="padding-top:60px"></td><td></td></tr> // padding 用来装饰
                 <tr style="display:none;color:red">
-                <td>
-                <h4>手机号或验证码不正确</h4>
-                </td>
+                    <td>
+                        <h4>手机号或验证码不正确</h4>
+                    </td>
                 </tr>
                 <tr>
-                <td>
-                    <b class="login_box">手机号:</b>
-                    <input placeholder="请输入手机号" class="login_form" type="text"
-                        value=mobile_no
-                        node_ref=input_mobile_no
-                    />
-                </td>
-                </tr>
-                <tr><td></td></tr>
-                <tr>
-                <td>
-                    <input placeholder="验证密码" class="login_form" type="text"
-                        value=sms
-                        node_ref=input_sms
+                    <td colspan="2">
+                        <input placeholder="请输入手机号" style="width:94%" class="login_form" type="text"
+                            value=mobile_no
+                            node_ref=input_mobile_no
                         />
-                </td>
-                <td>
-                    <button>获取验证码</button>
-                </td>
+                    </td>
                 </tr>
-            </table>
 
-            <table>
                 <tr>
-                <td style="padding:10px">
-                    <input class="submit_button" type="submit" value="登陆"/>
-                </td>
+                    <td>
+                        <input placeholder="验证密码" class="login_form" type="text"
+                            value=sms
+                            node_ref=input_sms
+                            />
+                    </td>
+                    <td>
+                        <button>获取验证码</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input class="submit_button" style="width:100%; padding-top:10px; padding-bottom:10px" type="submit" value="登陆"/>
+                    </td>
                 </tr>
             </table>
         </form>
@@ -218,13 +215,13 @@ pub fn LoginPage() -> impl IntoView {
 
             <tr>
                 <td>
-                    <div style="padding:20px">
+                    <div style="padding:20px;top:0px">
                         <table>
                         <tr>
-                            <td style="padding-right:30px;">
+                            <td>
                             <a href="#" class="login_switch" on:click=move |_| {
-                                    set_username_login.update(move |n| *n = String::from("inline"));
-                                    set_mobile_login.update(move |n| *n = String::from("none"));
+                                    set_username_login.update(|n| *n = String::from("inline"));
+                                    set_mobile_login.update(|n| *n = String::from("none"));
                                 }>
                                 密码登录
                             </a>

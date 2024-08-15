@@ -241,12 +241,12 @@ pub fn LoginPage() -> impl IntoView {
                         </table>
                     </div>
 
-                    <div style:display={username_login}>
+                    <div style:display=move || username_login.get()>
                         <UsernameLoginLayer/>
                     </div>
                     <b>{username_login.get()}</b>
 
-                    <div style:display={mobile_login}>
+                    <div style:display=move || mobile_login.get()>
                         <MobileLoginLayer/>
                     </div>
 

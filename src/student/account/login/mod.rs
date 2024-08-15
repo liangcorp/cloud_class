@@ -246,6 +246,9 @@ pub fn LoginPage() -> impl IntoView {
                 </td>
             </tr>
             </table>
+            <br />
+            <br />
+            <br />
             <a href="/">返回主页</a>
         </div>
         </div>

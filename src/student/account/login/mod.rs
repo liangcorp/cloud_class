@@ -74,7 +74,7 @@ fn UsernameLoginLayer() -> impl IntoView {
                         <input type="checkbox"/>记住账号
                     </td>
                     <td style="padding: 10px">
-                        忘记密码
+                        <a href="#">忘记密码</a>
                     </td>
                 </tr>
             </table>
@@ -85,7 +85,7 @@ fn UsernameLoginLayer() -> impl IntoView {
                     <input class="submit_button" type="submit" value="登陆"/>
                 </td>
                 <td style="padding:10px">
-                    <input class="register_button" type="submit" value="注册"/>
+                    <a href="/register" class="login_switch">注册</a>
                 </td>
                 </tr>
             </table>
@@ -181,11 +181,6 @@ fn QRLayer() -> impl IntoView {
     }
 }
 
-#[component]
-fn RegisterLayer() -> impl IntoView {
-    view! {}
-}
-
 /// 提供登陆页
 #[component]
 pub fn LoginPage() -> impl IntoView {
@@ -243,10 +238,6 @@ pub fn LoginPage() -> impl IntoView {
 
                     <div style:display=move || mobile_login.get()>
                         <MobileLoginLayer/>
-                    </div>
-
-                    <div>
-                    <RegisterLayer/>
                     </div>
                 </td>
                 <td></td>

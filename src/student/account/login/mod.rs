@@ -1,6 +1,16 @@
 use leptos::*;
 use leptos_meta::*;
 
+#[server(UserAuth, "/api")]
+pub async fn user_auth(username: String, password: String) -> Result<(), ServerFnError> {
+
+    if username == "user" && password == "password" {
+        Ok(())
+    } else {
+        Err(ServerFnError::ServerError("failed".to_string()))
+    }
+}
+
 #[component]
 fn UsernameLoginLayer() -> impl IntoView {
     // 制作一个reactive值去更新提交按钮
@@ -42,9 +52,17 @@ fn UsernameLoginLayer() -> impl IntoView {
             set_auth_success.set("inline");
         } else {
             set_auth_success.set("none");
-            set_username.set(username_value);
-            set_password.set(password_value);
+            set_username.set(username_value.clone());
+            set_password.set(password_value.clone());
         }
+
+        spawn_local(async {
+            match user_auth(username_value, password_value).await {
+                Ok(()) => set_auth_success.set("none"),
+                Err(_e) => set_auth_success.set("inline"),
+            };
+        });
+
     };
 
     view! {

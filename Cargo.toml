@@ -21,7 +21,10 @@ thiserror = "1"
 tracing = { version = "0.1", optional = true }
 http = "1"
 serde = { version = "1.0.207", optional = true, features = ["derive"] }
-sqlx = { version = "0.8.0", features = ["runtime-tokio-rustls", "sqlite"], optional = true }
+sqlx = { version = "0.8.0", features = [
+  "runtime-tokio-rustls",
+  "sqlite",
+], optional = true }
 
 [features]
 hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]
@@ -35,10 +38,10 @@ ssr = [
     "leptos_meta/ssr",
     "leptos_router/ssr",
     "dep:tracing",
+    "dep:sqlx",
 ]
 serde = ["dep:serde"]
 cfg-if = []
-sqlx = ["dep:sqlx"]
 
 # Defines a size-optimized profile for the WASM bundle in release mode
 [profile.wasm-release]
@@ -47,6 +50,10 @@ opt-level = 'z'
 lto = true
 codegen-units = 1
 panic = "abort"
+
+[package.metadata.cargo-all-features]
+denylist = ["axum", "tower", "tower-http", "tokio", "sqlx", "leptos_axum"]
+skip_feature_sets = [["csr", "ssr"], ["csr", "hydrate"], ["ssr", "hydrate"]]
 
 [package.metadata.leptos]
 # The name used by wasm-bindgen/cargo-leptos for the JS/WASM bundle. Defaults to the crate name

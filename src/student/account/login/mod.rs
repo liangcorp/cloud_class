@@ -23,23 +23,27 @@ pub mod ssr {
 }
 
 #[server(UserAuth, "/api")]
-pub async fn user_auth(username: String, password: String) -> Result<(), ServerFnError> {
+pub async fn user_auth(user: String, passwd: String) -> Result<(), ServerFnError> {
     use self::ssr::*;
 
     let mut conn = db().await?;
 
-    match sqlx::query("SELECT username FROM USERS")
-        .bind(username)
+    match sqlx::query("SELECT username,password FROM student_accounts WHERE username==$1 AND password=$2;")
+        .bind(user)
+        .bind(passwd)
         .execute(&mut conn)
         .await
     {
-        Ok(_row) => {
+        Ok(password) => {
+            logging::log!("what is this? {:?}", password);
             // and redirect to the home page
             leptos_axum::redirect("/");
             Ok(())
-        },
-        Err(e) => Err(ServerFnError::ServerError(e.to_string())),
-
+        }
+        Err(e) => {
+            logging::log!("Error: {:?}", e);
+            Err(ServerFnError::ServerError(e.to_string()))
+        }
     }
     // if username == "user" && password == "password" {
     //     // and redirect to the home page
@@ -102,15 +106,20 @@ fn UsernameLoginLayer() -> impl IntoView {
         //     };
         // });
 
-        spawn_local(async move{
+        spawn_local(async move {
             let result = user_auth(username_value.clone(), password_value.clone()).await;
 
             match result {
-                Ok(()) => { set_auth_success.set("none"); set_username.set(username_value) },
-                Err(_) => { set_auth_success.set("inline"); set_password.set(password_value) },
+                Ok(()) => {
+                    set_auth_success.set("none");
+                    set_username.set(username_value)
+                }
+                Err(_) => {
+                    set_auth_success.set("inline");
+                    set_password.set(password_value)
+                }
             }
         });
-
     };
 
     view! {

@@ -3,7 +3,6 @@ use leptos_meta::*;
 
 #[server(UserAuth, "/api")]
 pub async fn user_auth(username: String, password: String) -> Result<(), ServerFnError> {
-
     if username == "user" && password == "password" {
         Ok(())
     } else {
@@ -48,19 +47,29 @@ fn UsernameLoginLayer() -> impl IntoView {
             // to get the current value of the input
             .value();
 
-        if username_value != "user".to_string() || password_value != "password".to_string() {
-            set_auth_success.set("inline");
-        } else {
-            set_auth_success.set("none");
-            set_username.set(username_value.clone());
-            set_password.set(password_value.clone());
-        }
+        // if username_value != "user".to_string() || password_value != "password".to_string() {
+        //     set_auth_success.set("inline");
+        // } else {
+        //     set_auth_success.set("none");
+        //     set_username.set(username_value.clone());
+        //     set_password.set(password_value.clone());
+        // }
 
-        spawn_local(async {
-            match user_auth(username_value, password_value).await {
-                Ok(()) => set_auth_success.set("none"),
-                Err(_e) => set_auth_success.set("inline"),
-            };
+        // spawn_local(async {
+        //     match user_auth(username_value, password_value).await {
+        //         Ok(()) => set_auth_success.set("none"),
+        //         Err(_e) => set_auth_success.set("inline"),
+        //     };
+        // });
+
+        spawn_local(async move{
+
+            let result = user_auth(username_value.clone(), password_value.clone()).await;
+
+            match result {
+                Ok(()) => { set_auth_success.set("none"); set_username.set(username_value) },
+                Err(_) => { set_auth_success.set("inline"); set_password.set(password_value) },
+            }
         });
 
     };

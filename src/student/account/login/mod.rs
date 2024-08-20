@@ -33,11 +33,17 @@ pub async fn user_auth(username: String, password: String) -> Result<(), ServerF
         .execute(&mut conn)
         .await
     {
-        Ok(_row) => Ok(()),
+        Ok(_row) => {
+            // and redirect to the home page
+            leptos_axum::redirect("/");
+            Ok(())
+        },
         Err(e) => Err(ServerFnError::ServerError(e.to_string())),
-    }
 
+    }
     // if username == "user" && password == "password" {
+    //     // and redirect to the home page
+    //     leptos_axum::redirect("/");
     //     Ok(())
     // } else {
     //     Err(ServerFnError::ServerError("failed".to_string()))

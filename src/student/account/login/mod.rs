@@ -1,13 +1,47 @@
 use leptos::*;
 use leptos_meta::*;
+use server_fn::ServerFnError;
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+#[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
+pub struct User {
+    id: u16,
+    username: String,
+    password: String,
+    mobile: String,
+}
+
+#[cfg(feature = "ssr")]
+pub mod ssr {
+    // use http::{header::SET_COOKIE, HeaderMap, HeaderValue, StatusCode};
+    use leptos::server_fn::ServerFnError;
+    use sqlx::{Connection, SqliteConnection};
+
+    pub async fn db() -> Result<SqliteConnection, ServerFnError> {
+        Ok(SqliteConnection::connect("sqlite:Users.db").await?)
+    }
+}
 
 #[server(UserAuth, "/api")]
 pub async fn user_auth(username: String, password: String) -> Result<(), ServerFnError> {
-    if username == "user" && password == "password" {
-        Ok(())
-    } else {
-        Err(ServerFnError::ServerError("failed".to_string()))
+    use self::ssr::*;
+
+    let mut conn = db().await?;
+
+    match sqlx::query("SELECT username FROM USERS")
+        .bind(username)
+        .execute(&mut conn)
+        .await
+    {
+        Ok(_row) => Ok(()),
+        Err(e) => Err(ServerFnError::ServerError(e.to_string())),
     }
+
+    // if username == "user" && password == "password" {
+    //     Ok(())
+    // } else {
+    //     Err(ServerFnError::ServerError("failed".to_string()))
+    // }
 }
 
 #[component]
@@ -63,7 +97,6 @@ fn UsernameLoginLayer() -> impl IntoView {
         // });
 
         spawn_local(async move{
-
             let result = user_auth(username_value.clone(), password_value.clone()).await;
 
             match result {

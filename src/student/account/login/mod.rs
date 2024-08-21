@@ -27,39 +27,17 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
 
     let mut conn = db().await?;
 
-    let account = sqlx::query_as::<_, User>("SELECT * FROM student_accounts WHERE username==$1;")
-        .bind(user)
-        .fetch_one(&mut conn)
-        .await?;
+    let account = sqlx::query_as::<_, User>(
+        "SELECT * FROM student_accounts WHERE username==$1 AND password==$2;",
+    )
+    .bind(&user)
+    .bind(&password)
+    .fetch_one(&mut conn)
+    .await?;
 
-    if account.password == password {
-        logging::log!("successfully authenticated {:?}", account);
-        ()
-    } else {
-        logging::log!("user found. wrong password {:?}", account);
-        return Err(ServerFnError::ServerError("failed".to_string()));
-    }
+    logging::log!("successfully authenticated {:?}", account);
 
     Ok(())
-    // match password {
-    //     Ok(password) => {
-    //         logging::log!("what is this? {:?}", password);
-    //         // and redirect to the home page
-    //         leptos_axum::redirect("/");
-    //         Ok(())
-    //     }
-    //     Err(e) => {
-    //         logging::log!("Error: {:?}", e);
-    //         Err(ServerFnError::ServerError(e.to_string()))
-    //     }
-    // }
-    // if username == "user" && password == "password" {
-    //     // and redirect to the home page
-    //     leptos_axum::redirect("/");
-    //     Ok(())
-    // } else {
-    //     Err(ServerFnError::ServerError("failed".to_string()))
-    // }
 }
 
 #[component]

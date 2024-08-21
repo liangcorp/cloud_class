@@ -88,6 +88,8 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
             // if Argon2::default().verify_password(&b_password, &parsed_hash).is_ok() {
             if parsed_hash.hash.unwrap().to_string() == account.password {
                 logging::log!("successfully authenticated {:?}", &account);
+                //  改变网址到学生资料
+                leptos_axum::redirect("/profile");
             } else {
                 return Err(ServerFnError::Args("failed".to_string()));
             }

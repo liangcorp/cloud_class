@@ -2,6 +2,7 @@ use crate::error_template::{AppError, ErrorTemplate};
 use crate::home::HomePage;
 use crate::student::account::login::LoginPage;
 use crate::student::account::register::RegistrationPage;
+use crate::student::profile::ProfilePage;
 use crate::admin::AdminPage;
 
 use leptos::*;
@@ -38,6 +39,7 @@ pub fn App() -> impl IntoView {
                     <Route path="/login" view=LoginPage/>
                     <Route path="/register" view=RegistrationPage/>
                     <Route path="/admin" view=AdminPage/>
+                    <Route path="/profile" view=ProfilePage/>
                 </Routes>
             </main>
         </Router>

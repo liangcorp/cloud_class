@@ -5,8 +5,8 @@ use server_fn::ServerFnError;
 #[derive(Clone, Debug, PartialEq, Eq)]
 #[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
 pub struct User {
-    uuid: u16,
     username: String,
+    salt: String,
     password: String,
 }
 
@@ -32,14 +32,28 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
         Argon2
     };
 
-
     match db().await {
         Ok(c) => {
             let mut conn = c;
 
+            let account = sqlx::query_as::<_, User>(
+                "SELECT * FROM student_accounts WHERE username==$1;",
+            )
+            .bind(&user)
+            .fetch_one(&mut conn)
+            .await?;
+
             let b_password = password.clone().into_bytes();
             // let salt = SaltString::generate(&mut OsRng);
-            let salt = SaltString::from_b64("x1z2S4jDbLrigzigZp9CdA").unwrap();
+
+            let salt;
+            match SaltString::from_b64(account.salt.as_str()) {
+                Ok(s) => salt = s,
+                Err(e) => {
+                    logging::log!("ERROR: creating salt string - {:?}", e.to_string());
+                    return Err(ServerFnError::Args(e.to_string()))
+                },
+            }
 
             // Argon2 with default params (Argon2id v19)
             let argon2 = Argon2::default();
@@ -48,9 +62,11 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
             let password_hash;
             match argon2.hash_password(&b_password, &salt) {
                 Ok(p) => password_hash = p.to_string(),
-                Err(e) => return Err(ServerFnError::Args(e.to_string())),
+                Err(e) => {
+                    logging::log!("ERROR: password hashing - {:?}", e.to_string());
+                    return Err(ServerFnError::Args(e.to_string()))
+                },
             }
-
 
             // Verify password against PHC string.
             //
@@ -61,15 +77,6 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
                 Ok(p) => parsed_hash = p,
                 Err(e) => return Err(ServerFnError::Args(e.to_string())),
             }
-
-            let account = sqlx::query_as::<_, User>(
-                "SELECT * FROM student_accounts WHERE username==$1;",
-            )
-            .bind(&user)
-            .fetch_one(&mut conn)
-            .await?;
-
-            // let b_password = account.password.clone().into_bytes();
 
             logging::log!("parsed hash password: {:?}", &parsed_hash);
 

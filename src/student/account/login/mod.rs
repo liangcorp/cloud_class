@@ -5,10 +5,9 @@ use server_fn::ServerFnError;
 #[derive(Clone, Debug, PartialEq, Eq)]
 #[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
 pub struct User {
-    id: u16,
+    uuid: u16,
     username: String,
     password: String,
-    mobile: String,
 }
 
 #[cfg(feature = "ssr")]
@@ -23,28 +22,37 @@ pub mod ssr {
 }
 
 #[server(UserAuth, "/api")]
-pub async fn user_auth(user: String, passwd: String) -> Result<(), ServerFnError> {
+pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnError> {
     use self::ssr::*;
 
     let mut conn = db().await?;
 
-    match sqlx::query("SELECT username,password FROM student_accounts WHERE username==$1 AND password=$2;")
+    let account = sqlx::query_as::<_, User>("SELECT * FROM student_accounts WHERE username==$1;")
         .bind(user)
-        .bind(passwd)
-        .execute(&mut conn)
-        .await
-    {
-        Ok(password) => {
-            logging::log!("what is this? {:?}", password);
-            // and redirect to the home page
-            leptos_axum::redirect("/");
-            Ok(())
-        }
-        Err(e) => {
-            logging::log!("Error: {:?}", e);
-            Err(ServerFnError::ServerError(e.to_string()))
-        }
+        .fetch_one(&mut conn)
+        .await?;
+
+    if account.password == password {
+        logging::log!("successfully authenticated {:?}", account);
+        ()
+    } else {
+        logging::log!("user found. wrong password {:?}", account);
+        return Err(ServerFnError::ServerError("failed".to_string()));
     }
+
+    Ok(())
+    // match password {
+    //     Ok(password) => {
+    //         logging::log!("what is this? {:?}", password);
+    //         // and redirect to the home page
+    //         leptos_axum::redirect("/");
+    //         Ok(())
+    //     }
+    //     Err(e) => {
+    //         logging::log!("Error: {:?}", e);
+    //         Err(ServerFnError::ServerError(e.to_string()))
+    //     }
+    // }
     // if username == "user" && password == "password" {
     //     // and redirect to the home page
     //     leptos_axum::redirect("/");
@@ -107,16 +115,14 @@ fn UsernameLoginLayer() -> impl IntoView {
         // });
 
         spawn_local(async move {
-            let result = user_auth(username_value.clone(), password_value.clone()).await;
-
-            match result {
+            match user_auth(username_value.clone(), password_value.clone()).await {
                 Ok(()) => {
                     set_auth_success.set("none");
-                    set_username.set(username_value)
+                    set_username.set(username_value);
+                    set_password.set(password_value)
                 }
                 Err(_) => {
                     set_auth_success.set("inline");
-                    set_password.set(password_value)
                 }
             }
         });

@@ -32,10 +32,13 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
         Argon2
     };
 
+    //  连接数据库
     match db().await {
         Ok(c) => {
+            // 成功连接数据库
             let mut conn = c;
 
+            /*---   提取用户数据    ---*/
             let account = sqlx::query_as::<_, User>(
                 "SELECT * FROM student_accounts WHERE username==$1;",
             )
@@ -43,6 +46,7 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
             .fetch_one(&mut conn)
             .await?;
 
+            /*---   Salt Hash 用户输入密码    ---*/
             let b_password = password.clone().into_bytes();
             // let salt = SaltString::generate(&mut OsRng);
 
@@ -68,7 +72,7 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
                 },
             }
 
-            // Verify password against PHC string.
+            // Create PHC string.
             //
             // NOTE: hash params from `parsed_hash` are used instead of what is configured in the
             // `Argon2` instance.
@@ -80,6 +84,7 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
 
             logging::log!("parsed hash password: {:?}", &parsed_hash);
 
+            /*---   认证密码一致    ---*/
             // if Argon2::default().verify_password(&b_password, &parsed_hash).is_ok() {
             if parsed_hash.hash.unwrap().to_string() == account.password {
                 logging::log!("successfully authenticated {:?}", &account);
@@ -88,7 +93,8 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
             }
         }
         Err(e) => {
-            logging::log!("Failed to connect to database {:?}", e);
+            //  数据库连接失败
+            logging::log!("数据库连接失败 - {:?}", e);
         }
     }
     Ok(())

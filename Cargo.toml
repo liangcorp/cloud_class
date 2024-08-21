@@ -25,6 +25,8 @@ sqlx = { version = "0.8.0", features = [
   "runtime-tokio-rustls",
   "sqlite",
 ], optional = true }
+argon2 = { version = "0.5.3" }
+rand_core = { version = "0.6.4", features = ["getrandom"] }
 
 [features]
 hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]
@@ -52,7 +54,7 @@ codegen-units = 1
 panic = "abort"
 
 [package.metadata.cargo-all-features]
-denylist = ["axum", "tower", "tower-http", "tokio", "sqlx", "leptos_axum"]
+denylist = ["axum", "tower", "tower-http", "tokio", "sqlx", "rand_core", "argon2", "leptos_axum"]
 skip_feature_sets = [["csr", "ssr"], ["csr", "hydrate"], ["ssr", "hydrate"]]
 
 [package.metadata.leptos]

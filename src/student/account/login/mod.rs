@@ -24,19 +24,65 @@ pub mod ssr {
 #[server(UserAuth, "/api")]
 pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnError> {
     use self::ssr::*;
+    use argon2::{
+        password_hash::{
+            rand_core::OsRng,
+            PasswordHash, PasswordHasher, PasswordVerifier, SaltString
+        },
+        Argon2
+    };
 
-    let mut conn = db().await?;
 
-    let account = sqlx::query_as::<_, User>(
-        "SELECT * FROM student_accounts WHERE username==$1 AND password==$2;",
-    )
-    .bind(&user)
-    .bind(&password)
-    .fetch_one(&mut conn)
-    .await?;
+    match db().await {
+        Ok(c) => {
+            let mut conn = c;
 
-    logging::log!("successfully authenticated {:?}", account);
+            let b_password = password.clone().into_bytes();
+            let salt = SaltString::generate(&mut OsRng);
+            let salt_bak = "x1z2S4jDbLrigzigZp9CdA";
 
+            // Argon2 with default params (Argon2id v19)
+            let argon2 = Argon2::default();
+
+            // Hash password to PHC string ($argon2id$v=19$...)
+            let password_hash;
+            match argon2.hash_password(&b_password, &salt) {
+                Ok(p) => password_hash = p.to_string(),
+                Err(e) => return Err(ServerFnError::Args(e.to_string())),
+            }
+
+
+            // Verify password against PHC string.
+            //
+            // NOTE: hash params from `parsed_hash` are used instead of what is configured in the
+            // `Argon2` instance.
+            let parsed_hash;
+            match PasswordHash::new(&password_hash) {
+                Ok(p) => parsed_hash = p,
+                Err(e) => return Err(ServerFnError::Args(e.to_string())),
+            }
+
+            let account = sqlx::query_as::<_, User>(
+                "SELECT * FROM student_accounts WHERE username==$1;",
+            )
+            .bind(&user)
+            .fetch_one(&mut conn)
+            .await?;
+
+            let b_password = account.password.clone().into_bytes();
+
+            logging::log!("parsed hash password: {:?}", &parsed_hash);
+
+            if Argon2::default().verify_password(&b_password, &parsed_hash).is_ok() {
+                logging::log!("successfully authenticated {:?}", &account);
+            } else {
+                return Err(ServerFnError::Args("failed".to_string()));
+            }
+        }
+        Err(e) => {
+            logging::log!("Failed to connect to database {:?}", e);
+        }
+    }
     Ok(())
 }
 

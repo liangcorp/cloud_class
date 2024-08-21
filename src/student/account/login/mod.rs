@@ -38,8 +38,8 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
             let mut conn = c;
 
             let b_password = password.clone().into_bytes();
-            let salt = SaltString::generate(&mut OsRng);
-            let salt_bak = "x1z2S4jDbLrigzigZp9CdA";
+            // let salt = SaltString::generate(&mut OsRng);
+            let salt = SaltString::from_b64("x1z2S4jDbLrigzigZp9CdA").unwrap();
 
             // Argon2 with default params (Argon2id v19)
             let argon2 = Argon2::default();
@@ -69,11 +69,12 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
             .fetch_one(&mut conn)
             .await?;
 
-            let b_password = account.password.clone().into_bytes();
+            // let b_password = account.password.clone().into_bytes();
 
             logging::log!("parsed hash password: {:?}", &parsed_hash);
 
-            if Argon2::default().verify_password(&b_password, &parsed_hash).is_ok() {
+            // if Argon2::default().verify_password(&b_password, &parsed_hash).is_ok() {
+            if parsed_hash.hash.unwrap().to_string() == account.password {
                 logging::log!("successfully authenticated {:?}", &account);
             } else {
                 return Err(ServerFnError::Args("failed".to_string()));

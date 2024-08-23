@@ -12,7 +12,7 @@ pub struct User {
 
 #[cfg(feature = "ssr")]
 pub mod ssr {
-    // use http::{header::SET_COOKIE, HeaderMap, HeaderValue, StatusCode};
+    // use http::{header, header::SET_COOKIE, HeaderMap, HeaderValue, StatusCode};
     use leptos::server_fn::ServerFnError;
     use sqlx::{Connection, SqliteConnection};
 
@@ -21,16 +21,18 @@ pub mod ssr {
     }
 }
 
-#[server(UserAuth, "/api")]
+#[server(Login, "/api")]
 pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnError> {
     use self::ssr::*;
     use argon2::{
         password_hash::{
-            rand_core::OsRng,
-            PasswordHash, PasswordHasher, PasswordVerifier, SaltString
+            // rand_core::OsRng,
+            PasswordHash, PasswordHasher, SaltString//,PasswordVerifier
         },
         Argon2
     };
+    use leptos_axum::ResponseOptions;
+    use http::{header, HeaderValue};
 
     //  连接数据库
     match db().await {
@@ -88,8 +90,28 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
             // if Argon2::default().verify_password(&b_password, &parsed_hash).is_ok() {
             if parsed_hash.hash.unwrap().to_string() == account.password {
                 logging::log!("successfully authenticated {:?}", &account);
+
+                // pull ResponseOptions from context
+                let response = expect_context::<ResponseOptions>();
+
+
+                // set the HTTP status code
+                // response.set_status(StatusCode::IM_A_TEAPOT);
+
+                logging::log!("creating cookie");
+                // set a cookie in the HTTP response
+                // let mut cookie = Cookie::build("biscuits", "yes").finish();
+                let cookie = format!("id={};session_token=xxxxx;", &user);
+
+                if let Ok(cookie) = HeaderValue::from_str(&cookie.to_string()) {
+                    logging::log!("setting cookie");
+                    response.insert_header(header::SET_COOKIE, cookie);
+                }
+
+                logging::log!("redirecting to profile");
                 //  改变网址到学生资料
-                leptos_axum::redirect("/profile");
+                leptos_axum::redirect("/");
+                // logging::log!("{}", Cookie::parse("id=user3").unwrap());
             } else {
                 return Err(ServerFnError::Args("failed".to_string()));
             }

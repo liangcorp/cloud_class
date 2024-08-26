@@ -24,6 +24,8 @@ pub mod ssr {
 #[server(Login, "/api")]
 pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnError> {
     use self::ssr::*;
+    use http::{header, HeaderValue};
+    use leptos_axum::ResponseOptions;
     use argon2::{
         password_hash::{
             // rand_core::OsRng,
@@ -31,8 +33,7 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
         },
         Argon2
     };
-    use leptos_axum::ResponseOptions;
-    use http::{header, HeaderValue};
+
 
     //  连接数据库
     match db().await {
@@ -56,20 +57,20 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
             match SaltString::from_b64(account.salt.as_str()) {
                 Ok(s) => salt = s,
                 Err(e) => {
-                    logging::log!("ERROR: creating salt string - {:?}", e.to_string());
+                    logging::log!("ERROR: {:?}", e.to_string());
                     return Err(ServerFnError::Args(e.to_string()))
                 },
             }
 
             // Argon2 with default params (Argon2id v19)
-            let argon2 = Argon2::default();
+            let argon2_hash = Argon2::default();
 
             // Hash password to PHC string ($argon2id$v=19$...)
             let password_hash;
-            match argon2.hash_password(&b_password, &salt) {
+            match argon2_hash.hash_password(&b_password, &salt) {
                 Ok(p) => password_hash = p.to_string(),
                 Err(e) => {
-                    logging::log!("ERROR: password hashing - {:?}", e.to_string());
+                    logging::log!("ERROR: {:?}", e.to_string());
                     return Err(ServerFnError::Args(e.to_string()))
                 },
             }
@@ -83,8 +84,6 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
                 Ok(p) => parsed_hash = p,
                 Err(e) => return Err(ServerFnError::Args(e.to_string())),
             }
-
-            logging::log!("parsed hash password: {:?}", &parsed_hash);
 
             /*---   认证密码一致    ---*/
             // if Argon2::default().verify_password(&b_password, &parsed_hash).is_ok() {

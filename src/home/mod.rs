@@ -1,4 +1,4 @@
-use crate::session::extract_cookie;
+use crate::session::cookie::extract_header_cookie;
 use leptos::*;
 // use serde::Deserialize;
 
@@ -10,7 +10,7 @@ pub fn HomePage() -> impl IntoView {
     view! {
         <Await
             // `future` provides the `Future` to be resolved
-            future=extract_cookie
+            future=extract_header_cookie
 
             // the data is bound to whatever variable name you provide
             let:data

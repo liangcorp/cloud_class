@@ -34,6 +34,7 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
         Argon2
     };
 
+    use crate::session::cookie::CustomCookie;
 
     //  连接数据库
     match db().await {
@@ -100,9 +101,16 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
                 logging::log!("creating cookie");
                 // set a cookie in the HTTP response
                 // let mut cookie = Cookie::build("biscuits", "yes").finish();
-                let cookie = format!("id={};session_token=xxxxx;", &user);
+                let mut user_cookie: CustomCookie = CustomCookie::new();
 
-                if let Ok(cookie) = HeaderValue::from_str(&cookie.to_string()) {
+                logging::log!("default cookie: {}", user_cookie.to_string());
+
+                user_cookie.username = user.clone();
+                user_cookie.session_token = "aaaaaa".to_string();
+
+                logging::log!("result cookie: {}", user_cookie.to_string());
+
+                if let Ok(cookie) = HeaderValue::from_str(&user_cookie.to_string()) {
                     logging::log!("setting cookie");
                     response.insert_header(header::SET_COOKIE, cookie);
                 }
@@ -190,7 +198,6 @@ fn UsernameLoginLayer() -> impl IntoView {
     };
 
     view! {
-        // on_submit defined below
         <form on:submit=on_submit>
             <table>
                 // <tr><td><p>"用户名是: " {username}</p></td></tr>
@@ -297,7 +304,6 @@ fn MobileLoginLayer() -> impl IntoView {
     };
 
     view! {
-        // on_submit defined below
         <form on:submit=on_submit>
             <table style="padding-left:10px">
                 // <tr><td><p>"用户名是: " {username}</p></td></tr>

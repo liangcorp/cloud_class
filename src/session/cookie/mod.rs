@@ -6,8 +6,8 @@ use chrono::{Datelike, Timelike, Utc};
 // #[cfg(feature = "ssr", derive(serde::Deserialize))]
 #[derive(Debug)]
 pub struct CustomCookie {
-    pub id: Uuid,
-    pub username: String,
+    // pub id: Uuid,
+    // pub username: String,
     pub domain: String,
     pub path: String,
     pub session_token: String,
@@ -43,13 +43,12 @@ impl CustomCookie {
         );
 
         CustomCookie {
-            id: Uuid::new_v4(),
-            username: "".to_string(),
             session_token: "".to_string(),
             domain: "".to_string(),
             path: "/".to_string(),
             expire_date: expire,
             max_age: "2592000".to_string(),     // 30 days
+            // max_age: "10".to_string(),       // 10 seconds for testing
             // secure: "Secure".to_string(),    // only enable for HTTPS
             secure: "".to_string(),             // for HTTP
             http_only: "HttpOnly".to_string(),  // stop JavaScript from modifying cookies
@@ -58,10 +57,8 @@ impl CustomCookie {
     }
 
     pub fn to_string(&self) -> String {
-        format!("id={};session_token={};username={};domain={};path={};Max-Age={};Expires={};{};{};SameSite={}",
-            self.id,
+        format!("session_token={};domain={};path={};Max-Age={};Expires={};{};{};SameSite={}",
             self.session_token,
-            self.username,
             self.domain,
             self.path,
             self.max_age,
@@ -73,11 +70,15 @@ impl CustomCookie {
     }
 }
 
-// #[server]
-// pub async fn create_header_cookie(id: Uuid, username: String, session_hash: String, expire: String) -> Result<(), ServerFnError> {
-//     todo!();
-// }
+// Create session token from username and add to database
+#[server]
+pub async fn create_session(username: String) -> Result<String, ServerFnError> {
+    todo!();
+}
 
+// Get cookie from HTTP Header
+// for some reason it's only returning the first element of the cookie
+// maybe it's due to security settings
 #[server]
 pub async fn extract_header_cookie() -> Result<String, ServerFnError> {
     // use axum::{extract::Query, http::{Method, header::{HeaderMap, HeaderValue}}};

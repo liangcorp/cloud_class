@@ -105,8 +105,11 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
 
                 logging::log!("default cookie: {}", user_cookie.to_string());
 
-                user_cookie.username = user.clone();
+                // user_cookie.username = user.clone();
+                // user_cookie.expire_date = "".to_string();
                 user_cookie.session_token = "aaaaaa".to_string();
+                // user_cookie.http_only = "".to_string();
+                // user_cookie.same_site = "None".to_string();
 
                 logging::log!("result cookie: {}", user_cookie.to_string());
 

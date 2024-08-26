@@ -13,11 +13,14 @@ pub fn HomePage() -> impl IntoView {
             future=extract_header_cookie
 
             // the data is bound to whatever variable name you provide
-            let:data
+            let:cookie
         >
             <p>
-                {match data {
-                    Ok(s) => set_username.set((*s).clone()),
+                {match cookie {
+                    Ok(s) => {
+                        logging::log!("Cookie: {:?}", *s);
+                        set_username.set((*s).clone())
+                    },
                     Err(_) => set_username.set("".to_string()),
                 }}
             </p>

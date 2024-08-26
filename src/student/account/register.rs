@@ -9,7 +9,7 @@ pub fn RegistrationPage() -> impl IntoView {
 
     view! {
         <div>
-        <h1>Registration Page</h1>
+            <h1>Registration Page</h1>
         </div>
     }
 }

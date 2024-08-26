@@ -42,41 +42,62 @@ pub fn AdminPage() -> impl IntoView {
     };
 
     view! {
+        <Title text="浩天数智化教学辅助系统" />
 
-        // sets the document title
-        <Title text="浩天数智化教学辅助系统"/>
-
-        <form on:submit=on_submit> // on_submit defined below
+        // on_submit defined below
+        <form on:submit=on_submit>
             <table class="login">
                 // <tr><td><p>"用户名是: " {username}</p></td></tr>
-                <tr><td style="padding:25px"><h2 style="color:#000000">浩天数智化教学辅助系统</h2></td></tr>
+                <tr>
+                    <td style="padding:25px">
+                        <h2 style="color:#000000">浩天数智化教学辅助系统</h2>
+                    </td>
+                </tr>
                 <tr style="display:none;color:red">
-                <td>
-                <h4>用户名或者密码不正确</h4>
-                </td>
+                    <td>
+                        <h4>用户名或者密码不正确</h4>
+                    </td>
                 </tr>
                 <tr>
-                <td><b style="padding:10px;border:0px;font-size:20px">
-                    账号<input placeholder="请输入账号" style="padding:10px;border:0px;font-size:20px" type="text"
-                        value=username
-                        node_ref=input_username
-                    />
+                    <td>
+                        <b style="padding:10px;border:0px;font-size:20px">
+                            账号
+                            <input
+                                placeholder="请输入账号"
+                                style="padding:10px;border:0px;font-size:20px"
+                                type="text"
+                                value=username
+                                node_ref=input_username
+                            />
 
-                </b></td>
+                        </b>
+                    </td>
                 </tr>
-                <tr><td></td></tr>
                 <tr>
-                <td style="padding:10px"><b style="padding:10px;border:0px;font-size:20px">
-                    密码<input placeholder="请输入密码" style="padding:10px;border:0px;font-size:20px" type="password"
-                        value=password
-                        node_ref=input_password
+                    <td></td>
+                </tr>
+                <tr>
+                    <td style="padding:10px">
+                        <b style="padding:10px;border:0px;font-size:20px">
+                            密码
+                            <input
+                                placeholder="请输入密码"
+                                style="padding:10px;border:0px;font-size:20px"
+                                type="password"
+                                value=password
+                                node_ref=input_password
+                            />
+                        </b>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding:10px">
+                        <input
+                            style="border:0px;background-color:#333333;color:white;font-size:20px"
+                            type="submit"
+                            value="登陆"
                         />
-                </b></td>
-                </tr>
-                <tr>
-                <td style="padding:10px">
-                    <input style="border:0px;background-color:#333333;color:white;font-size:20px" type="submit" value="登陆"/>
-                </td>
+                    </td>
                 </tr>
             </table>
         </form>

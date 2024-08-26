@@ -10,8 +10,8 @@ pub fn ProfilePage() -> impl IntoView {
 
     view! {
         <div>
-        <h1>Profile Page</h1>
-        <a href="/">返回</a>
+            <h1>Profile Page</h1>
+            <a href="/">返回</a>
         </div>
     }
 }

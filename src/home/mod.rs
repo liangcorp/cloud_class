@@ -1,54 +1,16 @@
+use crate::session::extract_cookie;
 use leptos::*;
 // use serde::Deserialize;
-
-// #[cfg(feature = "ssr", derive(serde::Deserialize))]
-// #[derive(Deserialize, Debug)]
-// struct MyQuery {
-//     response: ResponseOptions,
-// }
-
-#[server]
-pub async fn axum_extract() -> Result<String, ServerFnError> {
-    // use axum::{extract::Query, http::{Method, header::{HeaderMap, HeaderValue}}};
-    use axum::http::header::{HeaderMap, HeaderValue};
-    use leptos_axum::extract;
-
-    // let (method, query): (Method, Query<MyQuery>);
-    let header: HeaderMap<HeaderValue>;
-
-    match extract().await {
-        Ok(h) => {
-            header = h;
-            logging::log!("{:?}", header.get("cookie"));
-        },
-        Err(e) => {
-            logging::log!("Error: {}", e.to_string());
-        },
-    }
-
-
-    logging::log!("layer loading is working");
-    Ok("test".to_string())
-}
 
 /// Renders the home page of your application.
 #[component]
 pub fn HomePage() -> impl IntoView {
     let (username, set_username) = create_signal("".to_string());
 
-    // spawn_local(
-    //     async {
-    //         set_username.update(axum_extract().await.unwrap());
-    // });
-
-    // let mut content = "".to_string();
-
-    // set_username.update(content.unwrap());
-
     view! {
         <Await
             // `future` provides the `Future` to be resolved
-            future = axum_extract
+            future = extract_cookie
 
             // the data is bound to whatever variable name you provide
             let:data
@@ -60,13 +22,6 @@ pub fn HomePage() -> impl IntoView {
                 }
             }</p>
         </Await>
-        // <body on:load=move |_| {
-        //     set_username.set("user".to_string());
-        //     spawn_local(
-        //         async move {
-        //             axum_extract().await;
-        //         });
-        // }>
 
         <div class="contents">
             <div class="header">
@@ -107,6 +62,5 @@ pub fn HomePage() -> impl IntoView {
             </div>
         </div>
         <div><img src="images/banners/3.财务会计banner.jpg" class="banner"/></div>
-        // </body>
     }
 }

@@ -1,9 +1,9 @@
+use crate::admin::AdminPage;
 use crate::error_template::{AppError, ErrorTemplate};
 use crate::home::HomePage;
 use crate::student::account::login::LoginPage;
 use crate::student::account::register::RegistrationPage;
 use crate::student::profile::ProfilePage;
-use crate::admin::AdminPage;
 
 use leptos::*;
 use leptos_meta::*;
@@ -45,4 +45,3 @@ pub fn App() -> impl IntoView {
         </Router>
     }
 }
-

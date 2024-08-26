@@ -3,6 +3,7 @@ pub mod error_template;
 pub mod home;   // 主页
 pub mod admin;  // 管理员页
 pub mod student;  // 用户登陆页
+pub mod session;
 
 #[cfg(feature = "ssr")]
 pub mod fileserv;

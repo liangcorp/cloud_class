@@ -10,20 +10,11 @@ pub struct User {
     password: String,
 }
 
-#[cfg(feature = "ssr")]
-pub mod ssr {
-    // use http::{header, header::SET_COOKIE, HeaderMap, HeaderValue, StatusCode};
-    use leptos::server_fn::ServerFnError;
-    use sqlx::{Connection, SqliteConnection};
-
-    pub async fn db() -> Result<SqliteConnection, ServerFnError> {
-        Ok(SqliteConnection::connect("sqlite:Users.db").await?)
-    }
-}
 
 #[server(Login, "/api")]
 pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnError> {
-    use self::ssr::*;
+    // use crate::utils::database::*;
+    use crate::utils::app_state::AppState;
     use http::{header, HeaderValue};
     use leptos_axum::ResponseOptions;
     use argon2::{
@@ -36,18 +27,23 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
 
     use crate::session::cookie::CustomCookie;
 
+    let state;
+    match use_context::<AppState>() {
+        Some(s) => state = s,
+        None => panic!("state not found"),
+    }
     //  连接数据库
-    match db().await {
-        Ok(c) => {
+    // match state.pool {
+    //     Ok(p) => {
             // 成功连接数据库
-            let mut conn = c;
+            let pool = state.pool;
 
             /*---   提取用户数据    ---*/
             let account = sqlx::query_as::<_, User>(
                 "SELECT * FROM student_accounts WHERE username==$1;",
             )
             .bind(&user)
-            .fetch_one(&mut conn)
+            .fetch_one(&pool)
             .await?;
 
             /*---   Salt Hash 用户输入密码    ---*/
@@ -125,12 +121,12 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
             } else {
                 return Err(ServerFnError::Args("failed".to_string()));
             }
-        }
-        Err(e) => {
-            //  数据库连接失败
-            logging::log!("数据库连接失败 - {:?}", e);
-        }
-    }
+    //     }
+    //     Err(e) => {
+    //         //  数据库连接失败
+    //         logging::log!("数据库连接失败 - {:?}", e);
+    //     }
+    // }
     Ok(())
 }
 

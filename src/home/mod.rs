@@ -20,7 +20,7 @@ pub fn HomePage() -> impl IntoView {
                     Ok(s) => {
                         logging::log!("Cookie: {:?}", *s);
                         set_username.set((*s).clone())
-                    },
+                    }
                     Err(_) => set_username.set("".to_string()),
                 }}
             </p>

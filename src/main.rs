@@ -7,6 +7,9 @@ async fn main() {
     use cloud_class::app::*;
     use cloud_class::fileserv::file_and_error_handler;
 
+    use cloud_class::utils::database::*;
+    use cloud_class::utils::app_state::AppState;
+
     // Setting get_configuration(None) means we'll be using cargo-leptos's env values
     // For deployment these variables are:
     // <https://github.com/leptos-rs/start-axum#executing-a-server-on-a-remote-machine-without-the-toolchain>
@@ -17,11 +20,22 @@ async fn main() {
     let addr = leptos_options.site_addr;
     let routes = generate_route_list(App);
 
+    let db_pool;
+    match create_pool().await {
+        Ok(p) => db_pool = p,
+        Err(e) => panic!("{}", e.to_string()),
+    }
+
+    let app_state = AppState {
+        pool: db_pool,
+        leptos_options,
+    };
+
     // build our application with a route
     let app = Router::new()
-        .leptos_routes(&leptos_options, routes, App)
+        .leptos_routes(&app_state, routes, App)
         .fallback(file_and_error_handler)
-        .with_state(leptos_options);
+        .with_state(app_state);
 
     let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
     logging::log!("listening on http://{}", &addr);

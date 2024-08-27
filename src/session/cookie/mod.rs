@@ -1,72 +1,76 @@
-
 use leptos::*;
-// use uuid::Uuid;
-use chrono::{Datelike, Timelike, Utc};
+use cfg_if::cfg_if;
 
-// #[cfg(feature = "ssr", derive(serde::Deserialize))]
-#[derive(Debug)]
-pub struct CustomCookie {
-    // pub id: Uuid,
-    // pub username: String,
-    pub domain: String,
-    pub path: String,
-    pub session_token: String,
-    pub max_age: String,
-    pub expire_date: String,
-    pub secure: String,
-    pub http_only: String,
-    pub same_site: String,
-}
+cfg_if! {
+    if #[cfg(feature = "ssr")] {
+        use chrono::{Datelike, Timelike, Utc};
 
-impl CustomCookie {
-    pub fn new() -> CustomCookie {
-        let now = Utc::now();
-
-        let month_str = [
-            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-        ];
-
-        let month = match now.month() {
-            12 => 0,            // first month in the vector
-            _ => now.month(),
-        };
-
-        let expire = format!(
-            "{}, {:?} {} {:?} {:02}:{:02}:{:02} UTC",
-            now.weekday(),
-            now.day(),
-            month_str[month as usize],  // list start from 0
-            now.year(),
-            now.hour(),
-            now.minute(),
-            now.second(),
-        );
-
-        CustomCookie {
-            session_token: "".to_string(),
-            domain: "".to_string(),
-            path: "/".to_string(),
-            expire_date: expire,
-            max_age: "2592000".to_string(),     // 30 days
-            // max_age: "10".to_string(),       // 10 seconds for testing
-            // secure: "Secure".to_string(),    // only enable for HTTPS
-            secure: "".to_string(),             // for HTTP
-            http_only: "HttpOnly".to_string(),  // stop JavaScript from modifying cookies
-            same_site: "Strict".to_string(),    // Strict, Lax, and None
+        // #[cfg(feature = "ssr", derive(serde::Deserialize))]
+        #[derive(Debug)]
+        pub struct CustomCookie {
+            // pub id: Uuid,
+            // pub username: String,
+            pub domain: String,
+            pub path: String,
+            pub session_token: String,
+            pub max_age: String,
+            pub expire_date: String,
+            pub secure: String,
+            pub http_only: String,
+            pub same_site: String,
         }
-    }
 
-    pub fn to_string(&self) -> String {
-        format!("session_token={};domain={};path={};Max-Age={};Expires={};{};{};SameSite={}",
-            self.session_token,
-            self.domain,
-            self.path,
-            self.max_age,
-            self.expire_date,
-            self.secure,
-            self.http_only,
-            self.same_site
-        )
+        impl CustomCookie {
+            pub fn new() -> CustomCookie {
+                let now = Utc::now();
+
+                let month_str = [
+                    "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+                ];
+
+                let month = match now.month() {
+                    12 => 0,            // first month in the vector
+                    _ => now.month(),
+                };
+
+                let expire = format!(
+                    "{}, {:?} {} {:?} {:02}:{:02}:{:02} UTC",
+                    now.weekday(),
+                    now.day(),
+                    month_str[month as usize],  // list start from 0
+                    now.year(),
+                    now.hour(),
+                    now.minute(),
+                    now.second(),
+                );
+
+                CustomCookie {
+                    session_token: "".to_string(),
+                    domain: "".to_string(),
+                    path: "/".to_string(),
+                    expire_date: expire,
+                    max_age: "2592000".to_string(),     // 30 days
+                    // max_age: "10".to_string(),       // 10 seconds for testing
+                    // secure: "Secure".to_string(),    // only enable for HTTPS
+                    secure: "".to_string(),             // for HTTP
+                    http_only: "HttpOnly".to_string(),  // stop JavaScript from modifying cookies
+                    same_site: "Strict".to_string(),    // Strict, Lax, and None
+                }
+            }
+
+            pub fn to_string(&self) -> String {
+                format!("session_token={};domain={};path={};Max-Age={};Expires={};{};{};SameSite={}",
+                    self.session_token,
+                    self.domain,
+                    self.path,
+                    self.max_age,
+                    self.expire_date,
+                    self.secure,
+                    self.http_only,
+                    self.same_site
+                )
+            }
+        }
     }
 }
 
@@ -103,6 +107,5 @@ pub async fn extract_header_cookie() -> Result<String, ServerFnError> {
         None => "".to_string(),
     };
 
-    logging::log!("layer loading is working");
     Ok(cookie)
 }

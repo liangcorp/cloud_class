@@ -1,6 +1,6 @@
 
 use leptos::*;
-use uuid::Uuid;
+// use uuid::Uuid;
 use chrono::{Datelike, Timelike, Utc};
 
 // #[cfg(feature = "ssr", derive(serde::Deserialize))]
@@ -72,7 +72,7 @@ impl CustomCookie {
 
 // Create session token from username and add to database
 #[server]
-pub async fn create_session(username: String) -> Result<String, ServerFnError> {
+pub async fn create_session(_username: String) -> Result<String, ServerFnError> {
     todo!();
 }
 

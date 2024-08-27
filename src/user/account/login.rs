@@ -74,15 +74,19 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
     //
     // NOTE: hash params from `parsed_hash` are used instead of what is configured in the
     // `Argon2` instance.
-    let parsed_hash;
+    let mut parsed_hash = String::new();
     match PasswordHash::new(&password_hash) {
-        Ok(p) => parsed_hash = p,
+        Ok(pass_h) => {
+            if let Some(p) = pass_h.hash {
+                parsed_hash = p.to_string();
+            }
+        },
         Err(e) => return Err(ServerFnError::Args(e.to_string())),
     }
 
     /*---   认证密码一致    ---*/
     // if Argon2::default().verify_password(&b_password, &parsed_hash).is_ok() {
-    if parsed_hash.hash.unwrap().to_string() == account.password {
+    if parsed_hash == account.password {
         // creat a user cookie
         let mut user_cookie: CustomCookie = CustomCookie::new();
         // set session token in cookie

@@ -17,11 +17,22 @@ cfg_if! {
             use super::server_fn::ServerFnError;
             use argon2::{
                 password_hash::{
-                    // rand_core::OsRng,
+                    rand_core::OsRng,
                     PasswordHash, PasswordHasher, SaltString//,PasswordVerifier
                 },
                 Argon2
             };
+
+            pub fn get_session_token() -> Result<[u8;32], ServerFnError> {
+                let salt = SaltString::generate(&mut OsRng).to_string();
+                let password = SaltString::generate(&mut OsRng).to_string();
+                let mut output_token_material = [0u8; 32]; // Can be any desired size
+
+                match Argon2::default().hash_password_into(&password.into_bytes(), &salt.into_bytes(), &mut output_token_material) {
+                    Ok(()) => return Ok(output_token_material),
+                    Err(e) => Err(ServerFnError::Args(e.to_string())),
+                }
+            }
 
             pub fn get_parsed_hash(password: String, account: &super::User) -> Result<String, ServerFnError> {
                 // Argon2 with default params (Argon2id v19)
@@ -33,18 +44,14 @@ cfg_if! {
                 let salt;
                 match SaltString::from_b64(account.salt.as_str()) {
                     Ok(s) => salt = s,
-                    Err(e) => {
-                        return Err(ServerFnError::Args(e.to_string()))
-                    },
+                    Err(e) => return Err(ServerFnError::Args(e.to_string())),
                 }
 
                 // Raw Hash password - $argon2id$v=19$...
                 let password_hash;
                 match argon2_hash.hash_password(&b_password, &salt) {
                     Ok(p) => password_hash = p.to_string(),
-                    Err(e) => {
-                        return Err(ServerFnError::Args(e.to_string()))
-                    },
+                    Err(e) => return Err(ServerFnError::Args(e.to_string())),
                 }
 
                 // Create PHC string.
@@ -73,7 +80,7 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
     use crate::state::AppState;
     use crate::session::cookie::CustomCookie;
 
-    //  取得软件情况
+    //  取得软件状态
     let state;
     match use_context::<AppState>() {
         Some(s) => state = s,
@@ -96,7 +103,9 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
     /*---   认证密码一致    ---*/
     // if Argon2::default().verify_password(&b_password, &parsed_hash).is_ok() {
     if parsed_hash == account.password {
-        CustomCookie::insert_cookie_to_header("xxxxxaaaaa")?;
+        let token = self::crypto::get_session_token()?;
+        logging::log!("{:?}", token);
+        CustomCookie::insert_cookie_to_header("xxxxxxx")?;
         //  改变网址到学生资料
         leptos_axum::redirect("/");
     } else {

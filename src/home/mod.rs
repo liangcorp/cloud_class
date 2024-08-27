@@ -17,9 +17,7 @@ pub fn HomePage() -> impl IntoView {
         >
             <p>
                 {match cookie {
-                    Ok(s) => {
-                        set_username.set((*s).clone())
-                    }
+                    Ok(s) => set_username.set((*s).clone()),
                     Err(_) => set_username.set("".to_string()),
                 }}
             </p>

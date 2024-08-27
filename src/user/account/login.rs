@@ -13,31 +13,6 @@ cfg_if! {
             password: String,
         }
 
-        mod cookie {
-            use http::{header, HeaderValue};
-            use leptos::expect_context;
-            use leptos_axum::ResponseOptions;
-
-            use super::server_fn::ServerFnError;
-
-            use crate::session::cookie::CustomCookie;
-
-            pub fn insert_cookie() -> Result<(), ServerFnError> {
-                // creat a user cookie
-                let mut user_cookie: CustomCookie = CustomCookie::default();
-                // set session token in cookie
-                user_cookie.session_token = "aaaaaa".to_string();
-
-                if let Ok(cookie) = HeaderValue::from_str(&user_cookie.to_string()) {
-                    // pull ResponseOptions from context
-                    let response = expect_context::<ResponseOptions>();
-                    response.insert_header(header::SET_COOKIE, cookie);
-                }
-
-                Ok(())
-            }
-        }
-
         mod crypto {
             use super::server_fn::ServerFnError;
             use argon2::{
@@ -95,8 +70,8 @@ cfg_if! {
 
 #[server(Login, "/api")]
 pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnError> {
-
     use crate::state::AppState;
+    use crate::session::cookie::CustomCookie;
 
     //  取得软件情况
     let state;
@@ -121,7 +96,7 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
     /*---   认证密码一致    ---*/
     // if Argon2::default().verify_password(&b_password, &parsed_hash).is_ok() {
     if parsed_hash == account.password {
-        self::cookie::insert_cookie()?;
+        CustomCookie::insert_cookie_to_header("xxxxxaaaaa")?;
         //  改变网址到学生资料
         leptos_axum::redirect("/");
     } else {

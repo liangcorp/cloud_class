@@ -1,9 +1,13 @@
 use leptos::*;
 use cfg_if::cfg_if;
+use server_fn::ServerFnError;
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
         use chrono::{Datelike, Timelike, Utc};
+        use http::{header, HeaderValue};
+        use leptos::expect_context;
+        use leptos_axum::ResponseOptions;
 
         #[derive(Debug)]
         pub struct CustomCookie {
@@ -70,6 +74,21 @@ cfg_if! {
                     self.http_only,
                     self.same_site
                 )
+            }
+
+            pub fn insert_cookie_to_header(token: &str) -> Result<(), ServerFnError> {
+                // creat a user cookie
+                let mut user_cookie: CustomCookie = CustomCookie::default();
+                // set session token in cookie
+                user_cookie.session_token = token.to_string();
+
+                if let Ok(cookie) = HeaderValue::from_str(&user_cookie.to_string()) {
+                    // pull ResponseOptions from context
+                    let response = expect_context::<ResponseOptions>();
+                    response.insert_header(header::SET_COOKIE, cookie);
+                }
+
+                Ok(())
             }
         }
     }

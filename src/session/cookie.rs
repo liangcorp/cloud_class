@@ -19,8 +19,8 @@ cfg_if! {
             pub same_site: String,
         }
 
-        impl CustomCookie {
-            pub fn new() -> CustomCookie {
+        impl Default for CustomCookie {
+            fn default() -> CustomCookie {
                 let now = Utc::now();
 
                 let month_str = [
@@ -56,7 +56,9 @@ cfg_if! {
                     same_site: "Strict".to_string(),    // Strict, Lax, and None
                 }
             }
+        }
 
+        impl CustomCookie {
             pub fn to_string(&self) -> String {
                 format!("session_token={};domain={};path={};Max-Age={};Expires={};{};{};SameSite={}",
                     self.session_token,

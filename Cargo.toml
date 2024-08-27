@@ -7,7 +7,7 @@ edition = "2021"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-axum = { version = "0.7", optional = true }
+axum = { version = "0.7", optional = true, features=["macros"] }
 console_error_panic_hook = "0.1"
 leptos = { version = "0.6" }
 leptos_axum = { version = "0.6", optional = true }
@@ -25,6 +25,7 @@ serde = { version = "1.0.207", features = ["derive"] }
 sqlx = { version = "0.8.0", features = [
   "runtime-tokio-rustls",
   "sqlite",
+  "postgres",
 ], optional = true }
 argon2 = { version = "0.5.3", optional = true }
 rand_core = { version = "0.6.4", features = ["getrandom"] }
@@ -48,7 +49,9 @@ ssr = [
     "dep:argon2",
 ]
 # serde = ["dep:serde"]
-cfg-if = []
+cfg-if = [
+    "dep:axum",
+]
 
 # Defines a size-optimized profile for the WASM bundle in release mode
 [profile.wasm-release]

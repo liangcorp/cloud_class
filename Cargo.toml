@@ -30,6 +30,7 @@ argon2 = { version = "0.5.3", optional = true }
 rand_core = { version = "0.6.4", features = ["getrandom"] }
 uuid = { version = "1.10.0", features = ["v4", "fast-rng", "macro-diagnostics"] }
 chrono = "0.4.38"
+cfg-if = "1.0.0"
 
 [features]
 hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]

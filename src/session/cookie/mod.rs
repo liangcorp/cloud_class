@@ -5,14 +5,13 @@ cfg_if! {
     if #[cfg(feature = "ssr")] {
         use chrono::{Datelike, Timelike, Utc};
 
-        // #[cfg(feature = "ssr", derive(serde::Deserialize))]
         #[derive(Debug)]
         pub struct CustomCookie {
             // pub id: Uuid,
             // pub username: String,
+            pub session_token: String,
             pub domain: String,
             pub path: String,
-            pub session_token: String,
             pub max_age: String,
             pub expire_date: String,
             pub secure: String,

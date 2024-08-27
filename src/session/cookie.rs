@@ -88,7 +88,7 @@ pub async fn extract_header_cookie() -> Result<String, ServerFnError> {
     match extract().await {
         Ok(h) => {
             header = h;
-            logging::log!("{:?}", header.get("cookie"));
+            logging::log!("DEBUG: extracted cookie: {:?}", header.get("cookie"));
         }
         Err(e) => {
             logging::log!("Error: {}", e.to_string());

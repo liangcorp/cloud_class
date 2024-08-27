@@ -30,7 +30,7 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
     let state;
     match use_context::<AppState>() {
         Some(s) => state = s,
-        None => panic!("ERROR: error during application state retrieval"),
+        None => panic!("ERROR<user/account/login.rs>: error during application state retrieval"),
     }
 
     //  取得数据库信息
@@ -52,7 +52,7 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
     match SaltString::from_b64(account.salt.as_str()) {
         Ok(s) => salt = s,
         Err(e) => {
-            logging::log!("ERROR: {:?}", e.to_string());
+            logging::log!("ERROR<user/account/login.rs>: {:?}", e.to_string());
             return Err(ServerFnError::Args(e.to_string()))
         },
     }
@@ -65,7 +65,7 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
     match argon2_hash.hash_password(&b_password, &salt) {
         Ok(p) => password_hash = p.to_string(),
         Err(e) => {
-            logging::log!("ERROR: {:?}", e.to_string());
+            logging::log!("ERROR<user/account/login.rs>: {:?}", e.to_string());
             return Err(ServerFnError::Args(e.to_string()))
         },
     }
@@ -83,35 +83,20 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
     /*---   认证密码一致    ---*/
     // if Argon2::default().verify_password(&b_password, &parsed_hash).is_ok() {
     if parsed_hash.hash.unwrap().to_string() == account.password {
-        logging::log!("successfully authenticated {:?}", &account);
-
-        // pull ResponseOptions from context
-        let response = expect_context::<ResponseOptions>();
-
-
-        // set the HTTP status code
-        // response.set_status(StatusCode::IM_A_TEAPOT);
-
-        logging::log!("creating cookie");
-        // set a cookie in the HTTP response
-        // let mut cookie = Cookie::build("biscuits", "yes").finish();
+        // creat a user cookie
         let mut user_cookie: CustomCookie = CustomCookie::new();
-
-        // user_cookie.username = user.clone();
-        // user_cookie.expire_date = "".to_string();
+        // set session token in cookie
         user_cookie.session_token = "aaaaaa".to_string();
-        // user_cookie.http_only = "".to_string();
-        // user_cookie.same_site = "None".to_string();
 
         if let Ok(cookie) = HeaderValue::from_str(&user_cookie.to_string()) {
-            logging::log!("setting cookie");
+            // pull ResponseOptions from context
+            let response = expect_context::<ResponseOptions>();
+            logging::log!("DEBUG<user/account/login.rs>setting cookie");
             response.insert_header(header::SET_COOKIE, cookie);
         }
 
-        logging::log!("redirecting to profile");
         //  改变网址到学生资料
         leptos_axum::redirect("/");
-        // logging::log!("{}", Cookie::parse("id=user3").unwrap());
     } else {
         return Err(ServerFnError::Args("failed".to_string()));
     }

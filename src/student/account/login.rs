@@ -27,106 +27,95 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
 
     use crate::session::cookie::CustomCookie;
 
+    //  取得软件情况
     let state;
     match use_context::<AppState>() {
         Some(s) => state = s,
         None => panic!("state not found"),
     }
-    //  连接数据库
-    // match state.pool {
-    //     Ok(p) => {
-            // 成功连接数据库
-            let pool = state.pool;
+    //  取得数据库信息
+    let pool = state.pool;
 
-            /*---   提取用户数据    ---*/
-            let account = sqlx::query_as::<_, User>(
-                "SELECT * FROM student_accounts WHERE username==$1;",
-            )
-            .bind(&user)
-            .fetch_one(&pool)
-            .await?;
+    /*---   提取用户数据    ---*/
+    let account = sqlx::query_as::<_, User>(
+        "SELECT * FROM student_accounts WHERE username==$1;",
+    )
+    .bind(&user)
+    .fetch_one(&pool)
+    .await?;
 
-            /*---   Salt Hash 用户输入密码    ---*/
-            let b_password = password.clone().into_bytes();
-            // let salt = SaltString::generate(&mut OsRng);
+    /*---   Salt Hash 用户输入密码    ---*/
+    let b_password = password.clone().into_bytes();
+    // let salt = SaltString::generate(&mut OsRng);
 
-            let salt;
-            match SaltString::from_b64(account.salt.as_str()) {
-                Ok(s) => salt = s,
-                Err(e) => {
-                    logging::log!("ERROR: {:?}", e.to_string());
-                    return Err(ServerFnError::Args(e.to_string()))
-                },
-            }
+    let salt;
+    match SaltString::from_b64(account.salt.as_str()) {
+        Ok(s) => salt = s,
+        Err(e) => {
+            logging::log!("ERROR: {:?}", e.to_string());
+            return Err(ServerFnError::Args(e.to_string()))
+        },
+    }
 
-            // Argon2 with default params (Argon2id v19)
-            let argon2_hash = Argon2::default();
+    // Argon2 with default params (Argon2id v19)
+    let argon2_hash = Argon2::default();
 
-            // Hash password to PHC string ($argon2id$v=19$...)
-            let password_hash;
-            match argon2_hash.hash_password(&b_password, &salt) {
-                Ok(p) => password_hash = p.to_string(),
-                Err(e) => {
-                    logging::log!("ERROR: {:?}", e.to_string());
-                    return Err(ServerFnError::Args(e.to_string()))
-                },
-            }
+    // Hash password to PHC string ($argon2id$v=19$...)
+    let password_hash;
+    match argon2_hash.hash_password(&b_password, &salt) {
+        Ok(p) => password_hash = p.to_string(),
+        Err(e) => {
+            logging::log!("ERROR: {:?}", e.to_string());
+            return Err(ServerFnError::Args(e.to_string()))
+        },
+    }
 
-            // Create PHC string.
-            //
-            // NOTE: hash params from `parsed_hash` are used instead of what is configured in the
-            // `Argon2` instance.
-            let parsed_hash;
-            match PasswordHash::new(&password_hash) {
-                Ok(p) => parsed_hash = p,
-                Err(e) => return Err(ServerFnError::Args(e.to_string())),
-            }
+    // Create PHC string.
+    //
+    // NOTE: hash params from `parsed_hash` are used instead of what is configured in the
+    // `Argon2` instance.
+    let parsed_hash;
+    match PasswordHash::new(&password_hash) {
+        Ok(p) => parsed_hash = p,
+        Err(e) => return Err(ServerFnError::Args(e.to_string())),
+    }
 
-            /*---   认证密码一致    ---*/
-            // if Argon2::default().verify_password(&b_password, &parsed_hash).is_ok() {
-            if parsed_hash.hash.unwrap().to_string() == account.password {
-                logging::log!("successfully authenticated {:?}", &account);
+    /*---   认证密码一致    ---*/
+    // if Argon2::default().verify_password(&b_password, &parsed_hash).is_ok() {
+    if parsed_hash.hash.unwrap().to_string() == account.password {
+        logging::log!("successfully authenticated {:?}", &account);
 
-                // pull ResponseOptions from context
-                let response = expect_context::<ResponseOptions>();
+        // pull ResponseOptions from context
+        let response = expect_context::<ResponseOptions>();
 
 
-                // set the HTTP status code
-                // response.set_status(StatusCode::IM_A_TEAPOT);
+        // set the HTTP status code
+        // response.set_status(StatusCode::IM_A_TEAPOT);
 
-                logging::log!("creating cookie");
-                // set a cookie in the HTTP response
-                // let mut cookie = Cookie::build("biscuits", "yes").finish();
-                let mut user_cookie: CustomCookie = CustomCookie::new();
+        logging::log!("creating cookie");
+        // set a cookie in the HTTP response
+        // let mut cookie = Cookie::build("biscuits", "yes").finish();
+        let mut user_cookie: CustomCookie = CustomCookie::new();
 
-                logging::log!("default cookie: {}", user_cookie.to_string());
+        // user_cookie.username = user.clone();
+        // user_cookie.expire_date = "".to_string();
+        user_cookie.session_token = "aaaaaa".to_string();
+        // user_cookie.http_only = "".to_string();
+        // user_cookie.same_site = "None".to_string();
 
-                // user_cookie.username = user.clone();
-                // user_cookie.expire_date = "".to_string();
-                user_cookie.session_token = "aaaaaa".to_string();
-                // user_cookie.http_only = "".to_string();
-                // user_cookie.same_site = "None".to_string();
+        if let Ok(cookie) = HeaderValue::from_str(&user_cookie.to_string()) {
+            logging::log!("setting cookie");
+            response.insert_header(header::SET_COOKIE, cookie);
+        }
 
-                logging::log!("result cookie: {}", user_cookie.to_string());
+        logging::log!("redirecting to profile");
+        //  改变网址到学生资料
+        leptos_axum::redirect("/");
+        // logging::log!("{}", Cookie::parse("id=user3").unwrap());
+    } else {
+        return Err(ServerFnError::Args("failed".to_string()));
+    }
 
-                if let Ok(cookie) = HeaderValue::from_str(&user_cookie.to_string()) {
-                    logging::log!("setting cookie");
-                    response.insert_header(header::SET_COOKIE, cookie);
-                }
-
-                logging::log!("redirecting to profile");
-                //  改变网址到学生资料
-                leptos_axum::redirect("/");
-                // logging::log!("{}", Cookie::parse("id=user3").unwrap());
-            } else {
-                return Err(ServerFnError::Args("failed".to_string()));
-            }
-    //     }
-    //     Err(e) => {
-    //         //  数据库连接失败
-    //         logging::log!("数据库连接失败 - {:?}", e);
-    //     }
-    // }
     Ok(())
 }
 

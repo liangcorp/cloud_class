@@ -73,12 +73,6 @@ cfg_if! {
     }
 }
 
-// Create session token from username and add to database
-#[server]
-pub async fn create_session(_username: String) -> Result<String, ServerFnError> {
-    todo!();
-}
-
 // Get cookie from HTTP Header
 // for some reason it's only returning the first element of the cookie
 // maybe it's due to security settings

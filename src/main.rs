@@ -7,8 +7,8 @@ async fn main() {
     use cloud_class::app::*;
     use cloud_class::fileserv::file_and_error_handler;
 
-    use cloud_class::utils::database::*;
-    use cloud_class::utils::app_state::AppState;
+    use cloud_class::utils::db::*;
+    use cloud_class::state::AppState;
 
     // Setting get_configuration(None) means we'll be using cargo-leptos's env values
     // For deployment these variables are:

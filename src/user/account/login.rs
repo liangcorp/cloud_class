@@ -13,8 +13,6 @@ pub struct User {
 
 #[server(Login, "/api")]
 pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnError> {
-    // use crate::utils::database::*;
-    use crate::utils::app_state::AppState;
     use http::{header, HeaderValue};
     use leptos_axum::ResponseOptions;
     use argon2::{
@@ -25,6 +23,7 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
         Argon2
     };
 
+    use crate::state::AppState;
     use crate::session::cookie::CustomCookie;
 
     //  取得软件情况

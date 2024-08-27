@@ -14,9 +14,9 @@ cfg_if! {
         }
 
         mod cookie {
-            use leptos_axum::ResponseOptions;
             use http::{header, HeaderValue};
             use leptos::expect_context;
+            use leptos_axum::ResponseOptions;
 
             use super::server_fn::ServerFnError;
 
@@ -102,7 +102,7 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
     let state;
     match use_context::<AppState>() {
         Some(s) => state = s,
-        None => panic!("ERROR<user/account/login.rs>: error during application state retrieval"),
+        None => return Err(ServerFnError::Args("ERROR<user/account/login.rs>: during application state retrieval".to_string())),
     }
 
     //  取得数据库信息

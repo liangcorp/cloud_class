@@ -60,7 +60,7 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
     // Argon2 with default params (Argon2id v19)
     let argon2_hash = Argon2::default();
 
-    // Hash password to PHC string ($argon2id$v=19$...)
+    // Raw Hash password - $argon2id$v=19$...
     let password_hash;
     match argon2_hash.hash_password(&b_password, &salt) {
         Ok(p) => password_hash = p.to_string(),
@@ -69,6 +69,7 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
             return Err(ServerFnError::Args(e.to_string()))
         },
     }
+    // logging::log!("DEBUG<user/account/login.rs>: {:?}", password_hash);
 
     // Create PHC string.
     //
@@ -77,6 +78,7 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
     let mut parsed_hash = String::new();
     match PasswordHash::new(&password_hash) {
         Ok(pass_h) => {
+            // logging::log!("DEBUG<user/account/login.rs>: {:?}", pass_h);
             if let Some(p) = pass_h.hash {
                 parsed_hash = p.to_string();
             }
@@ -88,7 +90,7 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
     // if Argon2::default().verify_password(&b_password, &parsed_hash).is_ok() {
     if parsed_hash == account.password {
         // creat a user cookie
-        let mut user_cookie: CustomCookie = CustomCookie::new();
+        let mut user_cookie: CustomCookie = CustomCookie::default();
         // set session token in cookie
         user_cookie.session_token = "aaaaaa".to_string();
 

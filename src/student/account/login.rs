@@ -31,8 +31,9 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
     let state;
     match use_context::<AppState>() {
         Some(s) => state = s,
-        None => panic!("state not found"),
+        None => panic!("ERROR: error during application state retrieval"),
     }
+
     //  取得数据库信息
     let pool = state.pool;
 

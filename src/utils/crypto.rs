@@ -1,6 +1,4 @@
-use leptos::*;
 use cfg_if::cfg_if;
-use server_fn::ServerFnError;
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
@@ -11,6 +9,7 @@ cfg_if! {
             },
             Argon2
         };
+        use leptos::server_fn::ServerFnError;
 
         pub fn get_session_token() -> String {
             SaltString::generate(&mut OsRng).to_string()

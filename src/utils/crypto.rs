@@ -7,7 +7,7 @@ cfg_if! {
         use argon2::{
             password_hash::{
                 rand_core::OsRng,
-                PasswordHash, PasswordHasher, SaltString//,PasswordVerifier
+                PasswordHash, PasswordHasher, SaltString, PasswordVerifier
             },
             Argon2
         };
@@ -56,6 +56,12 @@ cfg_if! {
             }
 
             Ok(parsed_hash)
+        }
+
+        // 没用的函数
+        pub fn is_verified(password: String, parsed_hash: PasswordHash) -> bool {
+            let b_password = password.clone().into_bytes();
+            Argon2::default().verify_password(&b_password, &parsed_hash).is_ok()
         }
     }
 }

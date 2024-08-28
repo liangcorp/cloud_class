@@ -13,11 +13,7 @@ cfg_if! {
         };
 
         pub fn get_session_token() -> String {
-            SaltString::generate(&mut OsRng)
-                .to_string()
-                .chars()
-                .filter(|c| *c != ';')
-                .collect()
+            SaltString::generate(&mut OsRng).to_string()
         }
 
         pub fn get_parsed_hash(password: String, salt_seed: &str) -> Result<String, ServerFnError> {

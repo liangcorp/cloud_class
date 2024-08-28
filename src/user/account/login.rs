@@ -12,66 +12,6 @@ cfg_if! {
             salt: String,
             password: String,
         }
-
-        mod crypto {
-            use super::server_fn::ServerFnError;
-            use argon2::{
-                password_hash::{
-                    rand_core::OsRng,
-                    PasswordHash, PasswordHasher, SaltString//,PasswordVerifier
-                },
-                Argon2
-            };
-
-            pub fn get_session_token() -> Result<[u8;32], ServerFnError> {
-                let salt = SaltString::generate(&mut OsRng).to_string();
-                let password = SaltString::generate(&mut OsRng).to_string();
-                let mut output_token_material = [0u8; 32]; // Can be any desired size
-
-                match Argon2::default().hash_password_into(&password.into_bytes(), &salt.into_bytes(), &mut output_token_material) {
-                    Ok(()) => return Ok(output_token_material),
-                    Err(e) => Err(ServerFnError::Args(e.to_string())),
-                }
-            }
-
-            pub fn get_parsed_hash(password: String, account: &super::User) -> Result<String, ServerFnError> {
-                // Argon2 with default params (Argon2id v19)
-                let argon2_hash = Argon2::default();
-
-                let b_password = password.clone().into_bytes();
-                // let salt = SaltString::generate(&mut OsRng);
-
-                let salt;
-                match SaltString::from_b64(account.salt.as_str()) {
-                    Ok(s) => salt = s,
-                    Err(e) => return Err(ServerFnError::Args(e.to_string())),
-                }
-
-                // Raw Hash password - $argon2id$v=19$...
-                let password_hash;
-                match argon2_hash.hash_password(&b_password, &salt) {
-                    Ok(p) => password_hash = p.to_string(),
-                    Err(e) => return Err(ServerFnError::Args(e.to_string())),
-                }
-
-                // Create PHC string.
-                //
-                // NOTE: hash params from `parsed_hash` are used instead of what is configured in the
-                // `Argon2` instance.
-                let mut parsed_hash = String::new();
-                match PasswordHash::new(&password_hash) {
-                    Ok(pass_h) => {
-                        // logging::log!("DEBUG<user/account/login.rs>: {:?}", pass_h);
-                        if let Some(p) = pass_h.hash {
-                            parsed_hash = p.to_string();
-                        }
-                    },
-                    Err(e) => return Err(ServerFnError::Args(e.to_string())),
-                }
-
-                Ok(parsed_hash)
-            }
-        }
     }
 }
 
@@ -79,6 +19,8 @@ cfg_if! {
 pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnError> {
     use crate::state::AppState;
     use crate::session::cookie::CustomCookie;
+    use crate::session::cache::CustomCache;
+    use crate::utils::crypto::*;
 
     //  取得软件状态
     let state;
@@ -99,13 +41,13 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
     .await?;
 
     /*---   Salt Hash 用户输入密码    ---*/
-    let parsed_hash = self::crypto::get_parsed_hash(password, &account)?;
+    let parsed_hash = get_parsed_hash(password, account.salt.as_str())?;
     /*---   认证密码一致    ---*/
     // if Argon2::default().verify_password(&b_password, &parsed_hash).is_ok() {
     if parsed_hash == account.password {
-        let token = self::crypto::get_session_token()?;
-        logging::log!("{:?}", token);
-        CustomCookie::insert_cookie_to_header("xxxxxxx")?;
+        let token = get_session_token();
+        CustomCookie::insert_cookie_to_header(&token)?;
+        let _ = CustomCache::new(user, token);
         //  改变网址到学生资料
         leptos_axum::redirect("/");
     } else {

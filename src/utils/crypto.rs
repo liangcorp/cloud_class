@@ -47,7 +47,6 @@ cfg_if! {
             let mut parsed_hash = String::new();
             match PasswordHash::new(&password_hash) {
                 Ok(pass_h) => {
-                    // logging::log!("DEBUG<user/account/login.rs>: {:?}", pass_h);
                     if let Some(p) = pass_h.hash {
                         parsed_hash = p.to_string();
                     }
@@ -59,6 +58,7 @@ cfg_if! {
         }
 
         // 没用的函数
+        // Do not use
         pub fn is_verified(password: String, parsed_hash: PasswordHash) -> bool {
             let b_password = password.clone().into_bytes();
             Argon2::default().verify_password(&b_password, &parsed_hash).is_ok()

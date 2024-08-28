@@ -10,7 +10,7 @@ cfg_if! {
         pub struct User {
             username: String,
             salt: String,
-            password: String,
+            pw_hash: String,
         }
     }
 }
@@ -44,8 +44,8 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
     let parsed_hash = get_parsed_hash(password, account.salt.as_str())?;
     /*---   认证密码一致    ---*/
     // if Argon2::default().verify_password(&b_password, &parsed_hash).is_ok() {
-    if parsed_hash == account.password {
-        let (session_salt, session_token) = get_session_token(user.clone())?;
+    if parsed_hash == account.pw_hash {
+        let session_token = get_session_token();
         CustomCookie::insert_cookie_to_header(&session_token)?;
         // let _ = CustomCache::new(user, token);
         //  改变网址到学生资料

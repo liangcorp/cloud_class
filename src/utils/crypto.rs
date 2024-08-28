@@ -12,34 +12,12 @@ cfg_if! {
             Argon2
         };
 
-        pub fn get_session_token(username: String) -> Result<(String, String), ServerFnError> {
-            let argon2_hash = Argon2::default();
-
-            let b_username = username.into_bytes();
-
-            let salt = SaltString::generate(&mut OsRng);
-
-            // Raw Hash password - $argon2id$v=19$...
-            let username_hash;
-            match argon2_hash.hash_password(&b_username, &salt) {
-                Ok(u) => username_hash = u.to_string(),
-                Err(e) => return Err(ServerFnError::Args(e.to_string())),
-            }
-
-            // Create PHC string.
-            //
-            // NOTE: hash params from `parsed_hash` are used instead of what is configured in the
-            // `Argon2` instance.
-            let mut session_token = String::new();
-            match PasswordHash::new(&username_hash) {
-                Ok(user_h) => {
-                    if let Some(u) = user_h.hash {
-                        session_token = u.to_string();
-                    }
-                },
-                Err(e) => return Err(ServerFnError::Args(e.to_string())),
-            }
-            Ok((salt.to_string(), session_token))
+        pub fn get_session_token() -> String {
+            SaltString::generate(&mut OsRng)
+                .to_string()
+                .chars()
+                .filter(|c| *c != ';')
+                .collect()
         }
 
         pub fn get_parsed_hash(password: String, salt_seed: &str) -> Result<String, ServerFnError> {

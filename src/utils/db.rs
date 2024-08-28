@@ -1,9 +1,9 @@
+use leptos::*;
 use cfg_if::cfg_if;
+use server_fn::ServerFnError;
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
-        use leptos::server_fn::ServerFnError;
-
         use sqlx::{Connection, SqliteConnection, Pool, Postgres, Sqlite};
         use sqlx::postgres::PgPoolOptions;
         use sqlx::sqlite::SqlitePoolOptions;

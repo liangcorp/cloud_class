@@ -21,6 +21,7 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
     use crate::session::cookie::CustomCookie;
     use crate::session::cache::CustomCache;
     use crate::utils::crypto::*;
+    use crate::utils::uuid::*;
 
     //  取得软件状态
     let state;
@@ -45,8 +46,8 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
     /*---   认证密码一致    ---*/
     // if Argon2::default().verify_password(&b_password, &parsed_hash).is_ok() {
     if parsed_hash == account.pw_hash {
-        let session_token = get_session_token();
-        CustomCookie::insert_cookie_to_header(&session_token)?;
+        let session_id = get_session_id();
+        CustomCookie::insert_cookie_to_header(&session_id)?;
         // let _ = CustomCache::new(user, token);
         //  改变网址到学生资料
         leptos_axum::redirect("/");

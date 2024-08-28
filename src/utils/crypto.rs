@@ -1,5 +1,6 @@
 use leptos::*;
 use cfg_if::cfg_if;
+use server_fn::ServerFnError;
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
@@ -12,10 +13,14 @@ cfg_if! {
         };
 
         pub fn get_session_token() -> String {
-            SaltString::generate(&mut OsRng).to_string()
+            SaltString::generate(&mut OsRng)
+                .to_string()
+                .chars()
+                .filter(|c| *c != ';')
+                .collect()
         }
 
-        pub fn get_parsed_hash(password: String, salt_src: &str) -> Result<String, ServerFnError> {
+        pub fn get_parsed_hash(password: String, salt_seed: &str) -> Result<String, ServerFnError> {
             // Argon2 with default params (Argon2id v19)
             let argon2_hash = Argon2::default();
 
@@ -23,7 +28,7 @@ cfg_if! {
             // let salt = SaltString::generate(&mut OsRng);
 
             let salt;
-            match SaltString::from_b64(salt_src) {
+            match SaltString::from_b64(salt_seed) {
                 Ok(s) => salt = s,
                 Err(e) => return Err(ServerFnError::Args(e.to_string())),
             }

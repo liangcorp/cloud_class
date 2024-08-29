@@ -4,13 +4,15 @@ cfg_if! {
     if #[cfg(feature = "ssr")] {
         use redis::cluster::ClusterClient;
         use redis::Commands;
-        use leptos::server_fn::ServerFnError;
+        use leptos::{logging, server_fn::ServerFnError};
 
+        #[allow(dead_code)]
         pub struct Redis {
             username: String,
             password: String,
             uri_scheme: String,
-            hostname: String
+            hostname: String,
+            port: String
         }
 
         impl Default for Redis {
@@ -21,10 +23,11 @@ cfg_if! {
                 //     Err(_) => "redis",
                 // };
                 Redis {
-                    username: String::from("redis_user"),
-                    password: String::from("redis_password"),
-                    uri_scheme: String::from("rediss"),
-                    hostname: String::from("192.168.110.228")
+                    username: String::from("default"),
+                    password: String::from("cikq5XxudvHKUzdPgbQWokCOOhfT8wGQKPsLhBx8Tlw="),
+                    uri_scheme: String::from("redis"),
+                    hostname: String::from("192.168.110.228"),
+                    port: String::from("7000")
                 }
             }
         }
@@ -32,14 +35,38 @@ cfg_if! {
         impl Redis {
             pub fn fetch_an_integer(&self) -> Result<String, ServerFnError> {
 
-                let nodes = vec![format!("{}://{}:{}@{}/",
-                            self.uri_scheme,
-                            self.username,
-                            self.password,
-                            self.hostname)];
-                let client = ClusterClient::new(nodes)?;
+                // let nodes = vec![format!("{}://{}:{}@{}:{}/",
+                //             self.uri_scheme,
+                //             self.username,
+                //             self.password,
+                //             self.hostname,
+                //             self.port)];
+                //@TODO change this to new user for better security
+                let nodes = vec!["redis://:cikq5XxudvHKUzdPgbQWokCOOhfT8wGQKPsLhBx8Tlw=@192.168.110.221:7000/",
+                                    "redis://:cikq5XxudvHKUzdPgbQWokCOOhfT8wGQKPsLhBx8Tlw=@192.168.110.221:7001/",
+                                    "redis://:cikq5XxudvHKUzdPgbQWokCOOhfT8wGQKPsLhBx8Tlw=@192.168.110.221:7002/",
+                                    "redis://:cikq5XxudvHKUzdPgbQWokCOOhfT8wGQKPsLhBx8Tlw=@192.168.110.221:7003/",
+                                    "redis://:cikq5XxudvHKUzdPgbQWokCOOhfT8wGQKPsLhBx8Tlw=@192.168.110.221:7004/",
+                                    "redis://:cikq5XxudvHKUzdPgbQWokCOOhfT8wGQKPsLhBx8Tlw=@192.168.110.221:7005/"];
 
-                let mut connection = client.get_connection()?;
+                let client;
+
+                match ClusterClient::new(nodes) {
+                    Ok(c) => client = c,
+                    Err(e) => {
+                        logging::log!("ERROR<utils/redis.rs: 48>: {}", e.to_string());
+                        return Err(ServerFnError::Args(e.to_string()))
+                    },
+                }
+
+                let mut connection;
+                match client.get_connection() {
+                    Ok(c) => connection = c,
+                    Err(e) => {
+                        logging::log!("ERROR<utils/redis.rs: 57>: {}", e.to_string());
+                        return Err(ServerFnError::Args(e.to_string()))
+                    },
+                }
 
                 let _: () = connection.set("test", "test_data")?;
                 let rv: String = connection.get("test")?;

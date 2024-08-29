@@ -1,23 +1,24 @@
-use crate::session::cookie::extract_header_cookie;
 use leptos::*;
+// use server_fn::ServerFnError;
 // use serde::Deserialize;
-
 /// Renders the home page of your application.
 #[component]
 pub fn HomePage() -> impl IntoView {
+    use crate::session::*;
+
     let (username, set_username) = create_signal("".to_string());
 
     view! {
         <Await
             // `future` provides the `Future` to be resolved
-            future=extract_header_cookie
+            future=extract_session
 
             // the data is bound to whatever variable name you provide
-            let:cookie
+            let:session_user
         >
             <p>
-                {match cookie {
-                    Ok(s) => set_username.set((*s).clone()),
+                {match session_user {
+                    Ok(s) => { set_username.set((*s).clone())},
                     Err(_) => set_username.set("".to_string()),
                 }}
             </p>

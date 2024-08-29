@@ -19,6 +19,7 @@ cfg_if! {
 pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnError> {
     use crate::state::AppState;
     use crate::session::cookie::*;
+    use crate::session::cache::*;
     use crate::utils::{ crypto::*,
                         uuid::*,
                         redis::* };
@@ -50,6 +51,7 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
 
         Cookie::set_cookie(&session_id)?;
 
+        CustomeCache::set_cache(session_id, account.username);
         // let redis = Redis::default();
         // match redis.fetch_an_integer() {
         //     Ok(result) => logging::log!("{}", result),

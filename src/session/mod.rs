@@ -12,7 +12,8 @@ pub async fn extract_session() -> Result<String, ServerFnError> {
     use axum::http::header::{HeaderMap, HeaderValue};
     use leptos_axum::extract;
     use crate::utils::redis::Redis;
-
+    use redis::Commands;
+    use redis::cluster::ClusterConnection;
     // let (method, query): (Method, Query<MyQuery>);
     let mut header: HeaderMap<HeaderValue> = HeaderMap::new();
 
@@ -31,12 +32,19 @@ pub async fn extract_session() -> Result<String, ServerFnError> {
         None => "".to_string(),
     };
 
-    let redis = Redis::default();
-    match redis.fetch_an_integer() {
-        Ok(s) => logging::log!("{}", s),
-        Err(e) => logging::log!("{}", e.to_string()),
-    };
+    let session_token = cookie.split('=').next();
 
-    Ok(cookie)
+    let redis = Redis::default();
+    let mut redis_cluster_conn = redis.get_cluster_connection().unwrap();
+
+    // let _: () = redis_cluster_conn.set(session_token, "user")?;
+    // let _: () = redis_cluster_conn.expire(session_token, 10)?;
+    if let Ok(Some(username)) =  redis_cluster_conn.get(session_token) {
+        Ok(username)
+    } else {
+        Ok("".to_string())
+    }
+
+    // Ok(cookie)
 }
 

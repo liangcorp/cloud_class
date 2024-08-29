@@ -26,7 +26,7 @@ pub fn HomePage() -> impl IntoView {
                             set_login_button.set("none".to_string())
                         }
                         set_username.set((*s).clone());
-                    },
+                    }
                     Err(_) => {
                         set_username.set("".to_string());
                     }

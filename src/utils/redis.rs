@@ -2,7 +2,7 @@ use cfg_if::cfg_if;
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
-        use redis::cluster::ClusterClient;
+        use redis::cluster::{ClusterClient, ClusterConnection};
         use redis::Commands;
         use leptos::{logging, server_fn::ServerFnError};
 
@@ -23,7 +23,7 @@ cfg_if! {
                 //     Err(_) => "redis",
                 // };
                 Redis {
-                    username: String::from("default"),
+                    username: String::from(""),
                     password: String::from("cikq5XxudvHKUzdPgbQWokCOOhfT8wGQKPsLhBx8Tlw="),
                     uri_scheme: String::from("redis"),
                     hostname: String::from("192.168.110.228"),
@@ -33,7 +33,7 @@ cfg_if! {
         }
 
         impl Redis {
-            pub fn fetch_an_integer(&self) -> Result<String, ServerFnError> {
+            pub fn get_cluster_connection(&self) -> Result<ClusterConnection, ServerFnError> {
 
                 // let nodes = vec![format!("{}://{}:{}@{}:{}/",
                 //             self.uri_scheme,
@@ -59,7 +59,7 @@ cfg_if! {
                     },
                 }
 
-                let mut connection;
+                let connection;
                 match client.get_connection() {
                     Ok(c) => connection = c,
                     Err(e) => {
@@ -67,10 +67,11 @@ cfg_if! {
                         return Err(ServerFnError::Args(e.to_string()))
                     },
                 }
-
-                let _: () = connection.set("test", "test_data")?;
-                let rv: String = connection.get("test")?;
-                Ok(rv)
+                Ok(connection)
+                // let _: () = connection.set("test", "test_data")?;
+                // let _: () = connection.expire("test", 10)?;
+                // let rv: String = connection.get("test")?;
+                // Ok(rv)
             }
         }
     }

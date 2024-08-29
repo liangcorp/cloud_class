@@ -50,11 +50,11 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
 
         Cookie::set_cookie(&session_id)?;
 
-        let redis = Redis::default();
-        match redis.fetch_an_integer() {
-            Ok(result) => logging::log!("{}", result),
-            Err(e) => logging::log!("ERROR<user/account/login.rs>: {}", e.to_string()),
-        }
+        // let redis = Redis::default();
+        // match redis.fetch_an_integer() {
+        //     Ok(result) => logging::log!("{}", result),
+        //     Err(e) => logging::log!("ERROR<user/account/login.rs>: {}", e.to_string()),
+        // }
         // let _ = CustomCache::new(user, session_id);
         //  改变网址到学生资料
         leptos_axum::redirect("/");

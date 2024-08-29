@@ -18,11 +18,10 @@ cfg_if! {
 #[server(Login, "/api")]
 pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnError> {
     use crate::state::AppState;
-    use crate::session::cookie::CustomCookie;
-    // use crate::session::cache::CustomCache;
-    use crate::utils::crypto::*;
-    use crate::utils::uuid::*;
-    use crate::utils::redis::*;
+    use crate::session::cookie::*;
+    use crate::utils::{ crypto::*,
+                        uuid::*,
+                        redis::* };
 
     //  取得软件状态
     let state;
@@ -48,9 +47,12 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
     // if Argon2::default().verify_password(&b_password, &parsed_hash).is_ok() {
     if parsed_hash == account.pw_hash {
         let session_id = get_session_id();
-        CustomCookie::insert_cookie_to_header(&session_id)?;
 
-        match fetch_an_integer() {
+        let mut cookie = Cookie::default();
+        cookie.insert_cookie_to_header(&session_id)?;
+
+        let redis = Redis::default();
+        match redis.fetch_an_integer() {
             Ok(result) => logging::log!("{}", result),
             Err(e) => logging::log!("ERROR<user/account/login.rs>: {}", e.to_string()),
         }

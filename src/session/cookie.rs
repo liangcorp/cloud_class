@@ -10,21 +10,21 @@ cfg_if! {
         use leptos_axum::ResponseOptions;
 
         #[derive(Debug)]
-        pub struct CustomCookie {
+        pub struct Cookie {
             // pub id: Uuid,
             // pub username: String,
-            pub session_token: String,
-            pub domain: String,
-            pub path: String,
-            pub max_age: String,
-            pub expire_date: String,
-            pub secure: String,
-            pub http_only: String,
-            pub same_site: String,
+            session_token: String,
+            domain: String,
+            path: String,
+            max_age: String,
+            expire_date: String,
+            secure: String,
+            http_only: String,
+            same_site: String,
         }
 
-        impl Default for CustomCookie {
-            fn default() -> CustomCookie {
+        impl Default for Cookie {
+            fn default() -> Cookie {
                 let now = Utc::now();
 
                 let month_str = [
@@ -47,7 +47,7 @@ cfg_if! {
                     now.second(),
                 );
 
-                CustomCookie {
+                Cookie {
                     session_token: "".to_string(),
                     domain: "".to_string(),
                     path: "/".to_string(),
@@ -62,7 +62,7 @@ cfg_if! {
             }
         }
 
-        impl CustomCookie {
+        impl Cookie {
             pub fn to_string(&self) -> String {
                 format!("session_token={};domain={};path={};Max-Age={};Expires={};{};{};SameSite={}",
                     self.session_token,
@@ -76,13 +76,11 @@ cfg_if! {
                 )
             }
 
-            pub fn insert_cookie_to_header(token: &str) -> Result<(), ServerFnError> {
-                // creat a user cookie
-                let mut user_cookie: CustomCookie = CustomCookie::default();
+            pub fn insert_cookie_to_header(&mut self, token: &str) -> Result<(), ServerFnError> {
                 // set session token in cookie
-                user_cookie.session_token = token.to_string();
+                self.session_token = token.to_string();
 
-                if let Ok(cookie) = HeaderValue::from_str(&user_cookie.to_string()) {
+                if let Ok(cookie) = HeaderValue::from_str(&self.to_string()) {
                     // pull ResponseOptions from context
                     let response = expect_context::<ResponseOptions>();
                     response.insert_header(header::SET_COOKIE, cookie);

@@ -7,6 +7,7 @@ pub fn HomePage() -> impl IntoView {
     use crate::session::*;
 
     let (username, set_username) = create_signal("".to_string());
+    let (login_button, set_login_button) = create_signal("inline".to_string());
 
     view! {
         <Await
@@ -18,8 +19,17 @@ pub fn HomePage() -> impl IntoView {
         >
             <p>
                 {match session_user {
-                    Ok(s) => { set_username.set((*s).clone())},
-                    Err(_) => set_username.set("".to_string()),
+                    Ok(s) => {
+                        if s == "" {
+                            set_login_button.set("inline".to_string())
+                        } else {
+                            set_login_button.set("none".to_string())
+                        }
+                        set_username.set((*s).clone());
+                    },
+                    Err(_) => {
+                        set_username.set("".to_string());
+                    }
                 }}
             </p>
         </Await>
@@ -75,8 +85,8 @@ pub fn HomePage() -> impl IntoView {
                         <td class="header_login">
                             <a
                                 href="/login"
-                                class="header"
-                                style="padding-top:10px;padding-bottom:10px;padding-left:20px;padding-right:20px;color:#FAFAFA;background-color: #333333;"
+                                class="home_login"
+                                style:display=move || login_button.get()
                             >
                                 登陆
                             </a>

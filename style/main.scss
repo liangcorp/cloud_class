@@ -53,6 +53,28 @@ a.header:focus {
   text-decoration-line: underline;
 }
 
+a.home_login {
+  font-weight: bold;
+  text-decoration-line: none;
+  padding-top:10px;
+  padding-bottom:10px;
+  padding-left:20px;
+  padding-right:20px;
+  color:#FAFAFA;
+  background-color: #333333;
+}
+
+a.home_login:focus {
+  font-weight: bold;
+  text-decoration-line: none;
+  padding-top:10px;
+  padding-bottom:10px;
+  padding-left:20px;
+  padding-right:20px;
+  color:#FAFAFA;
+  background-color: gray;
+}
+
 a.login_switch {
   color: #333333;
   text-decoration-line: none;

@@ -1,9 +1,9 @@
-use leptos::*;
 use cfg_if::cfg_if;
-use server_fn::ServerFnError;
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
+        use leptos::*;
+        use server_fn::ServerFnError;
         use chrono::{Datelike, Timelike, Utc};
         use http::{header, HeaderValue};
         // use leptos::expect_context;
@@ -76,14 +76,15 @@ cfg_if! {
                 )
             }
 
-            pub fn insert_cookie_to_header(&mut self, token: &str) -> Result<(), ServerFnError> {
+            pub fn set_cookie(token: &str) -> Result<(), ServerFnError> {
+                let mut cookie = Cookie::default();
                 // set session token in cookie
-                self.session_token = token.to_string();
+                cookie.session_token = token.to_string();
 
-                if let Ok(cookie) = HeaderValue::from_str(&self.to_string()) {
+                if let Ok(c) = HeaderValue::from_str(&cookie.to_string()) {
                     // pull ResponseOptions from context
                     let response = expect_context::<ResponseOptions>();
-                    response.insert_header(header::SET_COOKIE, cookie);
+                    response.insert_header(header::SET_COOKIE, c);
                 }
 
                 Ok(())

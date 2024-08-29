@@ -48,8 +48,7 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
     if parsed_hash == account.pw_hash {
         let session_id = get_session_id();
 
-        let mut cookie = Cookie::default();
-        cookie.insert_cookie_to_header(&session_id)?;
+        Cookie::set_cookie(&session_id)?;
 
         let redis = Redis::default();
         match redis.fetch_an_integer() {

@@ -1,21 +1,20 @@
-// use leptos::*;
 use cfg_if::cfg_if;
-// use server_fn::ServerFnError;
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
-        // use crate::state::AppState;
+        use leptos::*;
+        use server_fn::ServerFnError;
         use chrono::{Datelike, Timelike, Utc};
 
         #[derive(Debug)]
         pub struct CustomCache {
             username: String,
             session_token: String,
-            date_created: String,
+            date_created: String
         }
 
-        impl CustomCache {
-            pub fn new(username: String, session_token: String) -> CustomCache {
+        impl Default for CustomCache {
+            fn default() -> CustomCache {
                 let now = Utc::now();
 
                 let date_created = format!(
@@ -30,10 +29,23 @@ cfg_if! {
                 );
 
                 CustomCache {
-                    username,
-                    session_token,
-                    date_created,
+                    username: "".to_string(),
+                    session_token: "".to_string(),
+                    date_created
                 }
+            }
+        }
+
+        impl CustomCache {
+            pub fn to_string(&self) -> String {
+                format!("CustomCache: ( {} {} {} )", self.username, self.session_token, self.date_created)
+            }
+
+            pub fn set_cache(session_token: String) -> Result<(), ServerFnError> {
+                let mut cache = CustomCache::default();
+                cache.session_token = session_token;
+
+                Ok(())
             }
         }
     }

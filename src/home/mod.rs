@@ -17,7 +17,7 @@ pub fn HomePage() -> impl IntoView {
             // the data is bound to whatever variable name you provide
             let:session_user
         >
-            <p>
+            <a href="/profile">
                 {match session_user {
                     Ok(s) => {
                         if s == "" {
@@ -31,7 +31,7 @@ pub fn HomePage() -> impl IntoView {
                         set_username.set("".to_string());
                     }
                 }}
-            </p>
+            </a>
         </Await>
 
         <div class="contents">

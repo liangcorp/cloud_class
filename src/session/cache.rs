@@ -9,33 +9,34 @@ cfg_if! {
 
         #[derive(Debug)]
         pub struct CustomCache {
-            username: String,
-            session_token: String,
+            key: String,
+            value: String,
         }
 
         impl Default for CustomCache {
             fn default() -> CustomCache {
                 CustomCache {
-                    username: "".to_string(),
-                    session_token: "".to_string(),
+                    key: "".to_string(),
+                    value: "".to_string(),
                 }
             }
         }
 
         impl CustomCache {
             pub fn to_string(&self) -> String {
-                format!("CustomCache: ( {} {} )", self.username, self.session_token)
+                format!("CustomCache: ( {} {} )", self.value, self.key)
             }
 
-            pub fn set_cache(session_token: String, username: String) -> Result<(), ServerFnError> {
+            pub fn set_cache(key: String, value: String) -> Result<(), ServerFnError> {
                 let mut cache = CustomCache::default();
-                cache.username = username;
-                cache.session_token = session_token;
+                cache.value = value;
+                cache.key = key;
 
                 let mut redis_cluster_conn = Redis::get_cluster_connection().unwrap();
+                logging::log!("DEBUG<session/cache.rs>: set_cache - {}", cache.to_string());
 
-                let _: () = redis_cluster_conn.set(&cache.session_token, &cache.username)?;
-                let _: () = redis_cluster_conn.expire(cache.session_token, 10)?;
+                let _: () = redis_cluster_conn.set(&cache.key, &cache.value)?;
+                // let _: () = redis_cluster_conn.expire(cache.key, 10)?;
 
                 Ok(())
             }

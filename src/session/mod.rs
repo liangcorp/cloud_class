@@ -3,6 +3,7 @@ pub mod cache;
 
 use leptos::*;
 use server_fn::ServerFnError;
+
 // Get cookie from HTTP Header
 // for some reason it's only returning the first element of the cookie
 // maybe it's due to security settings
@@ -31,18 +32,16 @@ pub async fn extract_session() -> Result<String, ServerFnError> {
         None => "".to_string(),
     };
 
-    let session_token = cookie.split('=').next();
+    let session_token = cookie.split('=').nth(1).unwrap();
 
-    let mut redis_cluster_conn = Redis::get_cluster_connection().unwrap();
+    let mut redis_cluster_conn = Redis::get_cluster_connection()?;
 
-    // let _: () = redis_cluster_conn.set(session_token, "user")?;
-    // let _: () = redis_cluster_conn.expire(session_token, 10)?;
-    if let Ok(Some(username)) =  redis_cluster_conn.get(session_token) {
-        Ok(username)
+    logging::log!("DEBUG<session/mod.rs>: session token: {:?}", session_token);
+
+    if let Ok(Some(session_user)) =  redis_cluster_conn.get(session_token) {
+        Ok(session_user)
     } else {
         Ok("".to_string())
     }
-
-    // Ok(cookie)
 }
 

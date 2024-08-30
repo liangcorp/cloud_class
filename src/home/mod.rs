@@ -13,7 +13,7 @@ pub fn HomePage() -> impl IntoView {
     view! {
         <Await
             // `future` provides the `Future` to be resolved
-            future=extract_session
+            future=extract_session_user
 
             // the data is bound to whatever variable name you provide
             let:session_user

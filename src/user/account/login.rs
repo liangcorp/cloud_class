@@ -18,7 +18,7 @@ cfg_if! {
 #[server(Login, "/api")]
 pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnError> {
     use crate::state::AppState;
-    use crate::session::cookie::*;
+    use crate::session::cookie::Cookie;
     use crate::session::cache::CustomCache;
     use crate::utils::{ crypto::*, uuid::* };
 
@@ -41,14 +41,14 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
     .await?;
 
     /*---   Salt Hash 用户输入密码    ---*/
-    let parsed_hash = get_parsed_hash(password, account.salt.as_str())?;
+    let parsed_hash = get_parsed_hash(&password, account.salt.as_str())?;
     /*---   认证密码一致    ---*/
     // if Argon2::default().verify_password(&b_password, &parsed_hash).is_ok() {
     if parsed_hash == account.pw_hash {
-        let session_id = get_session_id();
+        let session_token = get_session_token();
 
-        Cookie::set_cookie(&session_id)?;
-        CustomCache::set_cache(session_id, account.username)?;
+        Cookie::set_cookie(&session_token)?;
+        CustomCache::set_cache(&session_token, &account.username)?;
 
         //  改变网址到学生资料
         leptos_axum::redirect("/");

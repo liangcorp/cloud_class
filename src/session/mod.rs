@@ -8,7 +8,35 @@ use server_fn::ServerFnError;
 // for some reason it's only returning the first element of the cookie
 // maybe it's due to security settings
 #[server]
-pub async fn extract_session() -> Result<String, ServerFnError> {
+pub async fn extract_session_token() -> Result<String, ServerFnError> {
+    use axum::http::header::{HeaderMap, HeaderValue};
+    use leptos_axum::extract;
+
+    let mut header: HeaderMap<HeaderValue> = HeaderMap::new();
+
+    match extract().await {
+        Ok(h) => {
+            header = h;
+            logging::log!("DEBUG<session/mod.rs>: extracted cookie: {:?}", header.get("cookie"));
+        }
+        Err(e) => {
+            logging::log!("ERROR<session/mod.rs>: {}", e.to_string());
+        }
+    }
+
+    let cookie = match header.get("cookie") {
+        Some(c) => c.to_str().unwrap().to_string(),
+        None => "".to_string(),
+    };
+
+    Ok(cookie.split('=')
+        .nth(1)
+        .unwrap_or("")
+        .to_string())
+}
+
+#[server]
+pub async fn extract_session_user() -> Result<String, ServerFnError> {
     // use axum::{extract::Query, http::{Method, header::{HeaderMap, HeaderValue}}};
     use axum::http::header::{HeaderMap, HeaderValue};
     use leptos_axum::extract;
@@ -32,7 +60,10 @@ pub async fn extract_session() -> Result<String, ServerFnError> {
         None => "".to_string(),
     };
 
-    let session_token = cookie.split('=').nth(1).unwrap();
+    let session_token = cookie
+        .split('=')
+        .nth(1)
+        .unwrap_or("");
 
     let mut redis_cluster_conn = Redis::get_cluster_connection()?;
 

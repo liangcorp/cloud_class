@@ -4,22 +4,21 @@ cfg_if! {
     if #[cfg(feature = "ssr")] {
         use argon2::{
             password_hash::{
-                rand_core::OsRng,
+                // rand_core::OsRng,
                 PasswordHash, PasswordHasher, SaltString    //, PasswordVerifier
             },
             Argon2
         };
         use leptos::server_fn::ServerFnError;
 
-        pub fn get_session_token() -> String {
-            SaltString::generate(&mut OsRng).to_string()
-        }
-
-        pub fn get_parsed_hash(password: String, salt_seed: &str) -> Result<String, ServerFnError> {
+        // pub fn get_session_token() -> String {
+        //     SaltString::generate(&mut OsRng).to_string()
+        // }
+        pub fn get_parsed_hash(password: &str, salt_seed: &str) -> Result<String, ServerFnError> {
             // Argon2 with default params (Argon2id v19)
             let argon2_hash = Argon2::default();
 
-            let b_password = password.clone().into_bytes();
+            let b_password = password.to_string().into_bytes();
             // let salt = SaltString::generate(&mut OsRng);
 
             let salt;

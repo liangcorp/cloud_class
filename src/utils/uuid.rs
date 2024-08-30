@@ -5,7 +5,7 @@ cfg_if! {
     if #[cfg(feature = "ssr")] {
         use uuid::Uuid;
 
-        pub fn get_session_id() -> String {
+        pub fn get_session_token() -> String {
             Uuid::new_v4().to_string()
         }
     }

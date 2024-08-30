@@ -23,11 +23,11 @@ pub async fn user_logout() -> Result<String, ServerFnError> {
         None => "".to_string(),
     };
 
-    let session_token = cookie.split('=')
+    let exit_message = cookie.split('=')
         .nth(1)
         .unwrap_or("");
 
-    Cache::delete_cache(session_token)?;
+    Cache::delete_cache(exit_message)?;
     Cookie::delete_cookie()?;
 
     // 改变网址到学生资料
@@ -39,7 +39,7 @@ pub async fn user_logout() -> Result<String, ServerFnError> {
 #[component]
 pub fn LogoutPage() -> impl IntoView {
 
-    let (session_token, set_session_token) = create_signal("".to_string());
+    let (exit_message, set_exit_message) = create_signal("正在退出...".to_string());
 
     view! {
         <Await
@@ -47,16 +47,16 @@ pub fn LogoutPage() -> impl IntoView {
             future=user_logout
 
             // the data is bound to whatever variable name you provide
-            let:session_token
+            let:exit_message
         >
             <p>
-                {match session_token {
-                    Ok(s) => set_session_token.set(s.clone()),
-                    Err(_) => set_session_token.set("".to_string()),
+                {match exit_message {
+                    Ok(s) => set_exit_message.set(s.clone()),
+                    Err(_) => set_exit_message.set("".to_string()),
                 }}
             </p>
         </Await>
 
-        <p>{move || session_token.get()}</p>
+        <p>{move || exit_message.get()}</p>
     }
 }

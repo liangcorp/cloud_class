@@ -19,7 +19,7 @@ cfg_if! {
 pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnError> {
     use crate::state::AppState;
     use crate::session::cookie::Cookie;
-    use crate::session::cache::CustomCache;
+    use crate::session::cache::Cache;
     use crate::utils::{ crypto::*, uuid::* };
 
     //  取得软件状态
@@ -48,7 +48,7 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
         let session_token = get_session_token();
 
         Cookie::set_cookie(&session_token)?;
-        CustomCache::set_cache(&session_token, &account.username)?;
+        Cache::set_cache(&session_token, &account.username)?;
 
         //  改变网址到学生资料
         leptos_axum::redirect("/");

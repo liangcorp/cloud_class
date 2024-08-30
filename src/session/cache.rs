@@ -8,27 +8,27 @@ cfg_if! {
         use redis::Commands;
 
         #[derive(Debug)]
-        pub struct CustomCache {
+        pub struct Cache {
             key: String,
             value: String,
         }
 
-        impl Default for CustomCache {
-            fn default() -> CustomCache {
-                CustomCache {
+        impl Default for Cache {
+            fn default() -> Cache {
+                Cache {
                     key: "".to_string(),
                     value: "".to_string(),
                 }
             }
         }
 
-        impl CustomCache {
+        impl Cache {
             pub fn to_string(&self) -> String {
-                format!("CustomCache: ( {} {} )", self.value, self.key)
+                format!("Cache: ( {} {} )", self.value, self.key)
             }
 
             pub fn set_cache(key: &str, value: &str) -> Result<(), ServerFnError> {
-                let mut cache = CustomCache::default();
+                let mut cache = Cache::default();
                 cache.value = value.to_string();
                 cache.key = key.to_string();
 

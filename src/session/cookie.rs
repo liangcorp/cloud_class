@@ -89,6 +89,22 @@ cfg_if! {
 
                 Ok(())
             }
+
+            pub fn delete_cookie() -> Result<(), ServerFnError> {
+                let mut cookie = Cookie::default();
+
+                cookie.session_token = "".to_string();
+                cookie.max_age = "0".to_string();
+                cookie.expire_date = "Thu, 01 Jan 1970 00:00:00 GMT".to_string();
+
+                if let Ok(c) = HeaderValue::from_str(&cookie.to_string()) {
+                    // pull ResponseOptions from context
+                    let response = expect_context::<ResponseOptions>();
+                    response.insert_header(header::SET_COOKIE, c);
+                }
+
+                Ok(())
+            }
         }
     }
 }

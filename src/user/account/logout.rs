@@ -5,7 +5,7 @@ use server_fn::ServerFnError;
 pub async fn user_logout() -> Result<String, ServerFnError> {
     use leptos_axum::extract;
     use axum::http::header::{HeaderMap, HeaderValue};
-    use crate::session::cache::CustomCache;
+    use crate::session::{cache::Cache, cookie::Cookie};
 
     let mut header: HeaderMap<HeaderValue> = HeaderMap::new();
 
@@ -28,7 +28,8 @@ pub async fn user_logout() -> Result<String, ServerFnError> {
         .nth(1)
         .unwrap_or("");
 
-    CustomCache::delete_cache(session_token)?;
+    Cache::delete_cache(session_token)?;
+    Cookie::delete_cookie()?;
 
     // 改变网址到学生资料
     leptos_axum::redirect("/");
@@ -41,7 +42,7 @@ pub fn LogoutPage() -> impl IntoView {
 
     let (session_token, set_session_token) = create_signal("".to_string());
 
-    view!{
+    view! {
         <Await
             // `future` provides the `Future` to be resolved
             future=user_logout
@@ -50,12 +51,10 @@ pub fn LogoutPage() -> impl IntoView {
             let:session_token
         >
             <p>
-            {
-                match session_token {
+                {match session_token {
                     Ok(s) => set_session_token.set(s.clone()),
                     Err(_) => set_session_token.set("".to_string()),
-                }
-            }
+                }}
             </p>
         </Await>
 

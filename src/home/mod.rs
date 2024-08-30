@@ -93,7 +93,9 @@ pub fn HomePage() -> impl IntoView {
                             >
                                 登陆
                             </a>
-                            <a class="header" href="/profile">{move || username.get()}</a>
+                            <a class="header" href="/profile">
+                                {move || username.get()}
+                            </a>
                         </td>
                         <td class="header_login">
                             <a

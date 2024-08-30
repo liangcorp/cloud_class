@@ -12,7 +12,6 @@ pub async fn user_logout() -> Result<String, ServerFnError> {
     match extract().await {
         Ok(h) => {
             header = h;
-            logging::log!("DEBUG<session/mod.rs>: extracted cookie: {:?}", header.get("cookie"));
         }
         Err(e) => {
             logging::log!("ERROR<session/mod.rs>: {}", e.to_string());

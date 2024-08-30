@@ -3,7 +3,7 @@ use cfg_if::cfg_if;
 cfg_if! {
     if #[cfg(feature = "ssr")] {
         use redis::cluster::{ClusterClient, ClusterConnection};
-        use leptos::{logging, server_fn::ServerFnError};
+        use leptos::{server_fn::ServerFnError};
 
         #[allow(dead_code)]
         pub struct Redis {
@@ -53,7 +53,6 @@ cfg_if! {
                 match ClusterClient::new(nodes) {
                     Ok(c) => client = c,
                     Err(e) => {
-                        logging::log!("ERROR<utils/redis.rs: 48>: {}", e.to_string());
                         return Err(ServerFnError::Args(e.to_string()))
                     },
                 }
@@ -62,7 +61,6 @@ cfg_if! {
                 match client.get_connection() {
                     Ok(c) => connection = c,
                     Err(e) => {
-                        logging::log!("ERROR<utils/redis.rs: 57>: {}", e.to_string());
                         return Err(ServerFnError::Args(e.to_string()))
                     },
                 }

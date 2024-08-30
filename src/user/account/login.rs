@@ -16,7 +16,7 @@ cfg_if! {
 }
 
 #[server(Login, "/api")]
-pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnError> {
+pub async fn user_auth(user: String, password: String, remember_user: String) -> Result<(), ServerFnError> {
     use crate::state::AppState;
     use crate::session::cookie::Cookie;
     use crate::session::cache::Cache;
@@ -47,7 +47,11 @@ pub async fn user_auth(user: String, password: String) -> Result<(), ServerFnErr
     if parsed_hash == account.pw_hash {
         let session_token = get_session_token();
 
-        Cookie::set_cookie(&session_token)?;
+        if remember_user == "true" {
+            Cookie::set_cookie(&session_token, true)?;
+        } else {
+            Cookie::set_cookie(&session_token, false)?;
+        }
         Cache::set_cache(&session_token, &account.username)?;
 
         //  改变网址到学生资料
@@ -65,6 +69,7 @@ fn UsernameLoginLayer() -> impl IntoView {
     let (username, set_username) = create_signal("".to_string());
     let (password, set_password) = create_signal("".to_string());
     let (auth_success, set_auth_success) = create_signal("none");
+    let (checkbox_value, set_checkbox_value) = create_signal("false");
 
     let input_username: NodeRef<html::Input> = create_node_ref();
     let input_password: NodeRef<html::Input> = create_node_ref();
@@ -96,23 +101,8 @@ fn UsernameLoginLayer() -> impl IntoView {
             // to get the current value of the input
             .value();
 
-        // if username_value != "user".to_string() || password_value != "password".to_string() {
-        //     set_auth_success.set("inline");
-        // } else {
-        //     set_auth_success.set("none");
-        //     set_username.set(username_value.clone());
-        //     set_password.set(password_value.clone());
-        // }
-
-        // spawn_local(async {
-        //     match user_auth(username_value, password_value).await {
-        //         Ok(()) => set_auth_success.set("none"),
-        //         Err(_e) => set_auth_success.set("inline"),
-        //     };
-        // });
-
         spawn_local(async move {
-            match user_auth(username_value.clone(), password_value.clone()).await {
+            match user_auth(username_value.clone(), password_value.clone(), checkbox_value.get().to_string()).await {
                 Ok(()) => {
                     set_auth_success.set("none");
                     set_username.set(username_value);
@@ -128,8 +118,6 @@ fn UsernameLoginLayer() -> impl IntoView {
     view! {
         <form on:submit=on_submit>
             <table>
-                // <tr><td><p>"用户名是: " {username}</p></td></tr>
-                // <tr><td><p>"密码名是: " {password}</p></td></tr>
                 <tr style:display=move || auth_success.get() style="color:red">
                     <td>
                         <h4>用户名或者密码不正确</h4>
@@ -167,7 +155,14 @@ fn UsernameLoginLayer() -> impl IntoView {
             <table>
                 <tr>
                     <td style="padding: 10px">
-                        <input type="checkbox" />
+                        <input
+                            type="checkbox"
+                            on:input=move |ev| {
+                                let is_checked = event_target_checked(&ev);
+                                let new_value = if is_checked { "true" } else { "false" };
+                                set_checkbox_value.set(new_value);
+                            }
+                        />
                         记住账号
                     </td>
                     <td style="padding: 10px">

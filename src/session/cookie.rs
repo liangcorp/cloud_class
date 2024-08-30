@@ -63,6 +63,17 @@ cfg_if! {
         }
 
         impl Cookie {
+
+            pub fn to_session_only_string(&self) -> String {
+                format!("session_token={};domain={};path={};{};{};SameSite={}",
+                    self.session_token,
+                    self.domain,
+                    self.path,
+                    self.secure,
+                    self.http_only,
+                    self.same_site
+                )
+            }
             pub fn to_string(&self) -> String {
                 format!("session_token={};domain={};path={};Max-Age={};Expires={};{};{};SameSite={}",
                     self.session_token,
@@ -76,15 +87,23 @@ cfg_if! {
                 )
             }
 
-            pub fn set_cookie(token: &str) -> Result<(), ServerFnError> {
+            pub fn set_cookie(token: &str, is_session_only: bool) -> Result<(), ServerFnError> {
                 let mut cookie = Cookie::default();
                 // set session token in cookie
                 cookie.session_token = token.to_string();
 
-                if let Ok(c) = HeaderValue::from_str(&cookie.to_string()) {
-                    // pull ResponseOptions from context
-                    let response = expect_context::<ResponseOptions>();
-                    response.insert_header(header::SET_COOKIE, c);
+                if is_session_only {
+                    if let Ok(c) = HeaderValue::from_str(&cookie.to_string()) {
+                        // pull ResponseOptions from context
+                        let response = expect_context::<ResponseOptions>();
+                        response.insert_header(header::SET_COOKIE, c);
+                    }
+                } else {
+                    if let Ok(c) = HeaderValue::from_str(&cookie.to_session_only_string()) {
+                        // pull ResponseOptions from context
+                        let response = expect_context::<ResponseOptions>();
+                        response.insert_header(header::SET_COOKIE, c);
+                    }
                 }
 
                 Ok(())

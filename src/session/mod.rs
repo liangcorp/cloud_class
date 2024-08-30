@@ -17,7 +17,6 @@ pub async fn extract_session_token() -> Result<String, ServerFnError> {
     match extract().await {
         Ok(h) => {
             header = h;
-            logging::log!("DEBUG<session/mod.rs>: extracted cookie: {:?}", header.get("cookie"));
         }
         Err(e) => {
             logging::log!("ERROR<session/mod.rs>: {}", e.to_string());
@@ -48,7 +47,6 @@ pub async fn extract_session_user() -> Result<String, ServerFnError> {
     match extract().await {
         Ok(h) => {
             header = h;
-            logging::log!("DEBUG<session/mod.rs>: extracted cookie: {:?}", header.get("cookie"));
         }
         Err(e) => {
             logging::log!("ERROR<session/mod.rs>: {}", e.to_string());

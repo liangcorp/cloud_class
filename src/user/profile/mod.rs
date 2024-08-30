@@ -1,17 +1,13 @@
+pub mod class;
+pub mod personal;
+
 use leptos::*;
 use leptos_router::Redirect;
-use server_fn::ServerFnError;
-
-#[server]
-pub async fn back_to_home() -> Result<(), ServerFnError> {
-    //  改变网址到学生资料
-    logging::log!("DEBUG<user/profile/mod.rs:back_to_home");
-    leptos_axum::redirect("/");
-    Ok(())
-}
+use crate::user::profile::class::ClassPage;
+use crate::user::profile::personal::PersonalPage;
 
 // use serde::Deserialize;
-/// Renders the home page of your application.
+/// Renders the profile page of your application.
 #[component]
 pub fn ProfilePage() -> impl IntoView {
     use crate::session::*;
@@ -19,6 +15,9 @@ pub fn ProfilePage() -> impl IntoView {
     let (username, set_username) = create_signal("".to_string());
     let (login_button, set_login_button) = create_signal("inline".to_string());
     let (logout_button, set_logout_button) = create_signal("none".to_string());
+
+    let (display_class, set_display_class) = create_signal("inline".to_string());
+    let (display_personal, set_display_personal) = create_signal("none".to_string());
 
     view! {
         <Await
@@ -64,23 +63,19 @@ pub fn ProfilePage() -> impl IntoView {
                             </a>
                         </td>
                         <td class="header_menu">
-                            <a href="/profile" class="header">
+                            <a href="/profile" class="header" on:click=move |_| {
+                                set_display_class.set("inline".to_string());
+                                set_display_personal.set("none".to_string());
+                            }>
                                 我的课程
                             </a>
                         </td>
                         <td class="header_menu">
-                            <a href="/profile" class="header">
-                                我的订单
-                            </a>
-                        </td>
-                        <td class="header_menu">
-                            <a href="/profile" class="header">
+                            <a href="/profile" class="header" on:click=move |_| {
+                                set_display_class.set("inline".to_string());
+                                set_display_personal.set("none".to_string());
+                            }>
                                 个人资料
-                            </a>
-                        </td>
-                        <td class="header_menu">
-                            <a href="/profile" class="header">
-                                我的卡巻
                             </a>
                         </td>
                         <td class="header_menu">
@@ -120,6 +115,14 @@ pub fn ProfilePage() -> impl IntoView {
         </div>
         <div>
             <hr class="page_divider"></hr>
+        </div>
+
+        <div style:display=move || display_class.get()>
+            <ClassPage />
+        </div>
+
+        <div style:display=move || display_personal.get()>
+            <PersonalPage />
         </div>
     }
 }

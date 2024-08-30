@@ -8,6 +8,7 @@ pub fn HomePage() -> impl IntoView {
 
     let (username, set_username) = create_signal("".to_string());
     let (login_button, set_login_button) = create_signal("inline".to_string());
+    let (logout_button, set_logout_button) = create_signal("none".to_string());
 
     view! {
         <Await
@@ -17,13 +18,15 @@ pub fn HomePage() -> impl IntoView {
             // the data is bound to whatever variable name you provide
             let:session_user
         >
-            <a href="/profile">
+            <p>
                 {match session_user {
                     Ok(s) => {
                         if s == "" {
-                            set_login_button.set("inline".to_string())
+                            set_login_button.set("inline".to_string());
+                            set_logout_button.set("none".to_string());
                         } else {
-                            set_login_button.set("none".to_string())
+                            set_login_button.set("none".to_string());
+                            set_logout_button.set("inline".to_string());
                         }
                         set_username.set((*s).clone());
                     }
@@ -31,7 +34,7 @@ pub fn HomePage() -> impl IntoView {
                         set_username.set("".to_string());
                     }
                 }}
-            </a>
+            </p>
         </Await>
 
         <div class="contents">
@@ -90,11 +93,22 @@ pub fn HomePage() -> impl IntoView {
                             >
                                 登陆
                             </a>
-                            <b>{move || username.get()}</b>
+                            <a class="header" href="/profile">{move || username.get()}</a>
                         </td>
                         <td class="header_login">
-                            <a href="/register" class="header">
+                            <a
+                                href="/register"
+                                class="header"
+                                style:display=move || login_button.get()
+                            >
                                 注册
+                            </a>
+                            <a
+                                href="/logout"
+                                class="home_login"
+                                style:display=move || logout_button.get()
+                            >
+                                退出
                             </a>
                         </td>
                     </tr>

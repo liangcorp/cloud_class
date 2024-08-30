@@ -2,6 +2,7 @@ use crate::admin::AdminPage;
 use crate::error_template::{AppError, ErrorTemplate};
 use crate::home::HomePage;
 use crate::user::account::login::LoginPage;
+use crate::user::account::logout::LogoutPage;
 use crate::user::account::register::RegistrationPage;
 use crate::user::profile::ProfilePage;
 
@@ -30,6 +31,7 @@ pub fn App() -> impl IntoView {
                 <Routes>
                     <Route path="/" view=HomePage />
                     <Route path="/login" view=LoginPage />
+                    <Route path="/logout" view=LogoutPage />
                     <Route path="/register" view=RegistrationPage />
                     <Route path="/admin" view=AdminPage />
                     <Route path="/profile" view=ProfilePage />

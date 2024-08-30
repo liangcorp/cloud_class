@@ -72,8 +72,8 @@ pub fn ProfilePage() -> impl IntoView {
                         </td>
                         <td class="header_menu">
                             <a href="/profile" class="header" on:click=move |_| {
-                                set_display_class.set("inline".to_string());
-                                set_display_personal.set("none".to_string());
+                                set_display_class.set("none".to_string());
+                                set_display_personal.set("inline".to_string());
                             }>
                                 个人资料
                             </a>

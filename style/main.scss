@@ -67,11 +67,11 @@ a.home_login {
 a.home_login:focus {
   font-weight: bold;
   text-decoration-line: none;
-  padding-top:10px;
-  padding-bottom:10px;
-  padding-left:20px;
-  padding-right:20px;
-  color:#FAFAFA;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  color: #FAFAFA;
   background-color: gray;
 }
 
@@ -151,6 +151,23 @@ input.register_button {
 input:focus {
   /* outline: none; */
   outline-color: #0F7ED0;
+}
+
+input.course_search_box_home {
+  margin: 10px;
+  padding: 2px;
+  height: 30px;
+  border-radius: 5px;
+  border: 1px solid #0F7ED0;
+}
+
+input.course_search_box_profile {
+  margin: 10px;
+  padding: 2px;
+  width: 750px;
+  height: 30px;
+  border-radius: 5px;
+  border: 1px solid #0F7ED0;
 }
 
 img.banner {

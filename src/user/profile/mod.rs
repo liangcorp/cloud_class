@@ -64,13 +64,7 @@ pub fn ProfilePage() -> impl IntoView {
                             </a>
                         </td>
                         <td class="header_menu">
-                            <a href="#" class="header">
-                                个人中心
-                            </a>
-                        </td>
-
-                        <td class="header_menu">
-                        <input style="text"/>
+                            <input class="course_search_box_profile" style="text" placeholder="搜索" />
                         </td>
                         <td class="header_login">
                             <a

@@ -74,7 +74,9 @@ pub fn HomePage() -> impl IntoView {
                                 关于我们
                             </a>
                         </td>
-
+                        <td class="header_menu">
+                            <input class="course_search_box_home" style="text" placeholder="搜索" />
+                        </td>
                         <td class="header_login">
                             <a
                                 href="/login"

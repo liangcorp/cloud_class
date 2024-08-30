@@ -13,7 +13,6 @@ pub async fn extract_session() -> Result<String, ServerFnError> {
     use leptos_axum::extract;
     use crate::utils::redis::Redis;
     use redis::Commands;
-    use redis::cluster::ClusterConnection;
     // let (method, query): (Method, Query<MyQuery>);
     let mut header: HeaderMap<HeaderValue> = HeaderMap::new();
 
@@ -34,8 +33,7 @@ pub async fn extract_session() -> Result<String, ServerFnError> {
 
     let session_token = cookie.split('=').next();
 
-    let redis = Redis::default();
-    let mut redis_cluster_conn = redis.get_cluster_connection().unwrap();
+    let mut redis_cluster_conn = Redis::get_cluster_connection().unwrap();
 
     // let _: () = redis_cluster_conn.set(session_token, "user")?;
     // let _: () = redis_cluster_conn.expire(session_token, 10)?;

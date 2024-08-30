@@ -3,7 +3,6 @@ use cfg_if::cfg_if;
 cfg_if! {
     if #[cfg(feature = "ssr")] {
         use redis::cluster::{ClusterClient, ClusterConnection};
-        use redis::Commands;
         use leptos::{logging, server_fn::ServerFnError};
 
         #[allow(dead_code)]
@@ -33,7 +32,7 @@ cfg_if! {
         }
 
         impl Redis {
-            pub fn get_cluster_connection(&self) -> Result<ClusterConnection, ServerFnError> {
+            pub fn get_cluster_connection() -> Result<ClusterConnection, ServerFnError> {
 
                 // let nodes = vec![format!("{}://{}:{}@{}:{}/",
                 //             self.uri_scheme,

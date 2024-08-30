@@ -4,9 +4,8 @@ cfg_if! {
     if #[cfg(feature = "ssr")] {
         use leptos::*;
         use server_fn::ServerFnError;
-        use chrono::{Datelike, Timelike, Utc};
+        use crate::utils::redis::Redis;
         use redis::Commands;
-        use redis::cluster::ClusterConnection;
 
         #[derive(Debug)]
         pub struct CustomCache {
@@ -25,7 +24,7 @@ cfg_if! {
 
         impl CustomCache {
             pub fn to_string(&self) -> String {
-                format!("CustomCache: ( {} {} {} )", self.username, self.session_token, self.date_created)
+                format!("CustomCache: ( {} {} )", self.username, self.session_token)
             }
 
             pub fn set_cache(session_token: String, username: String) -> Result<(), ServerFnError> {
@@ -33,11 +32,10 @@ cfg_if! {
                 cache.username = username;
                 cache.session_token = session_token;
 
-                let redis = Redis::default();
-                let mut redis_cluster_conn = redis.get_cluster_connection().unwrap();
+                let mut redis_cluster_conn = Redis::get_cluster_connection().unwrap();
 
-                let _: () = redis_cluster_conn.set(session_token, username)?;
-                let _: () = redis_cluster_conn.expire(session_token, 10)?;
+                let _: () = redis_cluster_conn.set(&cache.session_token, &cache.username)?;
+                let _: () = redis_cluster_conn.expire(cache.session_token, 10)?;
 
                 Ok(())
             }

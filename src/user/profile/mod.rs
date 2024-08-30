@@ -64,6 +64,26 @@ pub fn ProfilePage() -> impl IntoView {
                             </a>
                         </td>
                         <td class="header_menu">
+                            <a href="/profile" class="header">
+                                我的课程
+                            </a>
+                        </td>
+                        <td class="header_menu">
+                            <a href="/profile" class="header">
+                                我的订单
+                            </a>
+                        </td>
+                        <td class="header_menu">
+                            <a href="/profile" class="header">
+                                个人资料
+                            </a>
+                        </td>
+                        <td class="header_menu">
+                            <a href="/profile" class="header">
+                                我的卡巻
+                            </a>
+                        </td>
+                        <td class="header_menu">
                             <input class="course_search_box_profile" style="text" placeholder="搜索" />
                         </td>
                         <td class="header_login">
@@ -99,7 +119,7 @@ pub fn ProfilePage() -> impl IntoView {
             </div>
         </div>
         <div>
-            <img src="images/banners/3.财务会计banner.jpg" class="banner" />
+            <hr class="page_divider"></hr>
         </div>
     }
 }

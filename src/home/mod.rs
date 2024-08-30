@@ -110,7 +110,7 @@ pub fn HomePage() -> impl IntoView {
             </div>
         </div>
         <div>
-            <img src="images/banners/3.财务会计banner.jpg" class="banner" />
+            <hr class="page_divider"></hr>
         </div>
     }
 }

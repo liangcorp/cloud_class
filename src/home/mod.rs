@@ -51,37 +51,27 @@ pub fn HomePage() -> impl IntoView {
                         </td>
                         <td class="header_menu">
                             <a href="#" class="header">
-                                走进学校
+                                个人中心
                             </a>
                         </td>
                         <td class="header_menu">
                             <a href="#" class="header">
-                                课程中心
+                                商业中心
                             </a>
                         </td>
                         <td class="header_menu">
                             <a href="#" class="header">
-                                继续教育
+                                高校中心
                             </a>
                         </td>
                         <td class="header_menu">
                             <a href="#" class="header">
-                                师资力量
+                                政府中心
                             </a>
                         </td>
                         <td class="header_menu">
                             <a href="#" class="header">
-                                新闻中心
-                            </a>
-                        </td>
-                        <td class="header_menu">
-                            <a href="#" class="header">
-                                在线学习
-                            </a>
-                        </td>
-                        <td class="header_menu">
-                            <a href="#" class="header">
-                                就业招聘
+                                关于我们
                             </a>
                         </td>
 

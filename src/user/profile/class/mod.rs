@@ -4,22 +4,28 @@ use cfg_if::cfg_if;
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
-        #[derive(Clone, Debug, PartialEq, Eq)]
+        #[derive(Clone, Debug, PartialEq)]
         #[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
-        pub struct User {
-            username: String,
-            salt: String,
-            pw_hash: String,
+        pub struct UserCourses {
+            title: String,
+            price: f32,
+            language: String,
+            instructor: String,
+            rating: i32,
+            level: String,
+            requirement: String,
+            duration_minutes: i32,
+            about: String,
+            description: String,
+            tag_line: String,
+            update_date: String,
         }
     }
 }
 
-#[server(Login, "/api")]
-pub async fn user_auth(user: String, password: String, remember_user: String) -> Result<(), ServerFnError> {
+#[server]
+pub async fn get_user_courses(user: String) -> Result<(), ServerFnError> {
     use crate::state::AppState;
-    use crate::session::cookie::Cookie;
-    use crate::session::cache::Cache;
-    use crate::utils::{ crypto::*, uuid::* };
 
     //  取得软件状态
     let state;
@@ -31,40 +37,44 @@ pub async fn user_auth(user: String, password: String, remember_user: String) ->
     //  取得数据库信息
     let pool = state.pool;
 
+    logging::log!("DEBUG: <user/profile/class/mod.rs:41> getting {}'s courses", &user);
+
     /*---   提取用户数据    ---*/
-    let account = sqlx::query_as::<_, User>(
-        "SELECT * FROM student_accounts WHERE username==$1;",
+    let user_courses;
+
+    match sqlx::query_as::<_, UserCourses>(
+        "SELECT c.* FROM student_course sc INNER JOIN courses c ON sc.course_id = c.course_id WHERE sc.username = $1;",
     )
     .bind(&user)
     .fetch_one(&pool)
-    .await?;
-
-    /*---   Salt Hash 用户输入密码    ---*/
-    let parsed_hash = get_parsed_hash(&password, account.salt.as_str())?;
-    /*---   认证密码一致    ---*/
-    // if Argon2::default().verify_password(&b_password, &parsed_hash).is_ok() {
-    if parsed_hash == account.pw_hash {
-        let session_token = get_session_token();
-
-        if remember_user == "true" {
-            Cookie::set_cookie(&session_token, true)?;
-        } else {
-            Cookie::set_cookie(&session_token, false)?;
-        }
-        Cache::set_cache(&session_token, &account.username)?;
-
-        //  改变网址到学生资料
-        leptos_axum::redirect("/profile");
-    } else {
-        return Err(ServerFnError::Args("failed".to_string()));
+    .await {
+        Ok(uc) => user_courses = uc,
+        Err(e) => {
+            logging::log!("ERROR<user/profile/class/mod.rs:52>: {}", e.to_string());
+            return Err(ServerFnError::Args(e.to_string()))
+        },
     }
 
+    logging::log!("DEBUG: <user/profile/class/mod.rs:54> {:?}", user_courses);
     Ok(())
 }
 #[component]
-pub fn ClassPage(username: ReadSignal<String>) -> impl IntoView {
+pub fn ClassPage(user: ReadSignal<String>) -> impl IntoView {
 
+    // let mut result = Ok(());
+
+    // our resource
+    let async_data = create_resource(
+        move || user.get(),
+        // every time `count` changes, this will run
+        move |value| async move {
+            logging::log!("DEBUG<user/profile/class/mod.rs:57>: {:?}", &value);
+            get_user_courses(user.get()).await
+        },
+    );
+
+    logging::log!("ERROR<user/profile/class/mod.rs:68> {:?}", async_data);
     view!{
-        <h1> { move || username.get() } Classes: </h1>
+        <h1> Classes: </h1>
     }
 }

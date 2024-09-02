@@ -118,7 +118,7 @@ pub fn ProfilePage() -> impl IntoView {
         </div>
 
         <div style:display=move || display_class.get()>
-            <ClassPage username=username/>
+            <ClassPage user=username/>
         </div>
 
         <div style:display=move || display_personal.get()>

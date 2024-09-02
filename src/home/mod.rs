@@ -50,7 +50,7 @@ pub fn HomePage() -> impl IntoView {
                             </a>
                         </td>
                         <td class="header_menu">
-                            <a href="#" class="header">
+                            <a href="/profile" class="header">
                                 个人中心
                             </a>
                         </td>

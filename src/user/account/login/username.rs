@@ -33,7 +33,7 @@ pub async fn user_auth(user: String, password: String, remember_user: String) ->
 
     /*---   提取用户数据    ---*/
     let account = sqlx::query_as::<_, User>(
-        "SELECT * FROM student_accounts WHERE username==$1;",
+        "SELECT * FROM students WHERE username==$1;",
     )
     .bind(&user)
     .fetch_one(&pool)

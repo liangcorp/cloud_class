@@ -10,7 +10,7 @@ cfg_if! {
         // use crate::utils::app_state::AppState;
 
         pub async fn db() -> Result<SqliteConnection, ServerFnError> {
-            Ok(SqliteConnection::connect("sqlite:Users.db").await?)
+            Ok(SqliteConnection::connect("sqlite:Cloud_class.db").await?)
         }
 
         pub async fn create_pg_pool() -> Result<Pool<Postgres>, ServerFnError> {
@@ -22,7 +22,7 @@ cfg_if! {
         pub async fn create_pool() -> Result<Pool<Sqlite>, ServerFnError> {
             Ok(SqlitePoolOptions::new()
                 .max_connections(5)
-                .connect("sqlite:Users.db").await?)
+                .connect("sqlite:Cloud_class.db").await?)
         }
 
         // pub async fn get_sqlite_conn() -> Result<SqliteConnection, ServerFnError> {

@@ -1,9 +1,9 @@
 use leptos::*;
 
 #[component]
-pub fn PersonalPage() -> impl IntoView {
+pub fn PersonalPage(username: ReadSignal<String>) -> impl IntoView {
 
     view!{
-        <h1> Personal: </h1>
+        <h1> { move || username.get() } Personal: </h1>
     }
 }

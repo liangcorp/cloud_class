@@ -41,7 +41,6 @@ pub async fn user_logout() -> Result<Option<()>, ServerFnError> {
 
 #[component]
 pub fn LogoutPage() -> impl IntoView {
-    let (exit_message, set_exit_message) = create_signal("正在退出...".to_string());
     let a = create_resource(|| (), |_| async move { user_logout().await });
 
     view! {
@@ -50,7 +49,7 @@ pub fn LogoutPage() -> impl IntoView {
         >
             {move || {
                 a.get()
-                    .map(|a| view! { <Redirect path="/" /> })
+                    .map(|_| view! { <Redirect path="/" /> })
             }}
         </Transition>
     }

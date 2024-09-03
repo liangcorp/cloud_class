@@ -1,42 +1,11 @@
 use leptos::*;
-// use server_fn::ServerFnError;
-// use serde::Deserialize;
+
 /// Renders the home page of your application.
 #[component]
 pub fn HomePage() -> impl IntoView {
     use crate::session::*;
 
-    let (username, set_username) = create_signal("".to_string());
-    let (login_button, set_login_button) = create_signal("inline".to_string());
-    let (logout_button, set_logout_button) = create_signal("none".to_string());
-
     view! {
-        <Await
-            // `future` provides the `Future` to be resolved
-            future=extract_session_user
-
-            // the data is bound to whatever variable name you provide
-            let:session_user
-        >
-            <p>
-                {match session_user {
-                    Ok(s) => {
-                        if s == "" {
-                            set_login_button.set("inline".to_string());
-                            set_logout_button.set("none".to_string());
-                        } else {
-                            set_login_button.set("none".to_string());
-                            set_logout_button.set("inline".to_string());
-                        }
-                        set_username.set((*s).clone());
-                    }
-                    Err(_) => {
-                        set_username.set("".to_string());
-                    }
-                }}
-            </p>
-        </Await>
-
         <div class="contents">
             <div class="header">
                 <table class="header-menu">
@@ -77,34 +46,53 @@ pub fn HomePage() -> impl IntoView {
                         <td class="header_menu">
                             <input class="course_search_box_home" style="text" placeholder="搜索" />
                         </td>
-                        <td class="header_login">
-                            <a
-                                href="/login"
-                                class="home_login"
-                                style:display=move || login_button.get()
-                            >
-                                登陆
-                            </a>
-                            <a class="header" href="/profile">
-                                {move || username.get()}
-                            </a>
-                        </td>
-                        <td class="header_login">
-                            <a
-                                href="/register"
-                                class="header"
-                                style:display=move || login_button.get()
-                            >
-                                注册
-                            </a>
-                            <a
-                                href="/logout"
-                                class="home_login"
-                                style:display=move || logout_button.get()
-                            >
-                                退出
-                            </a>
-                        </td>
+                        <Await
+                            // `future` provides the `Future` to be resolved
+                            future=extract_session_user
+
+                            // the data is bound to whatever variable name you provide
+                            let:session_user
+                        >
+                                {match session_user {
+                                    Ok(username) => {
+                                        view! {
+                                            <td class="header_login">
+                                                <a class="header" href="/profile">
+                                                     {username}
+                                                </a>
+                                            </td>
+                                            <td class="header_login">
+                                                <a
+                                                    href="/logout"
+                                                    class="home_login"
+                                                >
+                                                    退出
+                                                </a>
+                                            </td>
+                                        }.into_view()
+                                    },
+                                    Err(_) => {
+                                        view!{
+                                            <td class="header_login">
+                                                <a
+                                                    href="/login"
+                                                    class="home_login"
+                                                >
+                                                    登陆
+                                                </a>
+                                            </td>
+                                            <td class="header_login">
+                                                <a
+                                                    href="/register"
+                                                    class="header"
+                                                >
+                                                    注册
+                                                </a>
+                                            </td>
+                                        }.into_view()
+                                    },
+                                }}
+                        </Await>
                     </tr>
                 </table>
             </div>

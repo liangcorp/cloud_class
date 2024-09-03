@@ -109,7 +109,6 @@ pub fn ProfilePage() -> impl IntoView {
         <div>
             <hr class="page_divider" />
         </div>
-
         <div class:display=move || show.get() == false>
             <ClassPage user=username.clone() />
         </div>

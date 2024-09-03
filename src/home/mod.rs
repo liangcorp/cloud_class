@@ -44,7 +44,11 @@ pub fn HomePage() -> impl IntoView {
                             </a>
                         </td>
                         <td class="header_menu">
-                            <input class="course_search_box_home" style="text" placeholder="搜索" />
+                            <input
+                                class="course_search_box_home"
+                                style="text"
+                                placeholder="搜索"
+                            />
                         </td>
                         <Await
                             // `future` provides the `Future` to be resolved
@@ -53,52 +57,45 @@ pub fn HomePage() -> impl IntoView {
                             // the data is bound to whatever variable name you provide
                             let:session_user
                         >
-                                {match session_user {
-                                    Ok(username) => {
-                                        view! {
-                                            <td class="header_login">
-                                                <a class="header" href="/profile">
-                                                     {username}
-                                                </a>
-                                            </td>
-                                            <td class="header_login">
-                                                <a
-                                                    href="/logout"
-                                                    class="home_login"
-                                                >
-                                                    退出
-                                                </a>
-                                            </td>
-                                        }.into_view()
-                                    },
-                                    Err(_) => {
-                                        view!{
-                                            <td class="header_login">
-                                                <a
-                                                    href="/login"
-                                                    class="home_login"
-                                                >
-                                                    登陆
-                                                </a>
-                                            </td>
-                                            <td class="header_login">
-                                                <a
-                                                    href="/register"
-                                                    class="header"
-                                                >
-                                                    注册
-                                                </a>
-                                            </td>
-                                        }.into_view()
-                                    },
-                                }}
+                            {match session_user {
+                                Ok(username) => {
+                                    view! {
+                                        <td class="header_login">
+                                            <a class="header" href="/profile">
+                                                {username}
+                                            </a>
+                                        </td>
+                                        <td class="header_login">
+                                            <a href="/logout" class="home_login">
+                                                退出
+                                            </a>
+                                        </td>
+                                    }
+                                        .into_view()
+                                }
+                                Err(_) => {
+                                    view! {
+                                        <td class="header_login">
+                                            <a href="/login" class="home_login">
+                                                登陆
+                                            </a>
+                                        </td>
+                                        <td class="header_login">
+                                            <a href="/register" class="header">
+                                                注册
+                                            </a>
+                                        </td>
+                                    }
+                                        .into_view()
+                                }
+                            }}
                         </Await>
                     </tr>
                 </table>
             </div>
         </div>
         <div>
-            <hr class="page_divider"></hr>
+            <hr class="page_divider" />
         </div>
     }
 }

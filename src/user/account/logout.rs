@@ -44,13 +44,8 @@ pub fn LogoutPage() -> impl IntoView {
     let logout_state = create_resource(|| (), |_| async move { user_logout().await });
 
     view! {
-        <Transition
-            fallback=move || view! { <p>"正在退出..."</p> }
-        >
-            {move || {
-                logout_state.get()
-                    .map(|_| view! { <Redirect path="/" /> })
-            }}
-        </Transition>
+        <Transition fallback=move || {
+            view! { <p>"正在退出..."</p> }
+        }>{move || { logout_state.get().map(|_| view! { <Redirect path="/" /> }) }}</Transition>
     }
 }

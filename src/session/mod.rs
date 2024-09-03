@@ -25,7 +25,7 @@ pub async fn extract_session_token() -> Result<String, ServerFnError> {
 
     let cookie = match header.get("cookie") {
         Some(c) => c.to_str().unwrap().to_string(),
-        None => return Err(ServerFnError::Args("cookie is empty".to_string())),
+        None => return Err(ServerFnError::Args("INFO: cookie not found".to_string())),
     };
 
     match cookie.split('=').nth(1) {
@@ -56,7 +56,7 @@ pub async fn extract_session_user() -> Result<String, ServerFnError> {
 
     let cookie = match header.get("cookie") {
         Some(c) => c.to_str().unwrap().to_string(),
-        None => return Err(ServerFnError::Args("INFO: cookie is empty".to_string())),
+        None => return Err(ServerFnError::Args("INFO: empty cookie".to_string())),
     };
 
     let session_token;
@@ -72,6 +72,6 @@ pub async fn extract_session_user() -> Result<String, ServerFnError> {
     if let Ok(Some(session_user)) =  redis_cluster_conn.get(session_token) {
         Ok(session_user)
     } else {
-        Err(ServerFnError::Args("INFO: session token not found in cache".to_string()))
+        Err(ServerFnError::Args("INFO: cache not found".to_string()))
     }
 }

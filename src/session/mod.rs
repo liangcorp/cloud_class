@@ -25,13 +25,13 @@ pub async fn extract_session_token() -> Result<String, ServerFnError> {
 
     let cookie = match header.get("cookie") {
         Some(c) => c.to_str().unwrap().to_string(),
-        None => "".to_string(),
+        None => return Err(ServerFnError::Args("cookie is empty".to_string())),
     };
 
-    Ok(cookie.split('=')
-        .nth(1)
-        .unwrap_or("")
-        .to_string())
+    match cookie.split('=').nth(1) {
+        Some(s) => Ok(s.to_string()),
+        None => return Err(ServerFnError::Args("malformed cookie".to_string())),
+    }
 }
 
 #[server]
@@ -50,18 +50,20 @@ pub async fn extract_session_user() -> Result<String, ServerFnError> {
         }
         Err(e) => {
             logging::log!("ERROR<session/mod.rs>: {}", e.to_string());
+            return Err(ServerFnError::Args(e.to_string()));
         }
     }
 
     let cookie = match header.get("cookie") {
         Some(c) => c.to_str().unwrap().to_string(),
-        None => "".to_string(),
+        None => return Err(ServerFnError::Args("INFO: cookie is empty".to_string())),
     };
 
-    let session_token = cookie
-        .split('=')
-        .nth(1)
-        .unwrap_or("");
+    let session_token;
+    match cookie.split('=').nth(1) {
+        Some(s) => session_token = s,
+        None => return Err(ServerFnError::Args("ERROR: malformed cookie".to_string())),
+    }
 
     let mut redis_cluster_conn = Redis::get_cluster_connection()?;
 
@@ -70,6 +72,6 @@ pub async fn extract_session_user() -> Result<String, ServerFnError> {
     if let Ok(Some(session_user)) =  redis_cluster_conn.get(session_token) {
         Ok(session_user)
     } else {
-        Ok("".to_string())
+        Err(ServerFnError::Args("INFO: session token not found in cache".to_string()))
     }
 }

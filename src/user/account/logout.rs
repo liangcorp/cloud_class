@@ -41,14 +41,14 @@ pub async fn user_logout() -> Result<Option<()>, ServerFnError> {
 
 #[component]
 pub fn LogoutPage() -> impl IntoView {
-    let a = create_resource(|| (), |_| async move { user_logout().await });
+    let logout_state = create_resource(|| (), |_| async move { user_logout().await });
 
     view! {
         <Transition
             fallback=move || view! { <p>"正在退出..."</p> }
         >
             {move || {
-                a.get()
+                logout_state.get()
                     .map(|_| view! { <Redirect path="/" /> })
             }}
         </Transition>

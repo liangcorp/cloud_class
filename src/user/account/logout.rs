@@ -1,8 +1,9 @@
 use leptos::*;
 use server_fn::ServerFnError;
+use leptos_router::Redirect;
 
 #[server(Logout, "/api")]
-pub async fn user_logout() -> Result<String, ServerFnError> {
+pub async fn user_logout() -> Result<Option<()>, ServerFnError> {
     use leptos_axum::extract;
     use axum::http::header::{HeaderMap, HeaderValue};
     use crate::session::{cache::Cache, cookie::Cookie};
@@ -20,12 +21,14 @@ pub async fn user_logout() -> Result<String, ServerFnError> {
 
     let cookie = match header.get("cookie") {
         Some(c) => c.to_str().unwrap().to_string(),
-        None => "".to_string(),
+        None => return Err(ServerFnError::Args("cookie not found".to_string())),
     };
 
-    let exit_message = cookie.split('=')
-        .nth(1)
-        .unwrap_or("");
+    let exit_message;
+    match cookie.split('=').nth(1) {
+        Some(e) => exit_message = e,
+        None => return Err(ServerFnError::Args("malformed cookie".to_string())),
+    }
 
     Cache::delete_cache(exit_message)?;
     Cookie::delete_cookie()?;
@@ -33,30 +36,22 @@ pub async fn user_logout() -> Result<String, ServerFnError> {
     // 改变网址到学生资料
     leptos_axum::redirect("/");
 
-    Ok("正在退出...".to_string())
+    Ok(Some(()))
 }
 
 #[component]
 pub fn LogoutPage() -> impl IntoView {
-
     let (exit_message, set_exit_message) = create_signal("正在退出...".to_string());
+    let a = create_resource(|| (), |_| async move { user_logout().await });
 
     view! {
-        <Await
-            // `future` provides the `Future` to be resolved
-            future=user_logout
-
-            // the data is bound to whatever variable name you provide
-            let:exit_message
+        <Transition
+            fallback=move || view! { <p>"正在退出..."</p> }
         >
-            <p>
-                {match exit_message {
-                    Ok(s) => set_exit_message.set(s.clone()),
-                    Err(_) => set_exit_message.set("".to_string()),
-                }}
-            </p>
-        </Await>
-
-        <p>{move || exit_message.get()}</p>
+            {move || {
+                a.get()
+                    .map(|a| view! { <Redirect path="/" /> })
+            }}
+        </Transition>
     }
 }

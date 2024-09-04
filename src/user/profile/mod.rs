@@ -117,6 +117,9 @@ pub fn ProfilePage() -> impl IntoView {
             <div class:display=move || show.get() == false>
                 <ClassPage user=async_data.get().unwrap_or(Ok("".to_string())).unwrap() />
             </div>
+            <div class:display=move || show.get() == true>
+                <PersonalPage user=async_data.get().unwrap_or(Ok("".to_string())).unwrap() />
+            </div>
         </Suspense>
     }
 }

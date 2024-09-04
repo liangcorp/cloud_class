@@ -1,12 +1,31 @@
 use leptos::*;
 use server_fn::ServerFnError;
+use serde::{Serialize, Deserialize};
 use cfg_if::cfg_if;
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct CourseContent {
+    course_id: String,
+    title: String,
+    price: f32,
+    language: String,
+    instructor: String,
+    rating: i32,
+    level: String,
+    requirement: String,
+    duration_minutes: i32,
+    about: String,
+    description: String,
+    tag_line: String,
+    update_date: String,
+}
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
         #[derive(Clone, Debug, PartialEq)]
         #[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
         pub struct UserCourses {
+            course_id: String,
             title: String,
             price: f32,
             language: String,
@@ -24,7 +43,7 @@ cfg_if! {
 }
 
 #[server]
-pub async fn get_user_courses(user: String) -> Result<Vec<String>, ServerFnError> {
+pub async fn get_user_courses(user: String) -> Result<Vec<CourseContent>, ServerFnError> {
     use crate::state::AppState;
 
     //  取得软件状态
@@ -56,25 +75,27 @@ pub async fn get_user_courses(user: String) -> Result<Vec<String>, ServerFnError
     }
 
     logging::log!("DEBUG: <user/profile/class/mod.rs:58> {:?}", user_courses);
-    let unpacked_courses = user_courses
+    let courses_contents = user_courses
         .iter()
-        .map(|uc| format!("{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}",
-                uc.title,
-                uc.price,
-                uc.language,
-                uc.instructor,
-                uc.rating,
-                uc.level,
-                uc.requirement,
-                uc.duration_minutes,
-                uc.about,
-                uc.description,
-                uc.tag_line,
-                uc.update_date))
+        .map(|uc| CourseContent {
+                course_id: uc.course_id.clone(),
+                title: uc.title.clone(),
+                price: uc.price.clone(),
+                language: uc.language.clone(),
+                instructor: uc.instructor.clone(),
+                rating: uc.rating.clone(),
+                level: uc.level.clone(),
+                requirement: uc.requirement.clone(),
+                duration_minutes: uc.duration_minutes.clone(),
+                about: uc.about.clone(),
+                description: uc.description.clone(),
+                tag_line: uc.tag_line.clone(),
+                update_date: uc.update_date.clone()})
         .collect();
 
-    Ok(unpacked_courses)
+    Ok(courses_contents)
 }
+
 #[component]
 pub fn ClassPage(user: String) -> impl IntoView {
 
@@ -88,14 +109,21 @@ pub fn ClassPage(user: String) -> impl IntoView {
                     Ok(data) => {
                         set_content.set(data)
                     },
-                    Err(_) => set_content.set(vec!["".to_string()]),
+                    Err(_) => set_content.set(Vec::new()),
                 }
            }
         )
     }
-    view!{
-        <h1> Classes: </h1>
 
-        <p> "show: " {content} </p>
+    view!{
+        <ul>
+            <For
+                each=move || content.get()
+                key=|state| (state.course_id.clone())
+                let:child
+            >
+                <p>{child.title}</p>
+            </For>
+        </ul>
     }
 }

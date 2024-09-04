@@ -24,7 +24,7 @@ cfg_if! {
 }
 
 #[server]
-pub async fn get_user_courses(user: String) -> Result<String, ServerFnError> {
+pub async fn get_user_courses(user: String) -> Result<Vec<String>, ServerFnError> {
     use crate::state::AppState;
 
     //  取得软件状态
@@ -46,7 +46,7 @@ pub async fn get_user_courses(user: String) -> Result<String, ServerFnError> {
         "SELECT c.* FROM student_course sc INNER JOIN courses c ON sc.course_id = c.course_id WHERE sc.username = $1;",
     )
     .bind(&user)
-    .fetch_one(&pool)
+    .fetch_all(&pool)
     .await {
         Ok(uc) => user_courses = uc,
         Err(e) => {
@@ -56,12 +56,29 @@ pub async fn get_user_courses(user: String) -> Result<String, ServerFnError> {
     }
 
     logging::log!("DEBUG: <user/profile/class/mod.rs:58> {:?}", user_courses);
-    Ok(user_courses.title)
+    let unpacked_courses = user_courses
+        .iter()
+        .map(|uc| format!("{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}",
+                uc.title,
+                uc.price,
+                uc.language,
+                uc.instructor,
+                uc.rating,
+                uc.level,
+                uc.requirement,
+                uc.duration_minutes,
+                uc.about,
+                uc.description,
+                uc.tag_line,
+                uc.update_date))
+        .collect();
+
+    Ok(unpacked_courses)
 }
 #[component]
 pub fn ClassPage(user: String) -> impl IntoView {
 
-    let (content, set_content) = create_signal("not changed".to_string());
+    let (content, set_content) = create_signal(Vec::new());
 
     if user != "".to_string() {
         logging::log!("spawning get {} courses", &user);
@@ -69,10 +86,9 @@ pub fn ClassPage(user: String) -> impl IntoView {
             async move {
                 match get_user_courses(user.clone()).await {
                     Ok(data) => {
-                        logging::log!("DEBUG<user/profile/class/mod.rs:71: {}", data);
-                        set_content.set(data.to_string())
+                        set_content.set(data)
                     },
-                    Err(_) => set_content.set("NOT FOUND".to_string()),
+                    Err(_) => set_content.set(vec!["".to_string()]),
                 }
            }
         )

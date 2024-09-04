@@ -116,7 +116,6 @@ pub fn ClassPage(user: String) -> impl IntoView {
 
     view! {
         <div class="contents">
-            <h1>我的课程</h1>
             <For
                 each=move || content.get()
                 key=|state| (state.course_id.clone())

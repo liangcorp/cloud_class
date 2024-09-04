@@ -24,7 +24,7 @@ cfg_if! {
 }
 
 #[server]
-pub async fn get_user_courses(user: String) -> Result<(), ServerFnError> {
+pub async fn get_user_courses(user: String) -> Result<String, ServerFnError> {
     use crate::state::AppState;
 
     //  取得软件状态
@@ -55,26 +55,38 @@ pub async fn get_user_courses(user: String) -> Result<(), ServerFnError> {
         },
     }
 
-    logging::log!("DEBUG: <user/profile/class/mod.rs:54> {:?}", user_courses);
-    Ok(())
+    logging::log!("DEBUG: <user/profile/class/mod.rs:54> {:?}", user_courses.title);
+    Ok(user_courses.title)
 }
 #[component]
-pub fn ClassPage(user: ReadSignal<String>) -> impl IntoView {
+pub fn ClassPage(user: String) -> impl IntoView {
 
-    // let mut result = Ok(());
-
-    // our resource
-    let async_data = create_resource(
-        move || user.get(),
-        // every time `count` changes, this will run
-        move |value| async move {
-            logging::log!("DEBUG<user/profile/class/mod.rs:57>: {:?}", &value);
-            get_user_courses(user.get()).await
-        },
-    );
-
-    logging::log!("ERROR<user/profile/class/mod.rs:68> {:?}", async_data);
+    let (content, set_content) = create_signal("".to_string());
+    if user != "".to_string() {
+        spawn_local(
+            async move {
+                match get_user_courses(user.clone()).await {
+                    Ok(data) => set_content.set(data),
+                    Err(_) => set_content.set("DEBUG".to_string()),
+                }
+           }
+        )
+    }
     view!{
         <h1> Classes: </h1>
+
+        // <Await
+        //     // `future` provides the `Future` to be resolved
+        //     future=move || get_user_courses(user.clone())
+        //     // the data is bound to whatever variable name you provide
+        //     let:data
+        // >
+        //     // you receive the data by reference and can use it in your view here
+        //     <p>{match data {
+        //         Ok(d) => view! { (*d).clone() }.into_view(),
+        //         Err(_) => view! { "".to_string() }.into_view(),
+        //     }} </p>
+        // </Await>
+        <p> "show: " {content.get()} </p>
     }
 }

@@ -16,6 +16,8 @@ pub fn ProfilePage() -> impl IntoView {
 
     let (show, set_show) = create_signal(true);
 
+    let async_data = create_resource(move || username.clone(), |_| async move { extract_session_user().await });
+
     view! {
         <div class="contents">
             <div class="header">
@@ -109,8 +111,12 @@ pub fn ProfilePage() -> impl IntoView {
         <div>
             <hr class="page_divider" />
         </div>
-        <div class:display=move || show.get() == false>
-            <ClassPage user=username.clone() />
-        </div>
+        <Suspense
+            fallback=move || view! { <p>"Loading..."</p> }
+        >
+            <div class:display=move || show.get() == false>
+                <ClassPage user=async_data.get().unwrap_or(Ok("".to_string())).unwrap() />
+            </div>
+        </Suspense>
     }
 }

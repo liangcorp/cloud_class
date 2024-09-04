@@ -116,68 +116,86 @@ pub fn ClassPage(user: String) -> impl IntoView {
 
     view! {
         <div class="contents">
-                <For
-                    each=move || content.get()
-                    key=|state| (state.course_id.clone())
-                    let:course_content
-                >
+            <For
+                each=move || content.get()
+                key=|state| (state.course_id.clone())
+                let:course_content
+            >
                 <a href="/course" style="text-decoration-line: none;color: #333333;">
-                <div class="each_class">
-                    <div style="display: inline-block; width:40%">
-                        <img src="images/classes/class_default.png" style="width:350px;height:250px" />
+                    <div class="each_class">
+                        <div style="display: inline-block; width:40%">
+                            <img
+                                src="images/classes/class_default.png"
+                                style="width:350px;height:250px"
+                            />
+                        </div>
+                        <div style="display: inline-block; width:60%">
+                            <table width="100%">
+                                <tr>
+                                    <td align="left">
+                                        <h3>{course_content.title}</h3>
+                                    </td>
+                                    <td stype="padding-left:300px" align="right">
+                                        <b>"¥" {course_content.price}" (CNY)"</b>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="left">
+                                        <p>{course_content.tag_line}</p>
+                                    </td>
+                                    <td align="right"></td>
+                                </tr>
+                                <tr>
+                                    <td align="left" style="color:gray;">
+                                        "教师: "
+                                        {course_content.instructor}
+                                    </td>
+                                    <td align="right"></td>
+                                </tr>
+                                <tr>
+                                    <td align="left">"面对: "{course_content.level}</td>
+                                    <td align="right"></td>
+                                </tr>
+                                <tr>
+                                    <td align="left">"语言: "{course_content.language}</td>
+                                    <td align="right"></td>
+                                </tr>
+                                <tr>
+                                    <td align="left">
+                                        <span>
+                                            {(0..course_content.rating)
+                                                .into_iter()
+                                                .map(|_| view! { <span style="color:red;">"★"</span> })
+                                                .collect_view()}
+                                        </span>
+                                        <span>
+                                            {(course_content.rating..10)
+                                                .into_iter()
+                                                .map(|_| view! { <span style="color:gray;">"★"</span> })
+                                                .collect_view()}
+                                        </span>
+                                    </td>
+                                    <td align="right"></td>
+                                </tr>
+                                <tr>
+                                    <td align="left">
+                                        "时间: "{course_content.duration_minutes} "分钟"
+                                    </td>
+                                    <td align="right"></td>
+                                </tr>
+                                <tr>
+                                    <td align="left" style="color:#1e6055;">
+                                        "更新日: "
+                                        <b>{course_content.update_date}</b>
+                                    </td>
+                                    <td align="right"></td>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
-                    <div style="display: inline-block; width:60%">
-                        <table width="100%">
-                        <tr>
-                            <td align="left"><h3>{course_content.title}</h3></td>
-                            <td stype="padding-left:300px" align="right"><b>"¥" {course_content.price}" (CNY)"</b></td>
-                        </tr>
-                        <tr>
-                            <td align="left"><p>{course_content.tag_line}</p></td>
-                            <td align="right"></td>
-                        </tr>
-                        <tr>
-                            <td align="left" style="color:gray;">"教师: "{course_content.instructor}</td>
-                            <td align="right"></td>
-                        </tr>
-                        <tr>
-                            <td align="left">"面对: "{course_content.level}</td>
-                            <td align="right"></td>
-                        </tr>
-                        <tr>
-                            <td align="left">"语言: "{course_content.language}</td>
-                            <td align="right"></td>
-                        </tr>
-                        <tr>
-                            <td align="left">
-                                // for _ in 0..course_content.rating {
-                                //     let stars = view!{
-                                //         <span style="color:red;">"★"</span>
-                                //     }.into_view();
-                                // stars
-                                <span>{(0..course_content.rating).into_iter()
-                                    .map(|_| view! { <span style="color:red;">"★"</span>})
-                                    .collect_view()
-                                }</span>
-                                <span>
-                                {(course_content.rating..10).into_iter()
-                                    .map(|_| view! { <span style="color:gray;">"★"</span>})
-                                    .collect_view()
-                                }</span>
-                            </td><td align="right"></td>
-                        </tr>
-                        <tr>
-                            <td align="left">"时间: "{course_content.duration_minutes} "分钟"</td><td align="right"></td>
-                        </tr>
-                        <tr>
-                            <td align="left" style="color:#1e6055;">"更新日: "<b>{course_content.update_date}</b></td><td align="right"></td>
-                        </tr>
-                        </table>
-                    </div>
-                </div>
                 </a>
                 <hr />
-                </For>
+            </For>
         </div>
     }
 }

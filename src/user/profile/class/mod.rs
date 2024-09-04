@@ -55,19 +55,24 @@ pub async fn get_user_courses(user: String) -> Result<String, ServerFnError> {
         },
     }
 
-    logging::log!("DEBUG: <user/profile/class/mod.rs:54> {:?}", user_courses.title);
+    logging::log!("DEBUG: <user/profile/class/mod.rs:58> {:?}", user_courses);
     Ok(user_courses.title)
 }
 #[component]
 pub fn ClassPage(user: String) -> impl IntoView {
 
-    let (content, set_content) = create_signal("".to_string());
+    let (content, set_content) = create_signal("not changed".to_string());
+
     if user != "".to_string() {
+        logging::log!("spawning get {} courses", &user);
         spawn_local(
             async move {
                 match get_user_courses(user.clone()).await {
-                    Ok(data) => set_content.set(data),
-                    Err(_) => set_content.set("DEBUG".to_string()),
+                    Ok(data) => {
+                        logging::log!("DEBUG<user/profile/class/mod.rs:71: {}", data);
+                        set_content.set(data.to_string())
+                    },
+                    Err(_) => set_content.set("NOT FOUND".to_string()),
                 }
            }
         )
@@ -75,18 +80,6 @@ pub fn ClassPage(user: String) -> impl IntoView {
     view!{
         <h1> Classes: </h1>
 
-        // <Await
-        //     // `future` provides the `Future` to be resolved
-        //     future=move || get_user_courses(user.clone())
-        //     // the data is bound to whatever variable name you provide
-        //     let:data
-        // >
-        //     // you receive the data by reference and can use it in your view here
-        //     <p>{match data {
-        //         Ok(d) => view! { (*d).clone() }.into_view(),
-        //         Err(_) => view! { "".to_string() }.into_view(),
-        //     }} </p>
-        // </Await>
-        <p> "show: " {content.get()} </p>
+        <p> "show: " {content} </p>
     }
 }

@@ -24,7 +24,7 @@ cfg_if! {
     if #[cfg(feature = "ssr")] {
         #[derive(Clone, Debug, PartialEq)]
         #[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
-        pub struct UserCourses {
+        pub struct CourseContentQuery {
             course_id: String,
             title: String,
             price: f32,
@@ -61,7 +61,7 @@ pub async fn get_user_courses(user: String) -> Result<Vec<CourseContent>, Server
     /*---   提取用户数据    ---*/
     let user_courses;
 
-    match sqlx::query_as::<_, UserCourses>(
+    match sqlx::query_as::<_, CourseContentQuery>(
         "SELECT c.* FROM student_course sc INNER JOIN courses c ON sc.course_id = c.course_id WHERE sc.username = $1;",
     )
     .bind(&user)
@@ -75,7 +75,7 @@ pub async fn get_user_courses(user: String) -> Result<Vec<CourseContent>, Server
     }
 
     // logging::log!("DEBUG: <user/profile/class/mod.rs:58> {:?}", user_courses);
-    let courses_contents = user_courses
+    let result_content = user_courses
         .iter()
         .map(|uc| CourseContent {
                 course_id: uc.course_id.clone(),
@@ -93,7 +93,7 @@ pub async fn get_user_courses(user: String) -> Result<Vec<CourseContent>, Server
                 update_date: uc.update_date.clone()})
         .collect();
 
-    Ok(courses_contents)
+    Ok(result_content)
 }
 
 #[component]
@@ -116,6 +116,7 @@ pub fn ClassPage(user: String) -> impl IntoView {
 
     view! {
         <div class="contents">
+            <h1>我的课程</h1>
             <For
                 each=move || content.get()
                 key=|state| (state.course_id.clone())

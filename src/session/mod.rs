@@ -12,14 +12,15 @@ pub async fn extract_session_token() -> Result<String, ServerFnError> {
     use axum::http::header::{HeaderMap, HeaderValue};
     use leptos_axum::extract;
 
-    let mut header: HeaderMap<HeaderValue> = HeaderMap::new();
+    let header: HeaderMap<HeaderValue>;
 
     match extract().await {
         Ok(h) => {
             header = h;
         }
         Err(e) => {
-            logging::log!("ERROR<session/mod.rs>: {}", e.to_string());
+            // logging::log!("ERROR<session/mod.rs>: {}", e.to_string());
+            return Err(ServerFnError::Args(e.to_string()))
         }
     }
 
@@ -42,14 +43,14 @@ pub async fn extract_session_user() -> Result<String, ServerFnError> {
     use crate::utils::redis::Redis;
     use redis::Commands;
     // let (method, query): (Method, Query<MyQuery>);
-    let mut header: HeaderMap<HeaderValue> = HeaderMap::new();
+    let header: HeaderMap<HeaderValue>;
 
     match extract().await {
         Ok(h) => {
             header = h;
         }
         Err(e) => {
-            logging::log!("ERROR<session/mod.rs>: {}", e.to_string());
+            // logging::log!("ERROR<session/mod.rs>: {}", e.to_string());
             return Err(ServerFnError::Args(e.to_string()));
         }
     }

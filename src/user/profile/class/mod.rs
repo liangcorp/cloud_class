@@ -56,7 +56,7 @@ pub async fn get_user_courses(user: String) -> Result<Vec<CourseContent>, Server
     //  取得数据库信息
     let pool = state.pool;
 
-    logging::log!("DEBUG: <user/profile/class/mod.rs:41> getting {}'s courses", &user);
+    // logging::log!("DEBUG: <user/profile/class/mod.rs:41> getting {}'s courses", &user);
 
     /*---   提取用户数据    ---*/
     let user_courses;
@@ -69,12 +69,12 @@ pub async fn get_user_courses(user: String) -> Result<Vec<CourseContent>, Server
     .await {
         Ok(uc) => user_courses = uc,
         Err(e) => {
-            logging::log!("ERROR<user/profile/class/mod.rs:52>: {}", e.to_string());
+            // logging::log!("ERROR<user/profile/class/mod.rs:52>: {}", e.to_string());
             return Err(ServerFnError::Args(e.to_string()))
         },
     }
 
-    logging::log!("DEBUG: <user/profile/class/mod.rs:58> {:?}", user_courses);
+    // logging::log!("DEBUG: <user/profile/class/mod.rs:58> {:?}", user_courses);
     let courses_contents = user_courses
         .iter()
         .map(|uc| CourseContent {
@@ -102,7 +102,6 @@ pub fn ClassPage(user: String) -> impl IntoView {
     let (content, set_content) = create_signal(Vec::new());
 
     if user != "".to_string() {
-        logging::log!("spawning get {} courses", &user);
         spawn_local(
             async move {
                 match get_user_courses(user.clone()).await {
@@ -115,15 +114,70 @@ pub fn ClassPage(user: String) -> impl IntoView {
         )
     }
 
-    view!{
-        <ul>
-            <For
-                each=move || content.get()
-                key=|state| (state.course_id.clone())
-                let:child
-            >
-                <p>{child.title}</p>
-            </For>
-        </ul>
+    view! {
+        <div class="contents">
+                <For
+                    each=move || content.get()
+                    key=|state| (state.course_id.clone())
+                    let:course_content
+                >
+                <a href="/course" style="text-decoration-line: none;color: #333333;">
+                <div class="each_class">
+                    <div style="display: inline-block; width:40%">
+                        <img src="images/classes/class_default.png" style="width:350px;height:250px" />
+                    </div>
+                    <div style="display: inline-block; width:60%">
+                        <table width="100%">
+                        <tr>
+                            <td align="left"><h3>{course_content.title}</h3></td>
+                            <td stype="padding-left:300px" align="right"><b>"¥" {course_content.price}" (CNY)"</b></td>
+                        </tr>
+                        <tr>
+                            <td align="left"><p>{course_content.tag_line}</p></td>
+                            <td align="right"></td>
+                        </tr>
+                        <tr>
+                            <td align="left" style="color:gray;">"教师: "{course_content.instructor}</td>
+                            <td align="right"></td>
+                        </tr>
+                        <tr>
+                            <td align="left">"面对: "{course_content.level}</td>
+                            <td align="right"></td>
+                        </tr>
+                        <tr>
+                            <td align="left">"语言: "{course_content.language}</td>
+                            <td align="right"></td>
+                        </tr>
+                        <tr>
+                            <td align="left">
+                                // for _ in 0..course_content.rating {
+                                //     let stars = view!{
+                                //         <span style="color:red;">"★"</span>
+                                //     }.into_view();
+                                // stars
+                                <span>{(0..course_content.rating).into_iter()
+                                    .map(|_| view! { <span style="color:red;">"★"</span>})
+                                    .collect_view()
+                                }</span>
+                                <span>
+                                {(course_content.rating..10).into_iter()
+                                    .map(|_| view! { <span style="color:gray;">"★"</span>})
+                                    .collect_view()
+                                }</span>
+                            </td><td align="right"></td>
+                        </tr>
+                        <tr>
+                            <td align="left">"时间: "{course_content.duration_minutes} "分钟"</td><td align="right"></td>
+                        </tr>
+                        <tr>
+                            <td align="left" style="color:#1e6055;">"更新日: "<b>{course_content.update_date}</b></td><td align="right"></td>
+                        </tr>
+                        </table>
+                    </div>
+                </div>
+                </a>
+                <hr />
+                </For>
+        </div>
     }
 }

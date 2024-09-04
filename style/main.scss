@@ -6,6 +6,7 @@ body {
 
 .contents {
   margin-left: 10%;
+  margin-right: 10%;
 }
 
 .header {
@@ -25,16 +26,16 @@ body {
 }
 
 td.header {
-  padding:20px;
+  padding:15px;
 }
 
 td.header_menu {
-  padding:20px;
+  padding:15px;
   font-size: 20;
 }
 
 td.header_login {
-  padding:20px;
+  padding:15px;
 }
 
 a.header {
@@ -109,6 +110,21 @@ div.display {
   display: none;
 }
 
+div.each_class {
+  width: 100%;
+  margin-top: 10px;
+  display: inline-block;
+  /* border: 1px solid gray; */
+}
+
+div.each_class:hover {
+  width: 100%;
+  margin-top: 10px;
+  background-color: #f7f9ff;
+  display: inline-block;
+  /* border: 1px solid gray; */
+}
+
 b.login_box {
   padding:10px;
   border:0px;
@@ -168,7 +184,7 @@ input.course_search_box_home {
 input.course_search_box_profile {
   margin: 10px;
   padding: 2px;
-  width: 600px;
+  width: 550px;
   height: 30px;
   border-radius: 5px;
   border: 1px solid #0F7ED0;
@@ -180,4 +196,9 @@ img.banner {
 
 hr.page_divider {
   border: 1px solid #0F7ED0;
+}
+
+li:before {
+	content:\5143;
+	font-family:Arial;
 }

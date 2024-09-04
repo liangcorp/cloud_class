@@ -68,13 +68,13 @@ pub fn ProfilePage() -> impl IntoView {
                             let:session_user
                         >
                             {match session_user {
-                                Ok(un) => {
+                                Ok(uname) => {
                                     view! {
                                         <td class="header_login">
                                             <a class="header" href="/profile">
                                                 {
-                                                    set_username.set(un.clone());
-                                                    un
+                                                    set_username.set(uname.clone());
+                                                    uname
                                                 }
                                             </a>
                                         </td>
@@ -111,15 +111,13 @@ pub fn ProfilePage() -> impl IntoView {
         <div>
             <hr class="page_divider" />
         </div>
-        <Suspense
-            fallback=move || view! { <p>"Loading..."</p> }
-        >
+        <Transition fallback=move || view! { <h1>"正在运行..."</h1> }>
             <div class:display=move || show.get() == false>
                 <ClassPage user=async_data.get().unwrap_or(Ok("".to_string())).unwrap() />
             </div>
             <div class:display=move || show.get() == true>
                 <PersonalPage user=async_data.get().unwrap_or(Ok("".to_string())).unwrap() />
             </div>
-        </Suspense>
+        </Transition>
     }
 }

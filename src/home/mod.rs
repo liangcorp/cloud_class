@@ -39,6 +39,11 @@ pub fn HomePage() -> impl IntoView {
                             </a>
                         </td>
                         <td class="header_menu">
+                            <a href="instructors" class="header">
+                                教师中心
+                            </a>
+                        </td>
+                        <td class="header_menu">
                             <a href="#" class="header">
                                 关于我们
                             </a>

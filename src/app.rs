@@ -1,10 +1,10 @@
 use crate::admin::AdminPage;
 use crate::error_template::{AppError, ErrorTemplate};
 use crate::home::HomePage;
-use crate::user::account::login::LoginPage;
-use crate::user::account::logout::LogoutPage;
-use crate::user::account::register::RegistrationPage;
-use crate::user::profile::ProfilePage;
+use crate::student::account::login::LoginPage;
+use crate::student::account::logout::LogoutPage;
+use crate::student::account::register::RegistrationPage;
+use crate::student::profile::ProfilePage;
 
 use leptos::*;
 use leptos_meta::*;

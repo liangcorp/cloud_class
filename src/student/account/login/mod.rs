@@ -63,11 +63,11 @@ pub fn LoginPage() -> impl IntoView {
                                 </table>
                             </div>
 
-                            <div class:display=move || show.get() == false >
+                            <div class:display=move || show.get() == false>
                                 <UsernameLoginLayer />
                             </div>
 
-                            <div class:display=move || show.get() == true >
+                            <div class:display=move || show.get() == true>
                                 <MobileLoginLayer />
                             </div>
                         </td>

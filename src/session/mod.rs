@@ -8,7 +8,7 @@ use server_fn::ServerFnError;
 // for some reason it's only returning the first element of the cookie
 // maybe it's due to security settings
 #[server]
-pub async fn extract_session_token() -> Result<String, ServerFnError> {
+pub async fn extract_session_token() -> Result<Option<String>, ServerFnError> {
     use axum::http::header::{HeaderMap, HeaderValue};
     use leptos_axum::extract;
 
@@ -19,24 +19,24 @@ pub async fn extract_session_token() -> Result<String, ServerFnError> {
             header = h;
         }
         Err(e) => {
-            // logging::log!("ERROR<session/mod.rs>: {}", e.to_string());
             return Err(ServerFnError::Args(e.to_string()))
         }
     }
 
-    let cookie = match header.get("cookie") {
-        Some(c) => c.to_str().unwrap().to_string(),
-        None => return Err(ServerFnError::Args("INFO: cookie not found".to_string())),
+    let cookie_header;
+    match header.get("cookie") {
+        Some(c) => cookie_header = c.to_str().unwrap().to_string(),
+        None => return Ok(None),
     };
 
-    match cookie.split('=').nth(1) {
-        Some(s) => Ok(s.to_string()),
-        None => return Err(ServerFnError::Args("malformed cookie".to_string())),
+    match cookie_header.split('=').nth(1) {
+        Some(s) => Ok(Some(s.to_string())),
+        None => Ok(None),
     }
 }
 
 #[server]
-pub async fn extract_session_user() -> Result<String, ServerFnError> {
+pub async fn extract_session_user() -> Result<Option<String>, ServerFnError> {
     // use axum::{extract::Query, http::{Method, header::{HeaderMap, HeaderValue}}};
     use axum::http::header::{HeaderMap, HeaderValue};
     use leptos_axum::extract;
@@ -54,21 +54,28 @@ pub async fn extract_session_user() -> Result<String, ServerFnError> {
         }
     }
 
-    let cookie = match header.get("cookie") {
-        Some(c) => c.to_str().unwrap().to_string(),
-        None => return Ok("".to_string()), //Err(ServerFnError::Args("INFO: empty cookie".to_string())),
+    let cookie_header;
+    match header.get("cookie") {
+        Some(c) => cookie_header = c.to_str().unwrap().to_string(),
+        None => return Ok(None),
     };
 
+    // let cookie;
+    // match cookie_header {
+    //     Some(c) => cookie = c,
+    //     None => return Ok(None),
+    // };
+
     let session_token;
-    match cookie.split('=').nth(1) {
+    match cookie_header.split('=').nth(1) {
         Some(s) => session_token = s,
-        None => return Err(ServerFnError::Args("ERROR: malformed cookie".to_string())),
+        None => return Ok(None),
     }
 
     let mut redis_cluster_conn = Redis::get_cluster_connection()?;
 
-    if let Ok(Some(session_user)) =  redis_cluster_conn.get(session_token) {
-        Ok(session_user)
+    if let Ok(Some(session_user)) = redis_cluster_conn.get(session_token) {
+        Ok(Some(session_user))
     } else {
         Err(ServerFnError::Args("ERROR: user session not found".to_string()))
     }

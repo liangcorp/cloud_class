@@ -49,11 +49,11 @@ pub fn HomePage() -> impl IntoView {
                             </a>
                         </td>
                         // <td class="header_menu">
-                        //     <input
-                        //         class="course_search_box_home"
-                        //         style="text"
-                        //         placeholder="搜索"
-                        //     />
+                        // <input
+                        // class="course_search_box_home"
+                        // style="text"
+                        // placeholder="搜索"
+                        // />
                         // </td>
                         <Await
                             // `future` provides the `Future` to be resolved
@@ -64,34 +64,37 @@ pub fn HomePage() -> impl IntoView {
                         >
                             {match session_user {
                                 Ok(username) => {
-                                    if username != "" {
-                                        view! {
-                                            <td class="header_login">
-                                                <a class="header" href="/profile">
-                                                    {username}
-                                                </a>
-                                            </td>
-                                            <td class="header_login">
-                                                <a href="/logout" class="home_login">
-                                                    退出
-                                                </a>
-                                            </td>
+                                    match username {
+                                        Some(u) => {
+                                            view! {
+                                                <td class="header_login">
+                                                    <a class="header" href="/profile">
+                                                        {u}
+                                                    </a>
+                                                </td>
+                                                <td class="header_login">
+                                                    <a href="/logout" class="home_login">
+                                                        退出
+                                                    </a>
+                                                </td>
+                                            }
+                                                .into_view()
                                         }
-                                            .into_view()
-                                    } else {
-                                        view! {
-                                            <td class="header_login">
-                                                <a href="/login" class="home_login">
-                                                    登陆
-                                                </a>
-                                            </td>
-                                            <td class="header_login">
-                                                <a href="/register" class="header">
-                                                    注册
-                                                </a>
-                                            </td>
+                                        None => {
+                                            view! {
+                                                <td class="header_login">
+                                                    <a href="/login" class="home_login">
+                                                        登陆
+                                                    </a>
+                                                </td>
+                                                <td class="header_login">
+                                                    <a href="/register" class="header">
+                                                        注册
+                                                    </a>
+                                                </td>
+                                            }
+                                                .into_view()
                                         }
-                                            .into_view()
                                     }
                                 }
                                 Err(_) => {

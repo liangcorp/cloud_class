@@ -86,10 +86,10 @@ pub async fn get_personal_profile(user: String) -> Result<PersonalContent, Serve
     Ok(result_content)
 }
 #[component]
-pub fn PersonalPage(user: String) -> impl IntoView {
+pub fn PersonalPage(user: Option<String>) -> impl IntoView {
     let (content, set_content) = create_signal(PersonalContent::default());
 
-    if user != "".to_string() {
+    if user != None {
         spawn_local(
             async move {
                 match get_personal_profile(user.clone()).await {
@@ -109,28 +109,43 @@ pub fn PersonalPage(user: String) -> impl IntoView {
         <div class="profile_contents">
             <p style="color:gray; font-weight:bold;">学生</p>
             <table style="width:100%">
-            <tr>
-                <td>
-                    <h1>{move || content.get().full_name}</h1>
-                    <table>
-                    <tr>
-                        <td><b>"注册日:"</b></td><td>{move || content.get().start_date}</td>
-                    </tr>
-                    <tr>
-                        <td><b>"邮件地址:"</b></td><td>{move || content.get().email}</td>
-                    </tr>
-                    <tr>
-                        <td><b>"手机号:"</b></td><td>{move || content.get().mobile}</td>
-                    </tr>
-                    <tr>
-                        <td><b>"地址:"</b></td><td>{move || content.get().address}</td>
-                    </tr>
-                    </table>
-                </td>
-                <td>
-                    <img src="images/users/default_profile.png" style="width:250px;height:250px" />
-                </td>
-            </tr>
+                <tr>
+                    <td>
+                        <h1>{move || content.get().full_name}</h1>
+                        <table>
+                            <tr>
+                                <td>
+                                    <b>"注册日:"</b>
+                                </td>
+                                <td>{move || content.get().start_date}</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <b>"邮件地址:"</b>
+                                </td>
+                                <td>{move || content.get().email}</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <b>"手机号:"</b>
+                                </td>
+                                <td>{move || content.get().mobile}</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <b>"地址:"</b>
+                                </td>
+                                <td>{move || content.get().address}</td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td>
+                        <img
+                            src="images/users/default_profile.png"
+                            style="width:250px;height:250px"
+                        />
+                    </td>
+                </tr>
             </table>
         </div>
     }

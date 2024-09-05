@@ -69,22 +69,42 @@ pub fn ProfilePage() -> impl IntoView {
                         >
                             {match session_user {
                                 Ok(uname) => {
-                                    view! {
-                                        <td class="header_login">
-                                            <a class="header" href="/profile">
-                                                {
-                                                    set_username.set(uname.clone());
-                                                    uname
-                                                }
-                                            </a>
-                                        </td>
-                                        <td class="header_login">
-                                            <a href="/logout" class="home_login">
-                                                退出
-                                            </a>
-                                        </td>
+                                    match uname {
+                                        Some(u) => {
+                                            view! {
+                                                <td class="header_login">
+                                                    <a class="header" href="/profile">
+                                                        {
+                                                            set_username.set(u.clone());
+                                                            u
+                                                        }
+                                                    </a>
+                                                </td>
+                                                <td class="header_login">
+                                                    <a href="/logout" class="home_login">
+                                                        退出
+                                                    </a>
+                                                </td>
+                                            }
+                                                .into_view()
+                                        }
+                                        None => {
+                                            view! {
+                                                <Redirect path="/" />
+                                                <td class="header_login">
+                                                    <a href="/login" class="home_login">
+                                                        登陆
+                                                    </a>
+                                                </td>
+                                                <td class="header_login">
+                                                    <a href="/register" class="header">
+                                                        注册
+                                                    </a>
+                                                </td>
+                                            }
+                                                .into_view()
+                                        }
                                     }
-                                        .into_view()
                                 }
                                 Err(_) => {
                                     view! {
@@ -113,10 +133,10 @@ pub fn ProfilePage() -> impl IntoView {
         </div>
         <Transition fallback=move || view! { <h1>"正在运行..."</h1> }>
             <div class:display=move || show.get() == false>
-                <ClassPage user=async_data.get().unwrap_or(Ok("".to_string())).unwrap() />
+                <ClassPage user=async_data.get().unwrap_or(Ok(None)).unwrap_or(Ok(None)).unwrap_or(Ok(None)) />
             </div>
             <div class:display=move || show.get() == true>
-                <PersonalPage user=async_data.get().unwrap_or(Ok("".to_string())).unwrap() />
+                <PersonalPage user=async_data.get().unwrap_or(Ok(None)).unwrap_or(Ok(None)).unwrap_or(Ok(None)) />
             </div>
         </Transition>
     }

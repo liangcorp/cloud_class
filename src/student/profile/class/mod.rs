@@ -109,11 +109,11 @@ pub async fn get_user_courses(user: String) -> Result<Vec<CourseContent>, Server
 }
 
 #[component]
-pub fn ClassPage(user: String) -> impl IntoView {
+pub fn ClassPage(user: Option<String>) -> impl IntoView {
 
     let (content, set_content) = create_signal(Vec::new());
 
-    if user != "".to_string() {
+    if user != None {
         spawn_local(
             async move {
                 match get_user_courses(user.clone()).await {
@@ -163,7 +163,7 @@ pub fn ClassPage(user: String) -> impl IntoView {
                                 <tr>
                                     <td align="left" style="color:gray;">
                                         "教师: "
-                                        // {course_content.instructor}
+                                    // {course_content.instructor}
                                     </td>
                                     <td align="right"></td>
                                 </tr>

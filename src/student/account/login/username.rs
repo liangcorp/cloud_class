@@ -101,7 +101,7 @@ pub fn UsernameLoginLayer() -> impl IntoView {
             .value();
 
         spawn_local(async move {
-            match user_auth(username_value.clone(), password_value.clone(), checkbox_value.get().to_string()).await {
+            match user_auth(username_value.clone(), password_value.clone(), checkbox_value.get_untracked().to_string()).await {
                 Ok(()) => {
                     set_auth_success.set("none");
                     set_username.set(username_value);

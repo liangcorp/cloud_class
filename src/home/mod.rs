@@ -48,13 +48,13 @@ pub fn HomePage() -> impl IntoView {
                                 关于我们
                             </a>
                         </td>
-                        <td class="header_menu">
-                            <input
-                                class="course_search_box_home"
-                                style="text"
-                                placeholder="搜索"
-                            />
-                        </td>
+                        // <td class="header_menu">
+                        //     <input
+                        //         class="course_search_box_home"
+                        //         style="text"
+                        //         placeholder="搜索"
+                        //     />
+                        // </td>
                         <Await
                             // `future` provides the `Future` to be resolved
                             future=extract_session_user
@@ -64,19 +64,35 @@ pub fn HomePage() -> impl IntoView {
                         >
                             {match session_user {
                                 Ok(username) => {
-                                    view! {
-                                        <td class="header_login">
-                                            <a class="header" href="/profile">
-                                                {username}
-                                            </a>
-                                        </td>
-                                        <td class="header_login">
-                                            <a href="/logout" class="home_login">
-                                                退出
-                                            </a>
-                                        </td>
+                                    if username != "" {
+                                        view! {
+                                            <td class="header_login">
+                                                <a class="header" href="/profile">
+                                                    {username}
+                                                </a>
+                                            </td>
+                                            <td class="header_login">
+                                                <a href="/logout" class="home_login">
+                                                    退出
+                                                </a>
+                                            </td>
+                                        }
+                                            .into_view()
+                                    } else {
+                                        view! {
+                                            <td class="header_login">
+                                                <a href="/login" class="home_login">
+                                                    登陆
+                                                </a>
+                                            </td>
+                                            <td class="header_login">
+                                                <a href="/register" class="header">
+                                                    注册
+                                                </a>
+                                            </td>
+                                        }
+                                            .into_view()
                                     }
-                                        .into_view()
                                 }
                                 Err(_) => {
                                     view! {

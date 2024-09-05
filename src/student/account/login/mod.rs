@@ -12,8 +12,7 @@ use qr::QRLayer;
 /// 提供登陆页
 #[component]
 pub fn LoginPage() -> impl IntoView {
-    let (username_login, set_username_login) = create_signal("".to_string());
-    let (mobile_login, set_mobile_login) = create_signal("none".to_string());
+    let (show, set_show) = create_signal(true);
 
     view! {
         <Title text="浩天数智化教学" />
@@ -43,8 +42,7 @@ pub fn LoginPage() -> impl IntoView {
                                                 href="#"
                                                 class="login_switch"
                                                 on:click=move |_| {
-                                                    set_username_login.update(|n| *n = String::from("inline"));
-                                                    set_mobile_login.update(|n| *n = String::from("none"));
+                                                    set_show.update(|n| *n = true);
                                                 }
                                             >
                                                 密码登录
@@ -55,8 +53,7 @@ pub fn LoginPage() -> impl IntoView {
                                                 href="#"
                                                 class="login_switch"
                                                 on:click=move |_| {
-                                                    set_username_login.update(|n| *n = String::from("none"));
-                                                    set_mobile_login.update(|n| *n = String::from("inline"));
+                                                    set_show.update(|n| *n = false);
                                                 }
                                             >
                                                 短信登录
@@ -66,12 +63,11 @@ pub fn LoginPage() -> impl IntoView {
                                 </table>
                             </div>
 
-                            <div style:display=move || username_login.get()>
+                            <div class:display=move || show.get() == false >
                                 <UsernameLoginLayer />
                             </div>
-                            <b>{move || username_login.get()}</b>
 
-                            <div style:display=move || mobile_login.get()>
+                            <div class:display=move || show.get() == true >
                                 <MobileLoginLayer />
                             </div>
                         </td>

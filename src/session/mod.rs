@@ -50,14 +50,13 @@ pub async fn extract_session_user() -> Result<String, ServerFnError> {
             header = h;
         }
         Err(e) => {
-            // logging::log!("ERROR<session/mod.rs>: {}", e.to_string());
             return Err(ServerFnError::Args(e.to_string()));
         }
     }
 
     let cookie = match header.get("cookie") {
         Some(c) => c.to_str().unwrap().to_string(),
-        None => return Err(ServerFnError::Args("INFO: empty cookie".to_string())),
+        None => return Ok("".to_string()), //Err(ServerFnError::Args("INFO: empty cookie".to_string())),
     };
 
     let session_token;
@@ -68,11 +67,9 @@ pub async fn extract_session_user() -> Result<String, ServerFnError> {
 
     let mut redis_cluster_conn = Redis::get_cluster_connection()?;
 
-    logging::log!("DEBUG<session/mod.rs:extract_session_user()>: {:?}", session_token);
-
     if let Ok(Some(session_user)) =  redis_cluster_conn.get(session_token) {
         Ok(session_user)
     } else {
-        Err(ServerFnError::Args("INFO: cache not found".to_string()))
+        Err(ServerFnError::Args("ERROR: user session not found".to_string()))
     }
 }

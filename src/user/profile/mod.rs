@@ -1,10 +1,10 @@
 pub mod class;
-pub mod personal;
+pub mod info;
 
 use leptos::*;
 use leptos_router::Redirect;
 use crate::user::profile::class::ClassPage;
-use crate::user::profile::personal::PersonalPage;
+use crate::user::profile::info::PersonalPage;
 
 // use serde::Deserialize;
 /// Renders the profile page of your application.

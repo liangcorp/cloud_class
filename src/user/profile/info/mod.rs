@@ -8,8 +8,8 @@ pub struct PersonalContent {
     username: String,
     full_name: String,
     start_date: String,
+    status: String,
     address: String,
-    role: String,
     email: String,
     mobile: String,
 }
@@ -20,8 +20,8 @@ impl Default for PersonalContent {
             username: "".to_string(),
             full_name: "".to_string(),
             start_date: "".to_string(),
+            status: "".to_string(),
             address: "".to_string(),
-            role: "".to_string(),
             email: "".to_string(),
             mobile: "".to_string()
         }
@@ -36,8 +36,8 @@ cfg_if! {
             username: String,
             full_name: String,
             start_date: String,
+            status: String,
             address: String,
-            role: String,
             email: String,
             mobile: String,
         }
@@ -52,7 +52,7 @@ pub async fn get_personal_profile(user: String) -> Result<PersonalContent, Serve
     let state;
     match use_context::<AppState>() {
         Some(s) => state = s,
-        None => return Err(ServerFnError::Args("ERROR<user/profile/personal/mod.rs>: during application state retrieval".to_string())),
+        None => return Ok(PersonalContent::default()),
     }
 
     //  取得数据库信息
@@ -77,10 +77,10 @@ pub async fn get_personal_profile(user: String) -> Result<PersonalContent, Serve
         username: personal_content.username.clone(),
         full_name: personal_content.full_name.clone(),
         start_date: personal_content.start_date.clone(),
+        status: personal_content.status.clone(),
         address: personal_content.address.clone(),
-        role: personal_content.role.clone(),
-        email: personal_content.address.clone(),
-        mobile: personal_content.address.clone(),
+        email: personal_content.email.clone(),
+        mobile: personal_content.mobile.clone(),
     };
 
     Ok(result_content)
@@ -96,7 +96,10 @@ pub fn PersonalPage(user: String) -> impl IntoView {
                     Ok(data) => {
                         set_content.set(data)
                     },
-                    Err(_) => set_content.set(PersonalContent::default()),
+                    Err(e) => {
+                        set_content.set(PersonalContent::default());
+                        logging::log!("ERROR<user/profile/info/mod.rs>: {}", e.to_string());
+                    },
                 }
            }
         )
@@ -104,25 +107,31 @@ pub fn PersonalPage(user: String) -> impl IntoView {
 
     view! {
         <div class="profile_contents">
-            <div style="display:inline-block;width:60%">
-                <p style="color:gray; weight:bold;"> { move || content.get().role} </p>
-                <h1>{ move || content.get().full_name}</h1>
-                <p>
-                    <b>"注册日:"</b>{ move || content.get().start_date}
-                </p>
-                <p>
-                    <b>"邮件地址:"</b>{ move || content.get().email}
-                </p>
-                <p>
-                    <b>"手机号:"</b>{ move || content.get().mobile}
-                </p>
-                <p>
-                    <b>"地址:"</b>{ move || content.get().address}
-                </p>
-            </div>
-            <div style="display:inline-block;width:40%">
-                <img src="images/users/default_profile.png" style="width:250px;height:250px"/>
-            </div>
+            <p style="color:gray; font-weight:bold;">学生</p>
+            <table style="width:100%">
+            <tr>
+                <td>
+                    <h1>{move || content.get().full_name}</h1>
+                    <table>
+                    <tr>
+                        <td><b>"注册日:"</b></td><td>{move || content.get().start_date}</td>
+                    </tr>
+                    <tr>
+                        <td><b>"邮件地址:"</b></td><td>{move || content.get().email}</td>
+                    </tr>
+                    <tr>
+                        <td><b>"手机号:"</b></td><td>{move || content.get().mobile}</td>
+                    </tr>
+                    <tr>
+                        <td><b>"地址:"</b></td><td>{move || content.get().address}</td>
+                    </tr>
+                    </table>
+                </td>
+                <td>
+                    <img src="images/users/default_profile.png" style="width:250px;height:250px" />
+                </td>
+            </tr>
+            </table>
         </div>
     }
 }

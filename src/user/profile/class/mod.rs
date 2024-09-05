@@ -8,16 +8,34 @@ pub struct CourseContent {
     course_id: String,
     title: String,
     price: f32,
-    language: String,
-    instructor: String,
+    course_language: String,
     rating: i32,
-    level: String,
+    target_level: String,
     requirement: String,
     duration_minutes: i32,
     about: String,
     description: String,
     tag_line: String,
-    update_date: String,
+    update_date: String
+}
+
+impl Default for CourseContent {
+    fn default() -> CourseContent {
+        CourseContent {
+            course_id: "".to_string(),
+            title: "".to_string(),
+            price: 0.0,
+            course_language: "".to_string(),
+            rating: 0,
+            target_level: "".to_string(),
+            requirement: "".to_string(),
+            duration_minutes: 0,
+            about: "".to_string(),
+            description: "".to_string(),
+            tag_line: "".to_string(),
+            update_date: "".to_string()
+        }
+    }
 }
 
 cfg_if! {
@@ -28,10 +46,9 @@ cfg_if! {
             course_id: String,
             title: String,
             price: f32,
-            language: String,
-            instructor: String,
+            course_language: String,
             rating: i32,
-            level: String,
+            target_level: String,
             requirement: String,
             duration_minutes: i32,
             about: String,
@@ -50,41 +67,36 @@ pub async fn get_user_courses(user: String) -> Result<Vec<CourseContent>, Server
     let state;
     match use_context::<AppState>() {
         Some(s) => state = s,
-        None => return Err(ServerFnError::Args("ERROR<user/profile/class/mod.rs>: during application state retrieval".to_string())),
+        None => return Ok(vec![CourseContent::default()]),
     }
 
     //  取得数据库信息
     let pool = state.pool;
 
-    // logging::log!("DEBUG: <user/profile/class/mod.rs:41> getting {}'s courses", &user);
-
     /*---   提取用户数据    ---*/
     let user_courses;
 
     match sqlx::query_as::<_, CourseContentQuery>(
-        "SELECT c.* FROM student_course sc INNER JOIN courses c ON sc.course_id = c.course_id WHERE sc.username = $1;",
+        "SELECT c.* FROM student_course sc INNER JOIN courses c ON sc.course_id = c.course_id WHERE sc.username = $1 ORDER BY sc.priority;",
     )
     .bind(&user)
     .fetch_all(&pool)
     .await {
         Ok(uc) => user_courses = uc,
         Err(e) => {
-            // logging::log!("ERROR<user/profile/class/mod.rs:52>: {}", e.to_string());
             return Err(ServerFnError::Args(e.to_string()))
         },
     }
 
-    // logging::log!("DEBUG: <user/profile/class/mod.rs:58> {:?}", user_courses);
     let result_content = user_courses
         .iter()
         .map(|uc| CourseContent {
                 course_id: uc.course_id.clone(),
                 title: uc.title.clone(),
                 price: uc.price.clone(),
-                language: uc.language.clone(),
-                instructor: uc.instructor.clone(),
+                course_language: uc.course_language.clone(),
                 rating: uc.rating.clone(),
-                level: uc.level.clone(),
+                target_level: uc.target_level.clone(),
                 requirement: uc.requirement.clone(),
                 duration_minutes: uc.duration_minutes.clone(),
                 about: uc.about.clone(),
@@ -108,7 +120,10 @@ pub fn ClassPage(user: String) -> impl IntoView {
                     Ok(data) => {
                         set_content.set(data)
                     },
-                    Err(_) => set_content.set(Vec::new()),
+                    Err(e) => {
+                        set_content.set(Vec::new());
+                        logging::log!("{}", e.to_string());
+                    },
                 }
            }
         )
@@ -148,16 +163,16 @@ pub fn ClassPage(user: String) -> impl IntoView {
                                 <tr>
                                     <td align="left" style="color:gray;">
                                         "教师: "
-                                        {course_content.instructor}
+                                        // {course_content.instructor}
                                     </td>
                                     <td align="right"></td>
                                 </tr>
                                 <tr>
-                                    <td align="left">"面对: "{course_content.level}</td>
+                                    <td align="left">"面对: "{course_content.target_level}</td>
                                     <td align="right"></td>
                                 </tr>
                                 <tr>
-                                    <td align="left">"语言: "{course_content.language}</td>
+                                    <td align="left">"语言: "{course_content.course_language}</td>
                                     <td align="right"></td>
                                 </tr>
                                 <tr>

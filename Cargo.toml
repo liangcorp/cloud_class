@@ -33,6 +33,7 @@ uuid = { version = "1.10.0", features = ["v4", "fast-rng", "macro-diagnostics"] 
 chrono = "0.4.38"
 cfg-if = "1.0.0"
 redis = { version = "0.26.1", features = ["cluster"], optional =  true }
+comrak = "0.28"
 
 [features]
 hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]

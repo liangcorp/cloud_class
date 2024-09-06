@@ -3,6 +3,7 @@ use leptos_router::*;
 use server_fn::ServerFnError;
 use serde::{Serialize, Deserialize};
 use cfg_if::cfg_if;
+use comrak::{markdown_to_html, Options};
 
 #[derive(Params, PartialEq)]
 struct CourseParams {
@@ -132,7 +133,15 @@ pub fn ContentPage() -> impl IntoView {
                     <div class="sidebar-resize-indicator"></div>
                 </div>
             </nav>
-
+            <For
+                each=move || content.get()
+                key=|state| (state.chapter_id.clone())
+                let:chapter_content
+            >
+                <div>
+                    { markdown_to_html(chapter_content.content.as_str(), &Options::default()) }
+                </div>
+            </For>
         </div>
     }
 }

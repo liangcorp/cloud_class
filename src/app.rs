@@ -5,8 +5,8 @@ use crate::student::account::login::LoginPage;
 use crate::student::account::logout::LogoutPage;
 use crate::student::account::register::RegistrationPage;
 use crate::student::profile::ProfilePage;
-use crate::courses::Courses;
-use crate::courses::CoursePage;
+use crate::courses::CoursesPage;
+use crate::courses::content::ContentPage;
 
 use leptos::*;
 use leptos_meta::*;
@@ -37,8 +37,8 @@ pub fn App() -> impl IntoView {
                     <Route path="/register" view=RegistrationPage />
                     <Route path="/admin" view=AdminPage />
                     <Route path="/profile" view=ProfilePage />
-                    <Route path="/courses" view=Courses/>
-                    <Route path="courses/:id" view=CoursePage />
+                    <Route path="/courses" view=CoursesPage/>
+                    <Route path="courses/:id" view=ContentPage />
                 </Routes>
             </main>
         </Router>

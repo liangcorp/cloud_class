@@ -57,10 +57,11 @@ CREATE TABLE course_instructor (
 );
 
 CREATE TABLE chapters (
-    charpter_id char(36) NOT NULL PRIMARY KEY,
+    chapter_id char(36) NOT NULL PRIMARY KEY,
     title varchar(400),
     content TEXT,
-    chapter_number INT
+    chapter_number INT,
+    course_id varchar(400),
 );
 
 CREATE TABLE course_chapter (
@@ -132,3 +133,8 @@ VALUES ('student3', '10031561-7689-44a4-bf80-f2e7c9e8d2dd', true, 2);
 INSERT INTO course_instructor (course_id, username)
 VALUES ('97931561-7689-44a4-bf80-f2e7c9e8d2dd', 'teacher1');
 
+INSERT INTO chapters (chapter_id, title, content, chapter_number, course_id)
+VALUES ('python-0000-001', '介绍', '# 介绍', 1, '97931561-7689-44a4-bf80-f2e7c9e8d2dd');
+
+INSERT INTO chapters (chapter_id, title, content, chapter_number, course_id)
+VALUES ('python-0000-002', '背景', '# 背景', 2, '97931561-7689-44a4-bf80-f2e7c9e8d2dd');

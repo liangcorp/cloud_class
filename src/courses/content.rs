@@ -114,19 +114,25 @@ pub fn ContentPage() -> impl IntoView {
     }
 
     view! {
-        <a href="/courses">回到个人资料</a>
-        // <p> { move || content.get() } </p>
-        <div class="contents">
-            <For
-                each=move || content.get()
-                key=|state| (state.chapter_id.clone())
-                let:chapter_content
-            >
-                <b>{chapter_content.chapter_number}". "{chapter_content.title}</b>
-                <br/>
-                {chapter_content.content}
-                <br />
-            </For>
+        <div style="height:25px"><a href="/courses" class="header">回到个人资料</a></div>
+        <div style="border-top: 1px solid gray">
+            <nav class="sidebar" aria-label="Table of contents">
+                <div class="sidebar-scrollbox">
+                    <ul style="list-style-type:none">
+                        <For
+                            each=move || content.get()
+                            key=|state| (state.chapter_id.clone())
+                            let:chapter_content
+                        >
+                            <li><p><b>{chapter_content.chapter_number}". "</b>{chapter_content.title}</p></li>
+                        </For>
+                    </ul>
+                </div>
+                <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                    <div class="sidebar-resize-indicator"></div>
+                </div>
+            </nav>
+
         </div>
     }
 }

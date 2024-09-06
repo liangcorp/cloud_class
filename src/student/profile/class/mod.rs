@@ -116,7 +116,7 @@ pub fn ClassPage(user: Option<String>) -> impl IntoView {
     if user != None {
         spawn_local(
             async move {
-                match get_user_courses(user.clone()).await {
+                match get_user_courses(user.unwrap().clone()).await {
                     Ok(data) => {
                         set_content.set(data)
                     },

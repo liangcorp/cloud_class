@@ -24,7 +24,7 @@ pub fn ProfilePage() -> impl IntoView {
                 <table class="header-menu">
                     <tr>
                         <td class="header">
-                            <img src="images/logo.png" />
+                            <img class="header" src="images/logo.png" />
                         </td>
                         <td class="header_menu">
                             <a href="/" class="header">
@@ -133,10 +133,10 @@ pub fn ProfilePage() -> impl IntoView {
         </div>
         <Transition fallback=move || view! { <h1>"正在运行..."</h1> }>
             <div class:display=move || show.get() == false>
-                <ClassPage user=async_data.get().unwrap_or(Ok(None)).unwrap_or(Ok(None)).unwrap_or(Ok(None)) />
+                <ClassPage user=async_data.get().unwrap_or(Ok(None)).expect("REASON") />
             </div>
             <div class:display=move || show.get() == true>
-                <PersonalPage user=async_data.get().unwrap_or(Ok(None)).unwrap_or(Ok(None)).unwrap_or(Ok(None)) />
+                <PersonalPage user=async_data.get().unwrap_or(Ok(None)).expect("REASON") />
             </div>
         </Transition>
     }

@@ -92,7 +92,7 @@ pub fn PersonalPage(user: Option<String>) -> impl IntoView {
     if user != None {
         spawn_local(
             async move {
-                match get_personal_profile(user.clone()).await {
+                match get_personal_profile(user.unwrap().clone()).await {
                     Ok(data) => {
                         set_content.set(data)
                     },

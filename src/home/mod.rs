@@ -11,7 +11,7 @@ pub fn HomePage() -> impl IntoView {
                 <table class="header-menu">
                     <tr>
                         <td class="header">
-                            <img src="images/logo.png" />
+                            <img class="header" src="images/logo.png" />
                         </td>
                         <td class="header_menu">
                             <a href="/" class="header">

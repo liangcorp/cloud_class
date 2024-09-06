@@ -7,12 +7,11 @@ cfg_if! {
         use sqlx::postgres::PgPoolOptions;
         use sqlx::sqlite::SqlitePoolOptions;
 
-        // use crate::utils::app_state::AppState;
-
         pub async fn db() -> Result<SqliteConnection, ServerFnError> {
             Ok(SqliteConnection::connect("sqlite:Cloud_class.db").await?)
         }
 
+        // @TODO use this in the future
         pub async fn create_pg_pool() -> Result<Pool<Postgres>, ServerFnError> {
             Ok(PgPoolOptions::new()
                 .max_connections(5)
@@ -25,6 +24,7 @@ cfg_if! {
                 .connect("sqlite:Cloud_class.db").await?)
         }
 
+        // use crate::utils::app_state::AppState;
         // pub async fn get_sqlite_conn() -> Result<SqliteConnection, ServerFnError> {
         //     let state = use_context::<AppState>();
         //     Ok(state.unwrap().pool.aquire().await?)

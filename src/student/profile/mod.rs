@@ -14,7 +14,7 @@ pub fn ProfilePage() -> impl IntoView {
 
     let (username, set_username) = create_signal("".to_string());
 
-    let (show, set_show) = create_signal(true);
+    let (show_layer, set_show_layer) = create_signal(true);
 
     let async_data = create_resource(move || username.clone(), |_| async move { extract_session_user().await });
 
@@ -36,7 +36,7 @@ pub fn ProfilePage() -> impl IntoView {
                                 href="/profile"
                                 class="header"
                                 on:click=move |_| {
-                                    set_show.set(true);
+                                    set_show_layer.set(true);
                                 }
                             >
                                 我的课程
@@ -47,7 +47,7 @@ pub fn ProfilePage() -> impl IntoView {
                                 href="/profile"
                                 class="header"
                                 on:click=move |_| {
-                                    set_show.set(false);
+                                    set_show_layer.set(false);
                                 }
                             >
                                 个人资料
@@ -132,10 +132,10 @@ pub fn ProfilePage() -> impl IntoView {
             <hr class="page_divider" />
         </div>
         <Transition fallback=move || view! { <h1>"正在运行..."</h1> }>
-            <div class:display=move || show.get() == false>
+            <div class:display=move || show_layer.get() == false>
                 <ClassPage user=async_data.get().unwrap_or(Ok(None)).expect("REASON") />
             </div>
-            <div class:display=move || show.get() == true>
+            <div class:display=move || show_layer.get() == true>
                 <PersonalPage user=async_data.get().unwrap_or(Ok(None)).expect("REASON") />
             </div>
         </Transition>

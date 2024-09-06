@@ -12,7 +12,7 @@ use qr::QRLayer;
 /// 提供登陆页
 #[component]
 pub fn LoginPage() -> impl IntoView {
-    let (show, set_show) = create_signal(true);
+    let (show_layer, set_show_layer) = create_signal(true);
 
     view! {
         <Title text="浩天数智化教学" />
@@ -42,7 +42,7 @@ pub fn LoginPage() -> impl IntoView {
                                                 href="#"
                                                 class="login_switch"
                                                 on:click=move |_| {
-                                                    set_show.update(|n| *n = true);
+                                                    set_show_layer.update(|n| *n = true);
                                                 }
                                             >
                                                 密码登录
@@ -53,7 +53,7 @@ pub fn LoginPage() -> impl IntoView {
                                                 href="#"
                                                 class="login_switch"
                                                 on:click=move |_| {
-                                                    set_show.update(|n| *n = false);
+                                                    set_show_layer.update(|n| *n = false);
                                                 }
                                             >
                                                 短信登录
@@ -63,11 +63,11 @@ pub fn LoginPage() -> impl IntoView {
                                 </table>
                             </div>
 
-                            <div class:display=move || show.get() == false>
+                            <div class:display=move || show_layer.get() == false>
                                 <UsernameLoginLayer />
                             </div>
 
-                            <div class:display=move || show.get() == true>
+                            <div class:display=move || show_layer.get() == true>
                                 <MobileLoginLayer />
                             </div>
                         </td>

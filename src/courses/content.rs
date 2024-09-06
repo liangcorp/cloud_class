@@ -131,9 +131,12 @@ pub fn ContentPage() -> impl IntoView {
                     >
                         <li>
                             <p>
-                                <a on:click=move |_| {
-                                    set_show_chapter.set(chapter_content.content.to_string());
-                                } href="#">
+                                <a
+                                    on:click=move |_| {
+                                        set_show_chapter.set(chapter_content.content.to_string());
+                                    }
+                                    href="#"
+                                >
                                     <b>{chapter_content.chapter_number}". "</b>
                                     {chapter_content.title}
                                 </a>
@@ -143,12 +146,13 @@ pub fn ContentPage() -> impl IntoView {
                 </ul>
             </div>
             // <div class="sidebar-resize-handle">
-            //     <div class="sidebar-resize-indicator"></div>
+            // <div class="sidebar-resize-indicator"></div>
             // </div>
-            <p>
-                { show_chapter }
-            </p>
-            <div class="chapter_content" inner_html={ markdown_to_html(show_chapter.get().as_str(), &Options::default()) }/>
+            {show_chapter}
+            <div
+                class="chapter_content"
+                inner_html=markdown_to_html(show_chapter.get().as_str(), &Options::default())
+            />
         </div>
     }
 }

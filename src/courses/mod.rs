@@ -8,18 +8,14 @@ struct CourseParams {
 }
 
 #[component]
-pub fn CoursePage() -> impl IntoView {
+pub fn Courses() -> impl IntoView {
+    view! {
+        <Redirect path="/profile" />
+    }
+}
 
-    // let params = use_params::<CourseParams>();
-    //
-    // // id: || -> String
-    // let id = move || {
-    //     params.with(|params| {
-    //         params.as_ref()
-    //             .map(|params| params.id.clone())
-    //             .unwrap_or_default()
-    //     })
-    // };
+#[component]
+pub fn CoursePage() -> impl IntoView {
 
     let params = use_params_map();
     // id: || -> Option<String>
@@ -28,6 +24,7 @@ pub fn CoursePage() -> impl IntoView {
     };
 
     view! {
+        <a href="/courses">回到个人资料</a>
         <p> { id } </p>
     }
 }

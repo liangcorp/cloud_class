@@ -136,7 +136,10 @@ pub fn ClassPage(user: Option<String>) -> impl IntoView {
                 key=|state| (state.course_id.clone())
                 let:course_content
             >
-                <a href={format!("/courses/{}", course_content.course_id)} style="text-decoration-line: none;color: #333333;">
+                <a
+                    href=format!("/courses/{}", course_content.course_id)
+                    style="text-decoration-line: none;color: #333333;"
+                >
                     <div class="each_class">
                         <div style="display: inline-block; width:40%">
                             <img

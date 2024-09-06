@@ -90,6 +90,7 @@ pub async fn get_course_content(course_id: String) -> Result<Vec<Chapter>, Serve
 #[component]
 pub fn ContentPage() -> impl IntoView {
     let (content, set_content) = create_signal(Vec::new());
+    let (show_chapter, set_show_chapter) = create_signal("".to_string());
 
     let params = use_params_map();
 
@@ -115,33 +116,39 @@ pub fn ContentPage() -> impl IntoView {
     }
 
     view! {
-        <div style="height:25px"><a href="/courses" class="header">回到个人资料</a></div>
+        <div style="height:25px">
+            <a href="/courses" class="header">
+                回到个人资料
+            </a>
+        </div>
         <div style="border-top: 1px solid gray">
-            <nav class="sidebar" aria-label="Table of contents">
-                <div class="sidebar-scrollbox">
-                    <ul style="list-style-type:none">
-                        <For
-                            each=move || content.get()
-                            key=|state| (state.chapter_id.clone())
-                            let:chapter_content
-                        >
-                            <li><p><b>{chapter_content.chapter_number}". "</b>{chapter_content.title}</p></li>
-                        </For>
-                    </ul>
-                </div>
-                <div id="sidebar-resize-handle" class="sidebar-resize-handle">
-                    <div class="sidebar-resize-indicator"></div>
-                </div>
-            </nav>
-            <For
-                each=move || content.get()
-                key=|state| (state.chapter_id.clone())
-                let:chapter_content
-            >
-                <div>
-                    { markdown_to_html(chapter_content.content.as_str(), &Options::default()) }
-                </div>
-            </For>
+            <div class="sidebar-scrollbox">
+                <ul style="list-style-type:none">
+                    <For
+                        each=move || content.get()
+                        key=|state| (state.chapter_id.clone())
+                        let:chapter_content
+                    >
+                        <li>
+                            <p>
+                                <a on:click=move |_| {
+                                    set_show_chapter.set(chapter_content.content.to_string());
+                                } href="#">
+                                    <b>{chapter_content.chapter_number}". "</b>
+                                    {chapter_content.title}
+                                </a>
+                            </p>
+                        </li>
+                    </For>
+                </ul>
+            </div>
+            // <div class="sidebar-resize-handle">
+            //     <div class="sidebar-resize-indicator"></div>
+            // </div>
+            <p>
+                { show_chapter }
+            </p>
+            <div class="chapter_content" inner_html={ markdown_to_html(show_chapter.get().as_str(), &Options::default()) }/>
         </div>
     }
 }

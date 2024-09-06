@@ -13,6 +13,18 @@ div.profile_contents {
   margin-left: 20%;
   margin-right: 20%;
 }
+
+div.sidebar-scrollbox {
+  width:20%;
+  display: inline-block;
+}
+
+div.chapter_content {
+  border-left: thick solid #CBCBCB;
+  /* width:70%; */
+  display: inline-block;
+}
+
 .header {
   padding-top: 25px;
 }

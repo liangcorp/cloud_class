@@ -25,7 +25,10 @@ pub fn LoginPage() -> impl IntoView {
                             <hr width="350px" size="1" color="#BFBFBF" noshade />
                         </td>
                         <td>
-                            <img style="width:50px;height:auto" src="images/users/authentication_page_logo.jpg" />
+                            <img
+                                style="width:50px;height:auto"
+                                src="images/users/authentication_page_logo.jpg"
+                            />
                         </td>
                         <td style="padding: 20px">
                             <hr width="350px" size="1" color="#BFBFBF" noshade />

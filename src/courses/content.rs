@@ -220,12 +220,13 @@ pub fn ContentPage() -> impl IntoView {
                                     }
                                     href="#"
                                 >
-                                       <b>
-                                       <div style="float: left;" class:display=move|| chapter.chapter_number == 0 >
-                                            { chapter.chapter_number }". "
-                                       </div>
-                                       </b>
-                                    { chapter.title }
+                                    <div
+                                        style="float: left;"
+                                        class:display=move || chapter.chapter_number == 0
+                                    >
+                                        <b>{chapter.chapter_number} ". "</b>
+                                    </div>
+                                    {chapter.title}
                                 </a>
                             </p>
                         </li>
@@ -233,7 +234,7 @@ pub fn ContentPage() -> impl IntoView {
                 </ul>
             </div>
             <div class="chapter_content">
-                <div inner_html={async_result} />
+                <div inner_html=async_result />
             </div>
         </div>
     }

@@ -4,6 +4,11 @@ body {
     height: 100%;
 }
 
+.display_chapter_number {
+  display: inline-block;
+  white-space: nowrap;
+}
+
 .contents {
   margin-left: 10%;
   margin-right: 10%;

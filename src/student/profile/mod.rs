@@ -16,7 +16,7 @@ pub fn ProfilePage() -> impl IntoView {
 
     let (show_layer, set_show_layer) = create_signal(true);
 
-    let async_data = create_resource(move || username.clone(), |_| async move { extract_session_user().await });
+    let async_data = create_resource(move || username, |_| async move { extract_session_user().await });
 
     view! {
         <div class="contents">

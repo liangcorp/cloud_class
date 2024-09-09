@@ -61,7 +61,7 @@ CREATE TABLE chapters (
     title varchar(400),
     content TEXT,
     chapter_number INT,
-    course_id varchar(400),
+    course_id varchar(400)
 );
 
 CREATE TABLE course_chapter (
@@ -134,7 +134,10 @@ INSERT INTO course_instructor (course_id, username)
 VALUES ('97931561-7689-44a4-bf80-f2e7c9e8d2dd', 'teacher1');
 
 INSERT INTO chapters (chapter_id, title, content, chapter_number, course_id)
-VALUES ('python-0000-001', '介绍', '# 介绍', 1, '97931561-7689-44a4-bf80-f2e7c9e8d2dd');
+VALUES ('welcome-0000', '欢迎', '<h1>欢迎来到Python - 面向物联网控制</h1>', 0, '97931561-7689-44a4-bf80-f2e7c9e8d2dd');
 
 INSERT INTO chapters (chapter_id, title, content, chapter_number, course_id)
-VALUES ('python-0000-002', '背景', '# 背景', 2, '97931561-7689-44a4-bf80-f2e7c9e8d2dd');
+VALUES ('python-0000-001', '介绍', '<h1>介绍</h1>', 1, '97931561-7689-44a4-bf80-f2e7c9e8d2dd');
+
+INSERT INTO chapters (chapter_id, title, content, chapter_number, course_id)
+VALUES ('python-0000-002', '背景', '<h1>背景</h1>', 2, '97931561-7689-44a4-bf80-f2e7c9e8d2dd');

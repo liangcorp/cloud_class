@@ -110,15 +110,12 @@ pub async fn get_course_chapters(course_id: String) -> Result<Vec<Chapter>, Serv
         })
         .collect();
 
-    logging::log!("returning chapters result");
     Ok(results)
 }
 
 #[server]
 pub async fn get_chapter_content(chapter_id: String) -> Result<String, ServerFnError> {
     use crate::state::AppState;
-
-    logging::log!("chapter ID: {}", chapter_id);
 
     //  取得软件状态
     let state;

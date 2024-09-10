@@ -203,7 +203,7 @@ pub fn ContentPage() -> impl IntoView {
             <a
                 target="_blank"
                 rel="noopener noreferrer"
-                href=format!("/tutorial/{}", course_id().unwrap())
+                href=format!("/tutorials/{}", course_id().unwrap())
                 class="tutorial_link"
             >
                 实验室

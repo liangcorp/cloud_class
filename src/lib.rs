@@ -7,6 +7,7 @@ pub mod session;
 pub mod utils;
 pub mod state;
 pub mod courses;
+pub mod tutorials;
 
 #[cfg(feature = "ssr")]
 pub mod fileserv;

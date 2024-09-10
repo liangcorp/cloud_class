@@ -206,7 +206,16 @@ pub fn ClassPage(user: Option<String>) -> impl IntoView {
                                         "更新日: "
                                         <b>{course_content.update_date}</b>
                                     </td>
-                                    <td align="right"></td>
+                                    <td align="right">
+                                        <a
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            href=format!("/tutorials/{}", course_content.course_id)
+                                            class="tutorial_link"
+                                        >
+                                            实验室
+                                        </a>
+                                    </td>
                                 </tr>
                             </table>
                         </div>

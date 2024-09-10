@@ -5,15 +5,11 @@ use leptos_router::*;
 
 #[component]
 pub fn CoursesPage() -> impl IntoView {
-    view! {
-        <Outlet/>
-    }
+    view! { <Outlet /> }
 }
 
 #[component]
 pub fn NoCoursePage() -> impl IntoView {
-    view! {
-        <Redirect path="/profile" />
-    }
+    view! { <Redirect path="/profile" /> }
 }
 

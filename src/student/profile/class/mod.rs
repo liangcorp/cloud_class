@@ -138,8 +138,8 @@ pub fn ClassPage(user: Option<String>) -> impl IntoView {
             >
                 <div class="each_class">
                     <a
-                    href=format!("/courses/{}", course_content.course_id)
-                    style="text-decoration-line: none;color: #333333;"
+                        href=format!("/courses/{}", course_content.course_id)
+                        style="text-decoration-line: none;color: #333333;"
                     >
                         <div style="display: inline-block; width:40%">
                             <img
@@ -206,12 +206,11 @@ pub fn ClassPage(user: Option<String>) -> impl IntoView {
                                         "更新日: "
                                         <b>{course_content.update_date}</b>
                                     </td>
-                                    <td align="right">
-                                    </td>
+                                    <td align="right"></td>
                                 </tr>
                             </table>
                         </div>
-                        </a>
+                    </a>
                 </div>
                 <div style="display:inline-block; padding-top:10px;padding-bottom:10px;margin-left:90%;">
                     <a

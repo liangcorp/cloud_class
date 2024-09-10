@@ -7,7 +7,6 @@ use leptos_router::*;
 pub fn CoursesPage() -> impl IntoView {
     view! {
         <Outlet/>
-        // <Redirect path="/profile" />
     }
 }
 

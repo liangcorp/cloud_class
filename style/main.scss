@@ -22,12 +22,14 @@ div.profile_contents {
 div.sidebar-scrollbox {
   width:20%;
   display: inline-block;
+  float: left;
+  overflow-y: scroll;
 }
 
+
 div.chapter_content {
-  border-left: thick solid #CBCBCB;
-  /* width:70%; */
   display: inline-block;
+  padding-left: 10%;
 }
 
 .header {
@@ -108,6 +110,30 @@ a.login_switch:hover {
 
 a.login_switch:focus {
   color: #0F7ED0;
+}
+
+a.tutorial_link {
+  font-size: 23;
+  margin-right: 50px;
+  color: white;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  text-decoration-line: none;
+  background-color: #265f26;
+}
+
+a.tutorial_link:hover {
+  font-size: 23;
+  font-weight: bold;
+  margin-right: 50px;
+  color: white;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  background-color: #278827;
 }
 
 div.full-height {
@@ -243,4 +269,78 @@ li:before {
 
 li.chapter_select {
   content: \5143;
+}
+
+/* The sidebar menu */
+div.sidenav {
+  position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+  height: 100%; /* Full-height: remove this if you want "auto" height */
+  width: 250px; /* Set the width of the sidebar */
+  z-index: 1; /* Stay on top */
+  top: 0; /* Stay at the top */
+  left: 0;
+  background-color: #111; /* Black */
+  overflow-x: hidden; /* Disable horizontal scroll */
+  overflow-y: scroll; /* Disable horizontal scroll */
+  padding-top: 20px;
+  /* resize: horizontal; */
+  /* overflow: auto; */
+  /* border-right: 3px solid gray; */
+}
+
+/* The navigation menu links */
+div.sidenav a {
+  /* padding: 6px 8px 6px 16px; */
+  text-decoration: none;
+  /* font-size: 20px; */
+  color: #f0f0f0;
+  display: block;
+}
+
+div.section_size_selector {
+  position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+  background-color: gray;
+  color: red;
+  /* font-size: 400; */
+  /* width:5px; */
+  height:100%;
+  top:0px;
+  display: inline-block;
+  /* float: left; */
+  margin-left: 240px;
+}
+
+div:hover.section_size_selector {
+  position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+  background-color: gray;
+  color: red;
+  height:100%;
+  top:0px;
+  display: inline-block;
+  margin-left: 240px;
+  background-color: #474747;
+}
+
+div.collaps_arrow {
+  // position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+  margin-top: 400px;
+}
+
+/* When you mouse over the navigation links, change their color */
+div.sidenav a:hover {
+  color: yellow;
+  /* background-color: #474747; */
+}
+
+/* Style page content */
+div.main {
+  margin-left: 250px; /* Same as the width of the sidebar */
+  padding: 0px 300px;
+  display: inline-block;
+}
+
+/* On smaller screens, where height is less than 450px, change the style of the sidebar (less padding and a smaller font size) */
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
 }

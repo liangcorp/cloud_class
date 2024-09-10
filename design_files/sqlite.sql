@@ -25,7 +25,6 @@ CREATE TABLE instructors (
     mobile varchar(30) NOT NULL UNIQUE
 );
 
-
 CREATE TABLE courses (
     course_id char(36) NOT NULL PRIMARY KEY,
     title varchar(400),
@@ -134,10 +133,10 @@ INSERT INTO course_instructor (course_id, username)
 VALUES ('97931561-7689-44a4-bf80-f2e7c9e8d2dd', 'teacher1');
 
 INSERT INTO chapters (chapter_id, title, content, chapter_number, course_id)
-VALUES ('welcome-0000', '欢迎', '<h1>欢迎来到Python - 面向物联网控制</h1>', 0, '97931561-7689-44a4-bf80-f2e7c9e8d2dd');
+VALUES ('welcome-0000', '欢迎', '# 欢迎来到Python - 面向物联网控制', 0, '97931561-7689-44a4-bf80-f2e7c9e8d2dd');
 
 INSERT INTO chapters (chapter_id, title, content, chapter_number, course_id)
-VALUES ('python-0000-001', '介绍', '<h1>介绍</h1>', 1, '97931561-7689-44a4-bf80-f2e7c9e8d2dd');
+VALUES ('python-0000-001', '介绍', '# 介绍', 1, '97931561-7689-44a4-bf80-f2e7c9e8d2dd');
 
 INSERT INTO chapters (chapter_id, title, content, chapter_number, course_id)
-VALUES ('python-0000-002', '背景', '<h1>背景</h1>', 2, '97931561-7689-44a4-bf80-f2e7c9e8d2dd');
+VALUES ('python-0000-002', '背景', '# 背景', 2, '97931561-7689-44a4-bf80-f2e7c9e8d2dd');

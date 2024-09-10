@@ -142,15 +142,18 @@ pub async fn get_chapter_content(chapter_id: String) -> Result<String, ServerFnE
         },
     }
     // logging::log!("transform content to raw HTML");
-    // let result_html = markdown_to_html(chapter_content.content.as_str(), &Options::default());
+    let result_html = markdown_to_html(chapter_content.content.as_str(), &Options::default());
 
-    Ok(chapter_content.content)
+    Ok(result_html)
 }
 
 #[component]
 pub fn ContentPage() -> impl IntoView {
     let (chapter_id, set_chapter_id) = create_signal("welcome-0000".to_string());
     let (show_chapters, set_show_chapters) = create_signal(Vec::new());
+
+    // @TODO: collapsible side navigation panel
+    // let (show_navbar, set_show_navbar) = create_signal(true);
 
     let params = use_params_map();
 
@@ -159,7 +162,7 @@ pub fn ContentPage() -> impl IntoView {
         params.with(|params| params.get("course_id").cloned())
     };
 
-    logging::log!("course id: {:?}", course_id());
+    // logging::log!("course id: {:?}", course_id());
 
     if course_id() != None {
         spawn_local(
@@ -196,13 +199,21 @@ pub fn ContentPage() -> impl IntoView {
     };
 
     view! {
-        <div style="height:25px">
+        <div align="right" style="height:30px">
+            <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href=format!("/tutorial/{}", course_id().unwrap())
+                class="tutorial_link"
+            >
+                实验室
+            </a>
             <a href="/courses" class="header">
                 回到个人资料
             </a>
         </div>
-        <div style="border-top: 1px solid gray">
-            <div class="sidebar-scrollbox">
+        <div>
+            <div class="sidenav">
                 <ul style="list-style-type:none">
                     <For
                         each=move || show_chapters.get()
@@ -216,12 +227,15 @@ pub fn ContentPage() -> impl IntoView {
                                         set_chapter_id.set(chapter.chapter_id.clone());
                                     }
                                     href="#"
+                                    class="chapter_selection"
                                 >
                                     <div
                                         style="float: left;"
                                         class:display=move || chapter.chapter_number == 0
                                     >
-                                        <b>{chapter.chapter_number} ". "</b>
+                                        <b style="padding-right:5px;">
+                                            {chapter.chapter_number}"."
+                                        </b>
                                     </div>
                                     {chapter.title}
                                 </a>
@@ -230,7 +244,13 @@ pub fn ContentPage() -> impl IntoView {
                     </For>
                 </ul>
             </div>
-            <div class="chapter_content">
+            // <div
+            // class="section_size_selector"
+            // on:click=move|_| {
+            // set_show_navbar.update(|n| *n = !*n);
+            // }
+            // ><div class="collaps_arrow">"◀"</div></div>
+            <div class="main">
                 <div inner_html=async_result />
             </div>
         </div>

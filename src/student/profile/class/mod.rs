@@ -212,7 +212,7 @@ pub fn ClassPage(user: Option<String>) -> impl IntoView {
                         </div>
                     </a>
                 </div>
-                <div style="display:inline-block; padding-top:10px;padding-bottom:10px;margin-left:90%;">
+                <div style="display:inline-block; padding-top:10px;padding-bottom:10px;margin-left:80%;">
                     <a
                         target="_blank"
                         rel="noopener noreferrer"

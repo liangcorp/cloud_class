@@ -136,11 +136,11 @@ pub fn ClassPage(user: Option<String>) -> impl IntoView {
                 key=|state| (state.course_id.clone())
                 let:course_content
             >
-                <a
+                <div class="each_class">
+                    <a
                     href=format!("/courses/{}", course_content.course_id)
                     style="text-decoration-line: none;color: #333333;"
-                >
-                    <div class="each_class">
+                    >
                         <div style="display: inline-block; width:40%">
                             <img
                                 src="images/classes/class_default.png"
@@ -207,20 +207,22 @@ pub fn ClassPage(user: Option<String>) -> impl IntoView {
                                         <b>{course_content.update_date}</b>
                                     </td>
                                     <td align="right">
-                                        <a
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            href=format!("/tutorials/{}", course_content.course_id)
-                                            class="tutorial_link"
-                                        >
-                                            实验室
-                                        </a>
                                     </td>
                                 </tr>
                             </table>
                         </div>
-                    </div>
-                </a>
+                        </a>
+                </div>
+                <div style="display:inline-block; padding-top:10px;padding-bottom:10px;margin-left:90%;">
+                    <a
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href=format!("/tutorials/{}", course_content.course_id)
+                        class="tutorial_link"
+                    >
+                        实验室
+                    </a>
+                </div>
                 <hr />
             </For>
         </div>

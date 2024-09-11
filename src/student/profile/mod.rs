@@ -22,14 +22,14 @@ pub fn ProfilePage() -> impl IntoView {
         <div class="contents">
             <table>
                 <tr>
-                    <td class="header_menu">
-                        <img class="header" src="images/logo.png" />
-                    </td>
-                    <td class="header_menu">
+                    <td class="header_image">
                         <a href="/" class="header">
-                            首页
+                            <img class="header" src="images/logo.png" />
                         </a>
                     </td>
+                    // <td class="header_menu">
+                    //         首页
+                    // </td>
                     <td class="header_menu">
                         <a
                             href="/profile"

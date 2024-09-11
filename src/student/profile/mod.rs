@@ -3,8 +3,8 @@ pub mod info;
 
 use leptos::*;
 use leptos_router::Redirect;
-use crate::student::profile::class::ClassPage;
-use crate::student::profile::info::PersonalPage;
+use crate::student::profile::class::CourseContentPage;
+use crate::student::profile::info::PersonalContentPage;
 
 // use serde::Deserialize;
 /// Renders the profile page of your application.
@@ -131,10 +131,10 @@ pub fn ProfilePage() -> impl IntoView {
         </div>
         <Transition fallback=move || view! { <h1>"正在运行..."</h1> }>
             <div class:display=move || show_layer.get() == false>
-                <ClassPage user=async_data.get().unwrap_or(Ok(None)).expect("REASON") />
+                <CourseContentPage user=async_data.get().unwrap_or(Ok(None)).expect("REASON") />
             </div>
             <div class:display=move || show_layer.get() == true>
-                <PersonalPage user=async_data.get().unwrap_or(Ok(None)).expect("REASON") />
+                <PersonalContentPage user=async_data.get().unwrap_or(Ok(None)).expect("REASON") />
             </div>
         </Transition>
     }

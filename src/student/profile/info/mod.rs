@@ -86,7 +86,7 @@ pub async fn get_personal_profile(user: String) -> Result<PersonalContent, Serve
     Ok(result_content)
 }
 #[component]
-pub fn PersonalPage(user: Option<String>) -> impl IntoView {
+pub fn PersonalContentPage(user: Option<String>) -> impl IntoView {
     let (content, set_content) = create_signal(PersonalContent::default());
 
     if user != None {

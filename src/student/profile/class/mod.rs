@@ -109,7 +109,7 @@ pub async fn get_user_courses(user: String) -> Result<Vec<CourseContent>, Server
 }
 
 #[component]
-pub fn ClassPage(user: Option<String>) -> impl IntoView {
+pub fn CourseContentPage(user: Option<String>) -> impl IntoView {
 
     let (content, set_content) = create_signal(Vec::new());
 

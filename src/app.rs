@@ -22,7 +22,7 @@ pub fn App() -> impl IntoView {
         <Stylesheet id="leptos" href="/pkg/cloud-class.css" />
 
         // sets the document title
-        <Title text="浩天云学院" />
+        <Title text="云学院" />
 
         // content for this welcome page
         <Router fallback=|| {

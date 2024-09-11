@@ -348,25 +348,27 @@ div.main {
   display: inline-block;
 }
 
+div.tutorial {
+  position: fixed; /* Fixed Sidebar (stay in place on scroll) */
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+div.editor_area {
+
+}
+
+div.output_area {
+
+}
+
 div.text_area {
 
 }
 
 div.console_area {
 
-}
-
-table.tutorial {
-  width:100%;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: auto;
-  margin-bottom: auto;
-}
-
-td.tutorial {
-  border:1px solid black;
-  height: 100%;
 }
 
 /* On smaller screens, where height is less than 450px, change the style of the sidebar (less padding and a smaller font size) */

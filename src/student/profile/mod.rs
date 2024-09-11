@@ -28,7 +28,7 @@ pub fn ProfilePage() -> impl IntoView {
                         </a>
                     </td>
                     // <td class="header_menu">
-                    //         首页
+                    // 首页
                     // </td>
                     <td class="header_menu">
                         <a

@@ -20,113 +20,111 @@ pub fn ProfilePage() -> impl IntoView {
 
     view! {
         <div class="contents">
-            <div class="header">
-                <table class="header-menu">
-                    <tr>
-                        <td class="header">
-                            <img class="header" src="images/logo.png" />
-                        </td>
-                        <td class="header_menu">
-                            <a href="/" class="header">
-                                首页
-                            </a>
-                        </td>
-                        <td class="header_menu">
-                            <a
-                                href="/profile"
-                                class="header"
-                                on:click=move |_| {
-                                    set_show_layer.set(true);
-                                }
-                            >
-                                我的课程
-                            </a>
-                        </td>
-                        <td class="header_menu">
-                            <a
-                                href="/profile"
-                                class="header"
-                                on:click=move |_| {
-                                    set_show_layer.set(false);
-                                }
-                            >
-                                个人资料
-                            </a>
-                        </td>
-                        <td class="header_menu">
-                            <input
-                                class="course_search_box_profile"
-                                style="text"
-                                placeholder="搜索"
-                            />
-                        </td>
-                        <Await
-                            // `future` provides the `Future` to be resolved
-                            future=extract_session_user
-
-                            // the data is bound to whatever variable name you provide
-                            let:session_user
+            <table>
+                <tr>
+                    <td class="header_menu">
+                        <img class="header" src="images/logo.png" />
+                    </td>
+                    <td class="header_menu">
+                        <a href="/" class="header">
+                            首页
+                        </a>
+                    </td>
+                    <td class="header_menu">
+                        <a
+                            href="/profile"
+                            class="header"
+                            on:click=move |_| {
+                                set_show_layer.set(true);
+                            }
                         >
-                            {match session_user {
-                                Ok(uname) => {
-                                    match uname {
-                                        Some(u) => {
-                                            view! {
-                                                <td class="header_login">
-                                                    <a class="header" href="/profile">
-                                                        {
-                                                            set_username.set(u.clone());
-                                                            u
-                                                        }
-                                                    </a>
-                                                </td>
-                                                <td class="header_login">
-                                                    <a href="/logout" class="home_login">
-                                                        退出
-                                                    </a>
-                                                </td>
-                                            }
-                                                .into_view()
+                            我的课程
+                        </a>
+                    </td>
+                    <td class="header_menu">
+                        <a
+                            href="/profile"
+                            class="header"
+                            on:click=move |_| {
+                                set_show_layer.set(false);
+                            }
+                        >
+                            个人资料
+                        </a>
+                    </td>
+                    <td class="header_menu">
+                        <input
+                            class="course_search_box_profile"
+                            style="text"
+                            placeholder="搜索"
+                        />
+                    </td>
+                    <Await
+                        // `future` provides the `Future` to be resolved
+                        future=extract_session_user
+
+                        // the data is bound to whatever variable name you provide
+                        let:session_user
+                    >
+                        {match session_user {
+                            Ok(uname) => {
+                                match uname {
+                                    Some(u) => {
+                                        view! {
+                                            <td class="header_login">
+                                                <a class="header" href="/profile">
+                                                    {
+                                                        set_username.set(u.clone());
+                                                        u
+                                                    }
+                                                </a>
+                                            </td>
+                                            <td class="header_login">
+                                                <a href="/logout" class="home_login">
+                                                    退出
+                                                </a>
+                                            </td>
                                         }
-                                        None => {
-                                            view! {
-                                                <Redirect path="/" />
-                                                <td class="header_login">
-                                                    <a href="/login" class="home_login">
-                                                        登陆
-                                                    </a>
-                                                </td>
-                                                <td class="header_login">
-                                                    <a href="/register" class="header">
-                                                        注册
-                                                    </a>
-                                                </td>
-                                            }
-                                                .into_view()
+                                            .into_view()
+                                    }
+                                    None => {
+                                        view! {
+                                            <Redirect path="/" />
+                                            <td class="header_login">
+                                                <a href="/login" class="home_login">
+                                                    登陆
+                                                </a>
+                                            </td>
+                                            <td class="header_login">
+                                                <a href="/register" class="header">
+                                                    注册
+                                                </a>
+                                            </td>
                                         }
+                                            .into_view()
                                     }
                                 }
-                                Err(_) => {
-                                    view! {
-                                        <Redirect path="/" />
-                                        <td class="header_login">
-                                            <a href="/login" class="home_login">
-                                                登陆
-                                            </a>
-                                        </td>
-                                        <td class="header_login">
-                                            <a href="/register" class="header">
-                                                注册
-                                            </a>
-                                        </td>
-                                    }
-                                        .into_view()
+                            }
+                            Err(_) => {
+                                view! {
+                                    <Redirect path="/" />
+                                    <td class="header_login">
+                                        <a href="/login" class="home_login">
+                                            登陆
+                                        </a>
+                                    </td>
+                                    <td class="header_login">
+                                        <a href="/register" class="header">
+                                            注册
+                                        </a>
+                                    </td>
                                 }
-                            }}
-                        </Await>
-                    </tr>
-                </table>
-            </div>
+                                    .into_view()
+                            }
+                        }}
+                    </Await>
+                </tr>
+            </table>
         </div>
         <div>
             <hr class="page_divider" />

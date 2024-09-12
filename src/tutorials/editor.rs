@@ -3,5 +3,5 @@ use leptos::*;
 #[component]
 pub fn TutorialEditorArea() -> impl IntoView {
 
-    view! { <textarea></textarea> }
+    view! { <textarea class="editor" spellcheck="false"></textarea> }
 }

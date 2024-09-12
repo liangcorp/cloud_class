@@ -13,6 +13,10 @@ pub fn TutorialPage() -> impl IntoView {
 
     view! {
         <div class="tutorial">
+            <div class="toolbar">
+                <button>保存</button>
+                <button>运行</button>
+            </div>
             <div class="editor_area">
                 <div class="text_area">
                     <TutorialEditorArea />
@@ -21,6 +25,7 @@ pub fn TutorialPage() -> impl IntoView {
                     <TutorialConsoleArea />
                 </div>
             </div>
+            <div class="middlebar"></div>
             <div class="output_area">
                 <TutorialOutputArea />
             </div>

@@ -4,6 +4,10 @@ body {
     height: 100%;
 }
 
+html {
+  height: 100%;
+}
+
 .display_chapter_number {
   display: inline-block;
   white-space: nowrap;
@@ -350,18 +354,21 @@ div.main {
 
 div.tutorial {
   width: 100%;
+  height: 100%;
 }
 
 div.toolbar {
   /* width: 100%; */
   margin-left: auto;
   margni-right: auto;
+  padding-bottom: 10px;
 }
 
 div.editor_area {
   width: 50%;
   display: inline-block;
   float: left;
+  height: 100%;
 }
 
 div.middlebar {
@@ -377,7 +384,10 @@ div.output_area {
 }
 
 div.text_area {
-
+  border: 1px solid black;
+  padding-left:15px;
+  background-color:#1a1b26;
+  margin-right:20px;
 }
 
 div.console_area {
@@ -388,15 +398,22 @@ textarea.editor {
   font-family: 'JetBrains Mono';
   font-size: 20;
   color: #c0caf5;
-  width: 90%;
+  width: 95%;
   background-color: #1a1b26;
-  height: 900px;
+  height: 890px;
   padding: 10px;
-  max-width: 90%;
+  max-width: 95%;
   line-height: 1.5;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  box-shadow: 1px 1px 1px #999;
+  /* border-radius: 0px; */
+  /* border: 0px solid #ccc; */
+  /* box-shadow: 1px 1px 1px #999; */
+  border: none;
+  overflow: auto;
+  outline: none;
+
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
 }
 
 textarea.console {

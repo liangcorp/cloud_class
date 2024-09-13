@@ -6,7 +6,7 @@ use leptos::*;
 use leptos::ev::KeyboardEvent;
 
 // use editor::TutorialEditorArea;
-use output::TutorialOutputArea;
+// use output::TutorialOutputArea;
 // use console::TutorialConsoleArea;
 
 #[component]
@@ -64,8 +64,8 @@ pub fn TutorialPage() -> impl IntoView {
                 </div>
             </form>
             <div class="output_area">
+                // <TutorialOutputArea />
                 { move || code.get() }
-                <TutorialOutputArea />
             </div>
 
         </div>

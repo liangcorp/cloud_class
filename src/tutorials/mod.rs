@@ -55,17 +55,18 @@ pub fn TutorialPage() -> impl IntoView {
                             prop:value=move || code.get()
                             on:keydown=on_keydown
                             node_ref=input_element
-                        >
-                        </textarea>
+                        ></textarea>
                     </div>
-                    // <div class="console_area">
-                    //     <TutorialConsoleArea />
-                    // </div>
+                // <div class="console_area">
+                // <TutorialConsoleArea />
+                // </div>
                 </div>
             </form>
             <div class="output_area">
                 // <TutorialOutputArea />
-                <pre><code>{ move || code.get() }</code></pre>
+                <pre>
+                    <code>{move || code.get()}</code>
+                </pre>
             </div>
 
         </div>

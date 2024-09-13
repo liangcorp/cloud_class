@@ -219,7 +219,7 @@ pub fn CourseContentPage(user: Option<String>) -> impl IntoView {
                         href=format!("/tutorials/{}", course_content.course_id)
                         class="tutorial_link"
                     >
-                        实验室
+                        "⚒ 实验室"
                     </a>
                 </div>
                 <hr />

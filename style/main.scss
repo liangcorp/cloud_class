@@ -127,8 +127,8 @@ a.tutorial_link {
   font-size: 23;
   margin-right: 50px;
   color: white;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
   padding-left: 20px;
   padding-right: 20px;
   text-decoration-line: none;
@@ -141,11 +141,24 @@ a.tutorial_link:hover {
   font-weight: bold;
   margin-right: 50px;
   color: white;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
   padding-left: 20px;
   padding-right: 20px;
   background-color: #278827;
+  z-index: 1;
+}
+
+a.tutorial_link:active {
+  font-size: 23;
+  font-weight: bold;
+  margin-right: 50px;
+  color: white;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 20px;
+  padding-right: 20px;
+  background-color: #265f26;
   z-index: 1;
 }
 

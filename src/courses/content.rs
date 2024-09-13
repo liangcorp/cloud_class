@@ -158,11 +158,7 @@ pub fn ContentPage() -> impl IntoView {
     let params = use_params_map();
 
     // id: || -> Option<String>
-    let course_id = move || {
-        params.with(|params| params.get("course_id").cloned())
-    };
-
-    // logging::log!("course id: {:?}", course_id());
+    let course_id = move || params.with_untracked(|params| params.get("course_id").cloned());
 
     if course_id() != None {
         spawn_local(
@@ -189,14 +185,6 @@ pub fn ContentPage() -> impl IntoView {
         // and does some async work
         |value| async move { get_chapter_content(value).await },
     );
-
-    let async_result = move || {
-        async_data
-            .get()
-            .map(|value| format!("{}", value.unwrap()))
-            // This loading state will only show before the first load
-            .unwrap_or_else(|| "Loading...".into())
-    };
 
     view! {
         <div align="right" style="height:30px">
@@ -251,7 +239,11 @@ pub fn ContentPage() -> impl IntoView {
             // }
             // ><div class="collaps_arrow">"◀"</div></div>
             <div class="main">
-                <div inner_html=async_result />
+                <Transition fallback=move || view! { <p>"正在下载课程章节..."</p> }>
+                    <div inner_html=move || {
+                        async_data.get().map(|value| format!("{}", value.unwrap()))
+                    } />
+                </Transition>
             </div>
         </div>
     }

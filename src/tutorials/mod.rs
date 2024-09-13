@@ -45,7 +45,7 @@ pub fn TutorialPage() -> impl IntoView {
         <div class="tutorial">
             <form on:submit=on_submit>
                 <div class="toolbar">
-                    <input type="submit" value="运行" />
+                    <input class="run_code" type="submit" value="运行" />
                 </div>
                 <div class="editor_area">
                     <div class="text_area">

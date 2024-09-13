@@ -65,7 +65,7 @@ pub fn TutorialPage() -> impl IntoView {
             </form>
             <div class="output_area">
                 // <TutorialOutputArea />
-                { move || code.get() }
+                <pre><code>{ move || code.get() }</code></pre>
             </div>
 
         </div>

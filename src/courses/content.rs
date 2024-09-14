@@ -145,6 +145,11 @@ pub async fn get_chapter_content(chapter_id: String) -> Result<String, ServerFnE
     Ok(result_html)
 }
 
+#[server]
+pub async fn is_subscripted() -> Result<bool, ServerFnError> {
+    todo!()
+}
+
 #[component]
 pub fn ContentPage() -> impl IntoView {
     use crate::session::*;
@@ -161,9 +166,7 @@ pub fn ContentPage() -> impl IntoView {
                 Ok(ok_username) => {
                     match ok_username {
                         Some(some_username) => {
-                            view! {
-                                <DisplayUserCourseContent username=some_username.to_string() />
-                            }
+                            view! { <UserCourseContent username=some_username.to_string() /> }
                         }
                         None => view! { <Redirect path="/courses" /> },
                     }
@@ -175,8 +178,9 @@ pub fn ContentPage() -> impl IntoView {
 }
 
 #[component]
-pub fn DisplayUserCourseContent(username: String) -> impl IntoView {
+pub fn UserCourseContent(username: String) -> impl IntoView {
     let (chapter_id, set_chapter_id) = create_signal("welcome-0000".to_string());
+    let (show_content, set_show_content) = create_signal(false);
     let (show_chapters, set_show_chapters) = create_signal(Vec::new());
 
     // @TODO: collapsible side navigation panel
@@ -197,79 +201,84 @@ pub fn DisplayUserCourseContent(username: String) -> impl IntoView {
         |value| async move { get_chapter_content(value).await },
     );
 
+
     view! {
-        {if course_id().is_some() {
+        {
+            if course_id().unwrap() == "" {
+                return vec![view! { <Redirect path="/courses" /> }];
+            }
+
             spawn_local(async move {
                 match get_course_chapters(course_id().unwrap().clone()).await {
                     Ok(ok_course_chapters) => set_show_chapters.set(ok_course_chapters),
-                    Err(_) => {
-                        set_show_chapters.set(Vec::new());
-                    }
+                    Err(_) => set_show_chapters.set(Vec::new()),
                 }
             })
-        }}
-        <div align="right" style="height:30px">
-            <table>
-                <tr>
-                    <td style="padding-right:20px">
-                        <a
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            href=format!("/tutorials/{}", course_id().unwrap())
-                            class="tutorial_link"
-                        >
-                            "⚒ 实验室"
-                        </a>
-                    </td>
-                    <td class="header_login">
-                        <a class="header" href="/courses">
-                            {username}
-                        </a>
-                    </td>
-                    <td class="header_login">
-                        <a href="/logout" class="home_login">
-                            "退出"
-                        </a>
-                    </td>
-                </tr>
-            </table>
-        </div>
-        <div class="sidenav">
-            <ul style="list-style-type:none">
-                <For
-                    each=move || show_chapters.get()
-                    key=|state| (state.chapter_id.clone())
-                    let:chapter
-                >
-                    <li>
-                        <p>
+        }
+        <div class:display=move || show_content.get() style="opacity:0.1">
+            <div align="right" style="height:30px">
+                <table>
+                    <tr>
+                        <td style="padding-right:20px">
                             <a
-                                on:click=move |_| {
-                                    set_chapter_id.set(chapter.chapter_id.clone());
-                                }
-                                href="#"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                href=format!("/tutorials/{}", course_id().unwrap())
+                                class="tutorial_link"
                             >
-                                <div
-                                    style="float: left;"
-                                    class:display=move || chapter.chapter_number == 0
-                                >
-                                    <b style="padding-right:5px;">{chapter.chapter_number}"."</b>
-                                </div>
-                                {chapter.title}
+                                "⚒ 实验室"
                             </a>
-                        </p>
-                    </li>
-                </For>
-            </ul>
-        </div>
-        <div class="main">
-            <Transition fallback=move || {
-                view! { <p>"正在下载课程章节..."</p> }
-            }>
-                <div inner_html=move || {
-                    async_data.get().map(|value| value.unwrap().to_string())
-                } />
-            </Transition>
+                        </td>
+                        <td class="header_login">
+                            <a class="header" href="/courses">
+                                {username}
+                            </a>
+                        </td>
+                        <td class="header_login">
+                            <a href="/logout" class="home_login">
+                                "退出"
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="sidenav">
+                <ul style="list-style-type:none">
+                    <For
+                        each=move || show_chapters.get()
+                        key=|state| (state.chapter_id.clone())
+                        let:chapter
+                    >
+                        <li>
+                            <p>
+                                <a
+                                    on:click=move |_| {
+                                        set_chapter_id.set(chapter.chapter_id.clone());
+                                    }
+                                    href="#"
+                                >
+                                    <div
+                                        style="float: left;"
+                                        class:display=move || chapter.chapter_number == 0
+                                    >
+                                        <b style="padding-right:5px;">{chapter.chapter_number}"."</b>
+                                    </div>
+                                    {chapter.title}
+                                </a>
+                            </p>
+                        </li>
+                    </For>
+                </ul>
+            </div>
+            <div class="chapter_content">
+                <Transition fallback=move || {
+                    view! { <p>"正在下载课程章节..."</p> }
+                }>
+                    <div inner_html=move || {
+                        async_data.get().map(|value| value.unwrap().to_string())
+                    } />
+                </Transition>
+            </div>
         </div>
     }
 }

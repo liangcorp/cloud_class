@@ -25,12 +25,13 @@ pub fn TutorialPage() -> impl IntoView {
             {match session_user {
                 Ok(ok_username) => {
                     match ok_username {
-                        Some(_some_username) => {
+                        Some(some_username) => {
                             view! {
                                 <div class="tutorial">
-                                    <TutorialContent />
+                                    <TutorialContent username=some_username.to_string() />
                                 </div>
-                            }.into_view()
+                            }
+                                .into_view()
                         }
                         None => view! { <Redirect path="/profile" /> },
                     }
@@ -42,9 +43,10 @@ pub fn TutorialPage() -> impl IntoView {
 }
 
 #[component]
-fn TutorialContent() -> impl IntoView {
+fn TutorialContent(username: String) -> impl IntoView {
     use leptos::ev::KeyboardEvent;
 
+    // let _ = username;
     let (code, set_code) = create_signal("".to_string());
 
     let input_element: NodeRef<html::Textarea> = create_node_ref();
@@ -77,6 +79,7 @@ fn TutorialContent() -> impl IntoView {
 
     view! {
         <form on:submit=on_submit>
+            <div style="float:left; font-weight:bold; padding-top:10px">"用户: "{username}</div>
             <div class="toolbar">
                 <input class="run_code" type="submit" value="⯈ 运行" />
             </div>

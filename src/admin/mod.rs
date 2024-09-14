@@ -50,7 +50,7 @@ pub fn AdminPage() -> impl IntoView {
                 // <tr><td><p>"用户名是: " {username}</p></td></tr>
                 <tr>
                     <td style="padding:25px">
-                        <h2 style="color:#000000">浩天数智化教学辅助系统</h2>
+                        <h2 style="color:#000000">数智化教学辅助系统</h2>
                     </td>
                 </tr>
                 <tr style="display:none;color:red">

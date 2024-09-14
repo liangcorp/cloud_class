@@ -33,11 +33,6 @@ div.sidebar-scrollbox {
 }
 
 
-div.chapter_content {
-  display: inline-block;
-  padding-left: 10%;
-}
-
 .header {
   padding-top: 25px;
 }
@@ -375,7 +370,7 @@ div.sidenav a:hover {
 }
 
 /* Style page content */
-div.main {
+div.chapter_content {
   margin-left: 250px; /* Same as the width of the sidebar */
   padding: 0px 300px;
   display: inline-block;

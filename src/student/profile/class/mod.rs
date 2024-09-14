@@ -82,30 +82,27 @@ pub async fn get_user_courses(user: String) -> Result<Vec<CourseContent>, Server
     .bind(&user)
     .fetch_all(&pool)
     .await {
-        Ok(uc) => user_courses = uc,
-        Err(e) => {
-            return Err(ServerFnError::Args(e.to_string()))
-        },
+        Ok(ok_user_courses) => user_courses =
+            ok_user_courses
+                .iter()
+                .map(|ok_user_courses| CourseContent {
+                        course_id: ok_user_courses.course_id.clone(),
+                        title: ok_user_courses.title.clone(),
+                        price: ok_user_courses.price.clone(),
+                        course_language: ok_user_courses.course_language.clone(),
+                        rating: ok_user_courses.rating.clone(),
+                        target_level: ok_user_courses.target_level.clone(),
+                        requirement: ok_user_courses.requirement.clone(),
+                        duration_minutes: ok_user_courses.duration_minutes.clone(),
+                        about: ok_user_courses.about.clone(),
+                        description: ok_user_courses.description.clone(),
+                        tag_line: ok_user_courses.tag_line.clone(),
+                        update_date: ok_user_courses.update_date.clone()})
+                .collect(),
+        Err(e) => return Err(ServerFnError::Args(e.to_string())),
     }
 
-    let result_content = user_courses
-        .iter()
-        .map(|uc| CourseContent {
-                course_id: uc.course_id.clone(),
-                title: uc.title.clone(),
-                price: uc.price.clone(),
-                course_language: uc.course_language.clone(),
-                rating: uc.rating.clone(),
-                target_level: uc.target_level.clone(),
-                requirement: uc.requirement.clone(),
-                duration_minutes: uc.duration_minutes.clone(),
-                about: uc.about.clone(),
-                description: uc.description.clone(),
-                tag_line: uc.tag_line.clone(),
-                update_date: uc.update_date.clone()})
-        .collect();
-
-    Ok(result_content)
+    Ok(user_courses)
 }
 
 #[component]

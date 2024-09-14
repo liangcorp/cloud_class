@@ -78,7 +78,7 @@ pub async fn get_course_chapters(course_id: String) -> Result<Vec<Chapter>, Serv
     //  取得软件状态
     let state;
     match use_context::<AppState>() {
-        Some(s) => state = s,
+        Some(some_state) => state = some_state,
         None => return Ok(vec![Chapter::default()]),
     }
 
@@ -94,23 +94,20 @@ pub async fn get_course_chapters(course_id: String) -> Result<Vec<Chapter>, Serv
     .bind(&course_id)
     .fetch_all(&pool)
     .await {
-        Ok(c) => chapters = c,
-        Err(e) => {
-            return Err(ServerFnError::Args(e.to_string()))
-        },
+        Ok(ok_chapters) => chapters =
+            ok_chapters
+                .iter()
+                .map(|cc| Chapter {
+                        chapter_id: cc.chapter_id.clone(),
+                        title: cc.title.clone(),
+                        chapter_number: cc.chapter_number.clone(),
+                        course_id: cc.course_id.clone(),
+                })
+                .collect(),
+        Err(e) => return Err(ServerFnError::Args(e.to_string())),
     }
 
-    let results = chapters
-        .iter()
-        .map(|cc| Chapter {
-                chapter_id: cc.chapter_id.clone(),
-                title: cc.title.clone(),
-                chapter_number: cc.chapter_number.clone(),
-                course_id: cc.course_id.clone(),
-        })
-        .collect();
-
-    Ok(results)
+    Ok(chapters)
 }
 
 #[server]
@@ -120,7 +117,7 @@ pub async fn get_chapter_content(chapter_id: String) -> Result<String, ServerFnE
     //  取得软件状态
     let state;
     match use_context::<AppState>() {
-        Some(s) => state = s,
+        Some(some_state) => state = some_state,
         None => return Ok("".to_string()),
     }
 
@@ -136,10 +133,8 @@ pub async fn get_chapter_content(chapter_id: String) -> Result<String, ServerFnE
     .bind(&chapter_id)
     .fetch_one(&pool)
     .await {
-        Ok(cc) => chapter_content = cc,
-        Err(e) => {
-            return Err(ServerFnError::Args(e.to_string()))
-        },
+        Ok(ok_chapter_content) => chapter_content = ok_chapter_content,
+        Err(e) => return Err(ServerFnError::Args(e.to_string())),
     }
     // logging::log!("transform content to raw HTML");
     let result_html = markdown_to_html(chapter_content.content.as_str(), &Options::default());
@@ -190,7 +185,9 @@ pub fn ContentPage() -> impl IntoView {
                                         match get_course_chapters(course_id().unwrap().clone())
                                             .await
                                         {
-                                            Ok(data) => set_show_chapters.set(data),
+                                            Ok(ok_course_chapters) => {
+                                                set_show_chapters.set(ok_course_chapters)
+                                            }
                                             Err(_) => {
                                                 set_show_chapters.set(Vec::new());
                                             }

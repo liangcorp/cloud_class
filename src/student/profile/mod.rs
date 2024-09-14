@@ -22,7 +22,7 @@ pub fn ProfilePage() -> impl IntoView {
             {match session_user {
                 Ok(ok_u) => {
                     match ok_u {
-                        Some(some_u) => view! { <ProfilePageContent ppc_user=some_u.to_string() /> },
+                        Some(some_u) => view! { <ProfilePageContent username=some_u.to_string() /> },
                         None => view! { <Redirect path="/" /> },
                     }
                 }
@@ -33,7 +33,7 @@ pub fn ProfilePage() -> impl IntoView {
 }
 
 #[component]
-pub fn ProfilePageContent(ppc_user: String) -> impl IntoView {
+pub fn ProfilePageContent(username: String) -> impl IntoView {
     let (show_layer, set_show_layer) = create_signal(true);
 
     view! {
@@ -77,7 +77,7 @@ pub fn ProfilePageContent(ppc_user: String) -> impl IntoView {
                     <td class="header_menu"></td>
                     <td class="header_login">
                         <a class="header" href="/profile">
-                            {ppc_user.clone()}
+                            {username.clone()}
                         </a>
                     </td>
                     <td class="header_login">
@@ -93,10 +93,10 @@ pub fn ProfilePageContent(ppc_user: String) -> impl IntoView {
         </div>
         <Transition fallback=move || view! { <h1>"正在运行..."</h1> }>
             <div class="contents" class:display=move || !show_layer.get()>
-                <CourseContentPage user=ppc_user.clone() />
+                <CourseContentPage user=username.clone() />
             </div>
             <div class="profile_contents" class:display=move || show_layer.get()>
-                <PersonalContentPage user=ppc_user.clone() />
+                <PersonalContentPage user=username.clone() />
             </div>
         </Transition>
     }

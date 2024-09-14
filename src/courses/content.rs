@@ -89,7 +89,10 @@ pub async fn get_course_chapters(course_id: String) -> Result<Vec<Chapter>, Serv
     let chapters;
 
     match sqlx::query_as::<_, ChapterQuery>(
-        "SELECT * FROM chapters WHERE course_id = $1 ORDER BY chapter_number;",
+        "SELECT *
+        FROM chapters
+        WHERE course_id = $1
+        ORDER BY chapter_number;"
     )
     .bind(&course_id)
     .fetch_all(&pool)
@@ -245,7 +248,6 @@ pub fn DisplayUserCourseContent(username: String) -> impl IntoView {
                                     set_chapter_id.set(chapter.chapter_id.clone());
                                 }
                                 href="#"
-                                class="chapter_selection"
                             >
                                 <div
                                     style="float: left;"

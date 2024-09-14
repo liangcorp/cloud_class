@@ -37,7 +37,9 @@ CREATE TABLE courses (
     about varchar(500),
     description varchar(500),
     tag_line varchar(300),
-    update_date varchar(40)
+    update_date varchar(40),
+    status varchar(100),
+    series_id char(36),
 );
 
 CREATE TABLE student_course (
@@ -81,19 +83,14 @@ CREATE TABLE series (
     about varchar(500),
     description varchar(500),
     tag_line varchar(300),
-    update_date varchar(40)
+    update_date varchar(40),
+    status varchar(100)
 );
 
 CREATE TABLE student_series (
     username varchar(100) NOT NULL,
     series_id char(36) NOT NULL,
     PRIMARY KEY(username, series_id)
-);
-
-CREATE TABLE series_course (
-    series_id char(36) NOT NULL,
-    course_id char(36) NOT NULL,
-    PRIMARY KEY (series_id, course_id)
 );
 
 INSERT INTO students (username, salt, pw_hash, start_date, full_name, status, email, mobile)
@@ -108,11 +105,11 @@ VALUES ('student3', 'x1z2S4jDbLrigzigZp9CdA', 'zhZt3RLLVZV9watjOg/gIvAhjuOvSox9J
 INSERT INTO instructors (username, salt, pw_hash, start_date, full_name, about, status, email, mobile)
 VALUES ('teacher1', 'x1z2S4jDbLrigzigZp9CdA', 'zhZt3RLLVZV9watjOg/gIvAhjuOvSox9JOf2nxdZ2S8', '2024-0821', '教师 1', '10 年教学经验', 'active',  'teacher1@example.com', '18602341237');
 
-INSERT INTO courses (course_id, title, price, course_language, rating, target_level, requirement, duration_minutes, about, description, tag_line, update_date)
-VALUES ('97931561-7689-44a4-bf80-f2e7c9e8d2dd', 'Python - 面向物联网控制', 100.00, '中文', 9, '初学者', '无需经验', 960, '对Python语言有基本的了解.对物联网有基本的了解.','面对小学生和初中生的Python编成教学课程。以物联网为背景。','以物联网为背景,面对小学生和初中生的Python编成教学课程。', '2024-08-20');
+INSERT INTO courses (course_id, title, price, course_language, rating, target_level, requirement, duration_minutes, about, description, tag_line, update_date, status, series_id)
+VALUES ('97931561-7689-44a4-bf80-f2e7c9e8d2dd', 'Python - 面向物联网控制', 100.00, '中文', 9, '初学者', '无需经验', 960, '对Python语言有基本的了解.对物联网有基本的了解.','面对小学生和初中生的Python编成教学课程。以物联网为背景。','以物联网为背景,面对小学生和初中生的Python编成教学课程。', '2024-08-20', 'live', NULL);
 
-INSERT INTO courses (course_id, title, price, course_language, rating, target_level, requirement, duration_minutes, about, description, tag_line, update_date)
-VALUES ('10031561-7689-44a4-bf80-f2e7c9e8d2dd', 'C 编程语言基础', 100.00, '中文', 9, '初学者', '无需经验', 960, '对C语言有基本的了解.','面对所有人的C编成教学课程。','基础C语言编成教学课程。', '2024-08-21');
+INSERT INTO courses (course_id, title, price, course_language, rating, target_level, requirement, duration_minutes, about, description, tag_line, update_date, status, series_id)
+VALUES ('10031561-7689-44a4-bf80-f2e7c9e8d2dd', 'C 编程语言基础', 100.00, '中文', 9, '初学者', '无需经验', 960, '对C语言有基本的了解.','面对所有人的C编成教学课程。','基础C语言编成教学课程。', '2024-08-21', 'live', NULL);
 
 INSERT INTO student_course (username, course_id, allow_code, priority)
 VALUES ('student1', '97931561-7689-44a4-bf80-f2e7c9e8d2dd', true, 1);

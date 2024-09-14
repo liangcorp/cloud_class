@@ -12,8 +12,38 @@ use leptos::*;
 #[component]
 pub fn TutorialPage() -> impl IntoView {
     use leptos_router::Redirect;
-    use leptos::ev::KeyboardEvent;
     use crate::session::extract_session_user;
+
+    view! {
+        <Await
+            // `future` provides the `Future` to be resolved
+            future=extract_session_user
+
+            // the data is bound to whatever variable name you provide
+            let:session_user
+        >
+            {match session_user {
+                Ok(ok_username) => {
+                    match ok_username {
+                        Some(_some_username) => {
+                            view! {
+                                <div class="tutorial">
+                                    <TutorialContent />
+                                </div>
+                            }.into_view()
+                        }
+                        None => view! { <Redirect path="/profile" /> },
+                    }
+                }
+                Err(_) => view! { <Redirect path="/profile" /> },
+            }}
+        </Await>
+    }
+}
+
+#[component]
+fn TutorialContent() -> impl IntoView {
+    use leptos::ev::KeyboardEvent;
 
     let (code, set_code) = create_signal("".to_string());
 
@@ -46,49 +76,26 @@ pub fn TutorialPage() -> impl IntoView {
     };
 
     view! {
-        <Await
-            // `future` provides the `Future` to be resolved
-            future=extract_session_user
-
-            // the data is bound to whatever variable name you provide
-            let:session_user
-        >
-            {match session_user {
-                Ok(ok_username) => {
-                    match ok_username {
-                        Some(_some_username) => {
-                            view! {
-                                <div class="tutorial">
-                                    <form on:submit=on_submit>
-                                        <div class="toolbar">
-                                            <input class="run_code" type="submit" value="⯈ 运行" />
-                                        </div>
-                                        <div class="editor_area">
-                                            <div class="text_area">
-                                                <textarea
-                                                    class="editor"
-                                                    spellcheck="false"
-                                                    prop:value=move || code.get()
-                                                    on:keydown=on_keydown
-                                                    node_ref=input_element
-                                                ></textarea>
-                                            </div>
-                                        </div>
-                                    </form>
-                                    <div class="output_area">
-                                        <pre>
-                                            <code>{move || code.get()}</code>
-                                        </pre>
-                                    </div>
-                                </div>
-                            }
-                                .into_view()
-                        }
-                        None => view! { <Redirect path="/courses" /> }.into_view(),
-                    }
-                }
-                Err(_) => view! { <Redirect path="/courses" /> }.into_view(),
-            }}
-        </Await>
+        <form on:submit=on_submit>
+            <div class="toolbar">
+                <input class="run_code" type="submit" value="⯈ 运行" />
+            </div>
+            <div class="editor_area">
+                <div class="text_area">
+                    <textarea
+                        class="editor"
+                        spellcheck="false"
+                        prop:value=move || code.get()
+                        on:keydown=on_keydown
+                        node_ref=input_element
+                    ></textarea>
+                </div>
+            </div>
+            <div class="output_area">
+                <pre>
+                    <code>{move || code.get()}</code>
+                </pre>
+            </div>
+        </form>
     }
 }

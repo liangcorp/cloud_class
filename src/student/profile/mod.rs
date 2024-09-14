@@ -20,23 +20,22 @@ pub fn ProfilePage() -> impl IntoView {
             let:session_user
         >
             {match session_user {
-                Ok(ok_username) => {
-                    match ok_username {
-                        Some(some_username) => {
-                            view! { <ProfilePageContent ppc_username=some_username.to_string() /> }
-                                .into_view()
-                        }
-                        None => view! { <Redirect path="/" /> }.into_view(),
+                Ok(ok_u) => {
+                    match ok_u {
+                        Some(some_u) => view! {
+                            <ProfilePageContent ppc_user=some_u.to_string() />
+                        },
+                        None => view! { <Redirect path="/" /> },
                     }
-                }
-                Err(_) => view! { <Redirect path="/" /> }.into_view(),
+                },
+                Err(_) => view! { <Redirect path="/" /> },
             }}
         </Await>
     }
 }
 
 #[component]
-pub fn ProfilePageContent(ppc_username: String) -> impl IntoView {
+pub fn ProfilePageContent(ppc_user: String) -> impl IntoView {
     let (show_layer, set_show_layer) = create_signal(true);
 
     view! {
@@ -80,7 +79,7 @@ pub fn ProfilePageContent(ppc_username: String) -> impl IntoView {
                     <td class="header_menu"></td>
                     <td class="header_login">
                         <a class="header" href="/profile">
-                            {ppc_username.clone()}
+                            {ppc_user.clone()}
                         </a>
                     </td>
                     <td class="header_login">
@@ -95,11 +94,11 @@ pub fn ProfilePageContent(ppc_username: String) -> impl IntoView {
             <hr class="page_divider" />
         </div>
         <Transition fallback=move || view! { <h1>"正在运行..."</h1> }>
-            <div class:display=move || show_layer.get() == false>
-                <CourseContentPage user=ppc_username.clone() />
+            <div class="contents" class:display=move || show_layer.get() == false>
+                <CourseContentPage user=ppc_user.clone() />
             </div>
-            <div class:display=move || show_layer.get() == true>
-                <PersonalContentPage user=ppc_username.clone() />
+            <div class="profile_contents" class:display=move || show_layer.get() == true>
+                <PersonalContentPage user=ppc_user.clone() />
             </div>
         </Transition>
     }

@@ -102,47 +102,45 @@ pub fn PersonalContentPage(user: String) -> impl IntoView {
     );
 
     view! {
-        <div class="profile_contents">
-            <p style="color:gray; font-weight:bold;">学生</p>
-            <table style="width:100%">
-                <tr>
-                    <td>
-                        <h1>{move || personal_content.get().full_name}</h1>
-                        <table>
-                            <tr>
-                                <td>
-                                    <b>"注册日:"</b>
-                                </td>
-                                <td>{move || personal_content.get().start_date}</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <b>"邮件地址:"</b>
-                                </td>
-                                <td>{move || personal_content.get().email}</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <b>"手机号:"</b>
-                                </td>
-                                <td>{move || personal_content.get().mobile}</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <b>"地址:"</b>
-                                </td>
-                                <td>{move || personal_content.get().address}</td>
-                            </tr>
-                        </table>
-                    </td>
-                    <td>
-                        <img
-                            src="images/users/default_profile.png"
-                            style="width:250px;height:250px"
-                        />
-                    </td>
-                </tr>
-            </table>
-        </div>
+        <p style="color:gray; font-weight:bold;">学生</p>
+        <table style="width:100%">
+            <tr>
+                <td>
+                    <h1>{move || personal_content.get().full_name}</h1>
+                    <table>
+                        <tr>
+                            <td>
+                                <b>"注册日:"</b>
+                            </td>
+                            <td>{move || personal_content.get().start_date}</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <b>"邮件地址:"</b>
+                            </td>
+                            <td>{move || personal_content.get().email}</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <b>"手机号:"</b>
+                            </td>
+                            <td>{move || personal_content.get().mobile}</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <b>"地址:"</b>
+                            </td>
+                            <td>{move || personal_content.get().address}</td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <img
+                        src="images/users/default_profile.png"
+                        style="width:250px;height:250px"
+                    />
+                </td>
+            </tr>
+        </table>
     }
 }

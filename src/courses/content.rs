@@ -149,6 +149,8 @@ pub async fn get_chapter_content(chapter_id: String) -> Result<String, ServerFnE
 
 #[component]
 pub fn ContentPage() -> impl IntoView {
+    use crate::session::*;
+
     let (chapter_id, set_chapter_id) = create_signal("welcome-0000".to_string());
     let (show_chapters, set_show_chapters) = create_signal(Vec::new());
 
@@ -159,22 +161,6 @@ pub fn ContentPage() -> impl IntoView {
 
     // id: || -> Option<String>
     let course_id = move || params.with_untracked(|params| params.get("course_id").cloned());
-
-    if course_id() != None {
-        spawn_local(
-            async move {
-                match get_course_chapters(course_id().unwrap().clone()).await {
-                    Ok(data) => {
-                        set_show_chapters.set(data)
-                    },
-                    Err(e) => {
-                        set_show_chapters.set(Vec::new());
-                        logging::log!("{}", e.to_string());
-                    },
-                }
-           }
-        )
-    }
 
     // create_resource takes two arguments after its scope
     let async_data = create_resource(
@@ -188,17 +174,66 @@ pub fn ContentPage() -> impl IntoView {
 
     view! {
         <div align="right" style="height:30px">
-            <a
-                target="_blank"
-                rel="noopener noreferrer"
-                href=format!("/tutorials/{}", course_id().unwrap())
-                class="tutorial_link"
-            >
-                实验室
-            </a>
-            <a href="/courses" class="header">
-                回到个人资料
-            </a>
+            <table>
+                <tr>
+                    <td class="header_login">
+                        <a
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            href=format!("/tutorials/{}", course_id().unwrap())
+                            class="tutorial_link"
+                        >
+                            实验室
+                        </a>
+                    </td>
+
+                    <Await
+                        // `future` provides the `Future` to be resolved
+                        future=extract_session_user
+
+                        // the data is bound to whatever variable name you provide
+                        let:session_user
+                    >
+                        {match session_user {
+                            Ok(uname) => {
+                                match uname {
+                                    Some(u) => {
+                                        view! {
+                                            <td class="header_login">
+                                                <a class="header" href="/courses">
+                                                    {u}
+                                                </a>
+                                            </td>
+                                            <td class="header_login">
+                                                <a href="/logout" class="home_login">
+                                                    退出
+                                                </a>
+                                            </td>
+                                            {
+                                            if course_id() != None {
+                                                spawn_local(async move {
+                                                    match get_course_chapters(course_id().unwrap().clone())
+                                                        .await
+                                                    {
+                                                        Ok(data) => set_show_chapters.set(data),
+                                                        Err(e) => {
+                                                            set_show_chapters.set(Vec::new());
+                                                            logging::log!("{}", e.to_string());
+                                                        }
+                                                    }
+                                                })
+                                            }}
+                                        }
+                                            .into_view()
+                                    }
+                                    None => view! { <Redirect path="/courses" /> }.into_view(),
+                                }
+                            }
+                            Err(_) => view! { <Redirect path="/courses" /> }.into_view(),
+                        }}
+                    </Await>
+                </tr>
+            </table>
         </div>
         <div>
             <div class="sidenav">

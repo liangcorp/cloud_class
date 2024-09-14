@@ -255,12 +255,6 @@ pub fn ContentPage() -> impl IntoView {
                                             </For>
                                         </ul>
                                     </div>
-                                    // <div
-                                    // class="section_size_selector"
-                                    // on:click=move|_| {
-                                    // set_show_navbar.update(|n| *n = !*n);
-                                    // }
-                                    // ><div class="collaps_arrow">"◀"</div></div>
                                     <div class="main">
                                         <Transition fallback=move || {
                                             view! { <p>"正在下载课程章节..."</p> }
@@ -274,74 +268,10 @@ pub fn ContentPage() -> impl IntoView {
                             }
                                 .into_view()
                         }
-                        None => {
-                            view! {
-                                // <div
-                                // class="section_size_selector"
-                                // on:click=move|_| {
-                                // set_show_navbar.update(|n| *n = !*n);
-                                // }
-                                // ><div class="collaps_arrow">"◀"</div></div>
-                                // <div
-                                // class="section_size_selector"
-                                // on:click=move|_| {
-                                // set_show_navbar.update(|n| *n = !*n);
-                                // }
-                                // ><div class="collaps_arrow">"◀"</div></div>
-                                // <div
-                                // class="section_size_selector"
-                                // on:click=move|_| {
-                                // set_show_navbar.update(|n| *n = !*n);
-                                // }
-                                // ><div class="collaps_arrow">"◀"</div></div>
-                                <Redirect path="/courses" />
-                            }
-                                .into_view()
-                        }
+                        None => view! { <Redirect path="/courses" /> }.into_view(),
                     }
                 }
-                Err(_) => {
-                    view! {
-                        // <div
-                        // class="section_size_selector"
-                        // on:click=move|_| {
-                        // set_show_navbar.update(|n| *n = !*n);
-                        // }
-                        // ><div class="collaps_arrow">"◀"</div></div>
-                        // <div
-                        // class="section_size_selector"
-                        // on:click=move|_| {
-                        // set_show_navbar.update(|n| *n = !*n);
-                        // }
-                        // ><div class="collaps_arrow">"◀"</div></div>
-                        // <div
-                        // class="section_size_selector"
-                        // on:click=move|_| {
-                        // set_show_navbar.update(|n| *n = !*n);
-                        // }
-                        // ><div class="collaps_arrow">"◀"</div></div>
-                        // <div
-                        // class="section_size_selector"
-                        // on:click=move|_| {
-                        // set_show_navbar.update(|n| *n = !*n);
-                        // }
-                        // ><div class="collaps_arrow">"◀"</div></div>
-                        // <div
-                        // class="section_size_selector"
-                        // on:click=move|_| {
-                        // set_show_navbar.update(|n| *n = !*n);
-                        // }
-                        // ><div class="collaps_arrow">"◀"</div></div>
-                        // <div
-                        // class="section_size_selector"
-                        // on:click=move|_| {
-                        // set_show_navbar.update(|n| *n = !*n);
-                        // }
-                        // ><div class="collaps_arrow">"◀"</div></div>
-                        <Redirect path="/courses" />
-                    }
-                        .into_view()
-                }
+                Err(_) => view! { <Redirect path="/courses" /> }.into_view(),
             }}
         </Await>
     }

@@ -73,13 +73,9 @@ pub fn TutorialPage() -> impl IntoView {
                                                     node_ref=input_element
                                                 ></textarea>
                                             </div>
-                                        // <div class="console_area">
-                                        // <TutorialConsoleArea />
-                                        // </div>
                                         </div>
                                     </form>
                                     <div class="output_area">
-                                        // <TutorialOutputArea />
                                         <pre>
                                             <code>{move || code.get()}</code>
                                         </pre>
@@ -88,20 +84,10 @@ pub fn TutorialPage() -> impl IntoView {
                             }
                                 .into_view()
                         }
-                        None => {
-                            view! {
-                                <Redirect path="/courses" />
-                            }
-                                .into_view()
-                        }
+                        None => view! { <Redirect path="/courses" /> }.into_view(),
                     }
                 }
-                Err(_) => {
-                    view! {
-                        <Redirect path="/courses" />
-                    }
-                        .into_view()
-                }
+                Err(_) => view! { <Redirect path="/courses" /> }.into_view(),
             }}
         </Await>
     }

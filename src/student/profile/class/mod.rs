@@ -77,7 +77,11 @@ pub async fn get_user_courses(user: String) -> Result<Vec<CourseContent>, Server
     let user_courses;
 
     match sqlx::query_as::<_, CourseContentQuery>(
-        "SELECT c.* FROM student_course sc INNER JOIN courses c ON sc.course_id = c.course_id WHERE sc.username = $1 ORDER BY sc.priority;",
+        "SELECT c.*
+        FROM student_course sc
+        INNER JOIN courses c ON sc.course_id = c.course_id
+        WHERE sc.username = $1
+        ORDER BY sc.priority;",
     )
     .bind(&user)
     .fetch_all(&pool)
@@ -110,26 +114,20 @@ pub fn CourseContentPage(user: String) -> impl IntoView {
 
     let (content, set_content) = create_signal(Vec::new());
 
-    spawn_local(
-        async move {
-            match get_user_courses(user).await {
-                Ok(data) => {
-                    set_content.set(data)
-                },
-                Err(e) => {
-                    set_content.set(Vec::new());
-                    logging::log!("{}", e.to_string());
-                },
-            }
-       }
-    );
+    spawn_local(async move {
+        match get_user_courses(user).await {
+            Ok(data) => {
+                set_content.set(data)
+            },
+            Err(e) => {
+                set_content.set(Vec::new());
+                logging::log!("{}", e.to_string());
+            },
+        }
+    });
 
     view! {
-        <For
-            each=move || content.get()
-            key=|state| (state.course_id.clone())
-            let:course_content
-        >
+        <For each=move || content.get() key=|state| (state.course_id.clone()) let:course_content>
             <div class="each_class">
                 <a
                     href=format!("/courses/{}", course_content.course_id)

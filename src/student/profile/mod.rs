@@ -22,12 +22,10 @@ pub fn ProfilePage() -> impl IntoView {
             {match session_user {
                 Ok(ok_u) => {
                     match ok_u {
-                        Some(some_u) => view! {
-                            <ProfilePageContent ppc_user=some_u.to_string() />
-                        },
+                        Some(some_u) => view! { <ProfilePageContent ppc_user=some_u.to_string() /> },
                         None => view! { <Redirect path="/" /> },
                     }
-                },
+                }
                 Err(_) => view! { <Redirect path="/" /> },
             }}
         </Await>

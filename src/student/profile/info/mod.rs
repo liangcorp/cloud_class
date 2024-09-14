@@ -135,10 +135,7 @@ pub fn PersonalContentPage(user: String) -> impl IntoView {
                     </table>
                 </td>
                 <td>
-                    <img
-                        src="images/users/default_profile.png"
-                        style="width:250px;height:250px"
-                    />
+                    <img src="images/users/default_profile.png" style="width:250px;height:250px" />
                 </td>
             </tr>
         </table>

@@ -92,10 +92,10 @@ pub fn ProfilePageContent(ppc_user: String) -> impl IntoView {
             <hr class="page_divider" />
         </div>
         <Transition fallback=move || view! { <h1>"正在运行..."</h1> }>
-            <div class="contents" class:display=move || show_layer.get() == false>
+            <div class="contents" class:display=move || !show_layer.get()>
                 <CourseContentPage user=ppc_user.clone() />
             </div>
-            <div class="profile_contents" class:display=move || show_layer.get() == true>
+            <div class="profile_contents" class:display=move || show_layer.get()>
                 <PersonalContentPage user=ppc_user.clone() />
             </div>
         </Transition>

@@ -180,7 +180,7 @@ pub fn ContentPage() -> impl IntoView {
                     match ok_username {
                         Some(some_username) => {
                             view! {
-                                {if course_id() != None {
+                                {if course_id().is_some() {
                                     spawn_local(async move {
                                         match get_course_chapters(course_id().unwrap().clone())
                                             .await
@@ -257,7 +257,7 @@ pub fn ContentPage() -> impl IntoView {
                                             view! { <p>"正在下载课程章节..."</p> }
                                         }>
                                             <div inner_html=move || {
-                                                async_data.get().map(|value| format!("{}", value.unwrap()))
+                                                async_data.get().map(|value| value.unwrap().to_string())
                                             } />
                                         </Transition>
                                     </div>

@@ -174,13 +174,11 @@ pub fn CourseContentPage(user: String) -> impl IntoView {
                                 <td align="left">
                                     <span>
                                         {(0..course_content.rating)
-                                            .into_iter()
                                             .map(|_| view! { <span style="color:red;">"★"</span> })
                                             .collect_view()}
                                     </span>
                                     <span>
                                         {(course_content.rating..10)
-                                            .into_iter()
                                             .map(|_| view! { <span style="color:gray;">"★"</span> })
                                             .collect_view()}
                                     </span>

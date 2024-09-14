@@ -74,6 +74,7 @@ cfg_if! {
                     self.same_site
                 )
             }
+
             pub fn to_string(&self) -> String {
                 format!("session_token={};domain={};path={};Max-Age={};Expires={};{};{};SameSite={}",
                     self.session_token,
@@ -92,18 +93,17 @@ cfg_if! {
                 // set session token in cookie
                 cookie.session_token = token.to_string();
 
-                if is_session_only {
-                    if let Ok(ok_cookie_content) = HeaderValue::from_str(&cookie.to_string()) {
-                        // pull ResponseOptions from context
-                        let response = expect_context::<ResponseOptions>();
-                        response.insert_header(header::SET_COOKIE, ok_cookie_content);
-                    }
-                } else {
-                    if let Ok(ok_cookie_content) = HeaderValue::from_str(&cookie.to_session_only_string()) {
-                        // pull ResponseOptions from context
-                        let response = expect_context::<ResponseOptions>();
-                        response.insert_header(header::SET_COOKIE, ok_cookie_content);
-                    }
+                // pull ResponseOptions from context
+                let response = expect_context::<ResponseOptions>();
+
+                let header_cookie = if is_session_only {
+                        HeaderValue::from_str(&cookie.to_string())
+                    } else {
+                        HeaderValue::from_str(&cookie.to_session_only_string())
+                    };
+
+                if let Ok(ok_cookie_content) = header_cookie {
+                    response.insert_header(header::SET_COOKIE, ok_cookie_content);
                 }
 
                 Ok(())

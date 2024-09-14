@@ -173,32 +173,43 @@ pub fn ContentPage() -> impl IntoView {
     );
 
     view! {
-        <div align="right" style="height:30px">
-            <table>
-                <tr>
-                    <td class="header_login">
-                        <a
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            href=format!("/tutorials/{}", course_id().unwrap())
-                            class="tutorial_link"
-                        >
-                            实验室
-                        </a>
-                    </td>
+        <Await
+            // `future` provides the `Future` to be resolved
+            future=extract_session_user
 
-                    <Await
-                        // `future` provides the `Future` to be resolved
-                        future=extract_session_user
-
-                        // the data is bound to whatever variable name you provide
-                        let:session_user
-                    >
-                        {match session_user {
-                            Ok(uname) => {
-                                match uname {
-                                    Some(u) => {
-                                        view! {
+            // the data is bound to whatever variable name you provide
+            let:session_user
+        >
+            {match session_user {
+                Ok(uname) => {
+                    match uname {
+                        Some(u) => {
+                            view! {
+                                {if course_id() != None {
+                                    spawn_local(async move {
+                                        match get_course_chapters(course_id().unwrap().clone())
+                                            .await
+                                        {
+                                            Ok(data) => set_show_chapters.set(data),
+                                            Err(_) => {
+                                                set_show_chapters.set(Vec::new());
+                                            }
+                                        }
+                                    })
+                                }}
+                                <div align="right" style="height:30px">
+                                    <table>
+                                        <tr>
+                                            <td style="padding-right:20px">
+                                                <a
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    href=format!("/tutorials/{}", course_id().unwrap())
+                                                    class="tutorial_link"
+                                                >
+                                                    "⚒ 实验室"
+                                                </a>
+                                            </td>
                                             <td class="header_login">
                                                 <a class="header" href="/courses">
                                                     {u}
@@ -206,80 +217,90 @@ pub fn ContentPage() -> impl IntoView {
                                             </td>
                                             <td class="header_login">
                                                 <a href="/logout" class="home_login">
-                                                    退出
+                                                    "退出"
                                                 </a>
                                             </td>
-                                            {
-                                            if course_id() != None {
-                                                spawn_local(async move {
-                                                    match get_course_chapters(course_id().unwrap().clone())
-                                                        .await
-                                                    {
-                                                        Ok(data) => set_show_chapters.set(data),
-                                                        Err(e) => {
-                                                            set_show_chapters.set(Vec::new());
-                                                            logging::log!("{}", e.to_string());
-                                                        }
-                                                    }
-                                                })
-                                            }}
-                                        }
-                                            .into_view()
-                                    }
-                                    None => view! { <Redirect path="/courses" /> }.into_view(),
-                                }
-                            }
-                            Err(_) => view! { <Redirect path="/courses" /> }.into_view(),
-                        }}
-                    </Await>
-                </tr>
-            </table>
-        </div>
-        <div>
-            <div class="sidenav">
-                <ul style="list-style-type:none">
-                    <For
-                        each=move || show_chapters.get()
-                        key=|state| (state.chapter_id.clone())
-                        let:chapter
-                    >
-                        <li>
-                            <p>
-                                <a
-                                    on:click=move |_| {
-                                        set_chapter_id.set(chapter.chapter_id.clone());
-                                    }
-                                    href="#"
-                                    class="chapter_selection"
-                                >
-                                    <div
-                                        style="float: left;"
-                                        class:display=move || chapter.chapter_number == 0
-                                    >
-                                        <b style="padding-right:5px;">
-                                            {chapter.chapter_number}"."
-                                        </b>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div>
+                                    <div class="sidenav">
+                                        <ul style="list-style-type:none">
+                                            <For
+                                                each=move || show_chapters.get()
+                                                key=|state| (state.chapter_id.clone())
+                                                let:chapter
+                                            >
+                                                <li>
+                                                    <p>
+                                                        <a
+                                                            on:click=move |_| {
+                                                                set_chapter_id.set(chapter.chapter_id.clone());
+                                                            }
+                                                            href="#"
+                                                            class="chapter_selection"
+                                                        >
+                                                            <div
+                                                                style="float: left;"
+                                                                class:display=move || chapter.chapter_number == 0
+                                                            >
+                                                                <b style="padding-right:5px;">
+                                                                    {chapter.chapter_number}"."
+                                                                </b>
+                                                            </div>
+                                                            {chapter.title}
+                                                        </a>
+                                                    </p>
+                                                </li>
+                                            </For>
+                                        </ul>
                                     </div>
-                                    {chapter.title}
-                                </a>
-                            </p>
-                        </li>
-                    </For>
-                </ul>
-            </div>
-            // <div
-            // class="section_size_selector"
-            // on:click=move|_| {
-            // set_show_navbar.update(|n| *n = !*n);
-            // }
-            // ><div class="collaps_arrow">"◀"</div></div>
-            <div class="main">
-                <Transition fallback=move || view! { <p>"正在下载课程章节..."</p> }>
-                    <div inner_html=move || {
-                        async_data.get().map(|value| format!("{}", value.unwrap()))
-                    } />
-                </Transition>
-            </div>
-        </div>
+                                    // <div
+                                    // class="section_size_selector"
+                                    // on:click=move|_| {
+                                    // set_show_navbar.update(|n| *n = !*n);
+                                    // }
+                                    // ><div class="collaps_arrow">"◀"</div></div>
+                                    <div class="main">
+                                        <Transition fallback=move || {
+                                            view! { <p>"正在下载课程章节..."</p> }
+                                        }>
+                                            <div inner_html=move || {
+                                                async_data.get().map(|value| format!("{}", value.unwrap()))
+                                            } />
+                                        </Transition>
+                                    </div>
+                                </div>
+                            }
+                                .into_view()
+                        }
+                        None => {
+                            view! {
+                                // <div
+                                // class="section_size_selector"
+                                // on:click=move|_| {
+                                // set_show_navbar.update(|n| *n = !*n);
+                                // }
+                                // ><div class="collaps_arrow">"◀"</div></div>
+                                <Redirect path="/courses" />
+                            }
+                                .into_view()
+                        }
+                    }
+                }
+                Err(_) => {
+                    view! {
+                        // <div
+                        // class="section_size_selector"
+                        // on:click=move|_| {
+                        // set_show_navbar.update(|n| *n = !*n);
+                        // }
+                        // ><div class="collaps_arrow">"◀"</div></div>
+                        <Redirect path="/courses" />
+                    }
+                        .into_view()
+                }
+            }}
+        </Await>
     }
 }

@@ -20,6 +20,7 @@ pub fn App() -> impl IntoView {
 
     view! {
         <Stylesheet id="leptos" href="/pkg/cloud-class.css" />
+        <Meta charset="UTF-8" />
 
         // sets the document title
         <Title text="云学院" />

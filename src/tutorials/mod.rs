@@ -3,7 +3,7 @@ pub mod output;
 // pub mod console;
 
 use leptos::*;
-use leptos::ev::KeyboardEvent;
+
 
 // use editor::TutorialEditorArea;
 // use output::TutorialOutputArea;
@@ -11,6 +11,10 @@ use leptos::ev::KeyboardEvent;
 
 #[component]
 pub fn TutorialPage() -> impl IntoView {
+    use leptos_router::Redirect;
+    use leptos::ev::KeyboardEvent;
+    use crate::session::extract_session_user;
+
     let (code, set_code) = create_signal("".to_string());
 
     let input_element: NodeRef<html::Textarea> = create_node_ref();
@@ -42,33 +46,63 @@ pub fn TutorialPage() -> impl IntoView {
     };
 
     view! {
-        <div class="tutorial">
-            <form on:submit=on_submit>
-                <div class="toolbar">
-                    <input class="run_code" type="submit" value="⯈ 运行" />
-                </div>
-                <div class="editor_area">
-                    <div class="text_area">
-                        <textarea
-                            class="editor"
-                            spellcheck="false"
-                            prop:value=move || code.get()
-                            on:keydown=on_keydown
-                            node_ref=input_element
-                        ></textarea>
-                    </div>
-                // <div class="console_area">
-                // <TutorialConsoleArea />
-                // </div>
-                </div>
-            </form>
-            <div class="output_area">
-                // <TutorialOutputArea />
-                <pre>
-                    <code>{move || code.get()}</code>
-                </pre>
-            </div>
+        <Await
+            // `future` provides the `Future` to be resolved
+            future=extract_session_user
 
-        </div>
+            // the data is bound to whatever variable name you provide
+            let:session_user
+        >
+            {match session_user {
+                Ok(uname) => {
+                    match uname {
+                        Some(_u) => {
+                            view! {
+                                <div class="tutorial">
+                                    <form on:submit=on_submit>
+                                        <div class="toolbar">
+                                            <input class="run_code" type="submit" value="⯈ 运行" />
+                                        </div>
+                                        <div class="editor_area">
+                                            <div class="text_area">
+                                                <textarea
+                                                    class="editor"
+                                                    spellcheck="false"
+                                                    prop:value=move || code.get()
+                                                    on:keydown=on_keydown
+                                                    node_ref=input_element
+                                                ></textarea>
+                                            </div>
+                                        // <div class="console_area">
+                                        // <TutorialConsoleArea />
+                                        // </div>
+                                        </div>
+                                    </form>
+                                    <div class="output_area">
+                                        // <TutorialOutputArea />
+                                        <pre>
+                                            <code>{move || code.get()}</code>
+                                        </pre>
+                                    </div>
+                                </div>
+                            }
+                                .into_view()
+                        }
+                        None => {
+                            view! {
+                                <Redirect path="/courses" />
+                            }
+                                .into_view()
+                        }
+                    }
+                }
+                Err(_) => {
+                    view! {
+                        <Redirect path="/courses" />
+                    }
+                        .into_view()
+                }
+            }}
+        </Await>
     }
 }

@@ -282,6 +282,18 @@ pub fn ContentPage() -> impl IntoView {
                                 // set_show_navbar.update(|n| *n = !*n);
                                 // }
                                 // ><div class="collaps_arrow">"◀"</div></div>
+                                // <div
+                                // class="section_size_selector"
+                                // on:click=move|_| {
+                                // set_show_navbar.update(|n| *n = !*n);
+                                // }
+                                // ><div class="collaps_arrow">"◀"</div></div>
+                                // <div
+                                // class="section_size_selector"
+                                // on:click=move|_| {
+                                // set_show_navbar.update(|n| *n = !*n);
+                                // }
+                                // ><div class="collaps_arrow">"◀"</div></div>
                                 <Redirect path="/courses" />
                             }
                                 .into_view()
@@ -290,6 +302,36 @@ pub fn ContentPage() -> impl IntoView {
                 }
                 Err(_) => {
                     view! {
+                        // <div
+                        // class="section_size_selector"
+                        // on:click=move|_| {
+                        // set_show_navbar.update(|n| *n = !*n);
+                        // }
+                        // ><div class="collaps_arrow">"◀"</div></div>
+                        // <div
+                        // class="section_size_selector"
+                        // on:click=move|_| {
+                        // set_show_navbar.update(|n| *n = !*n);
+                        // }
+                        // ><div class="collaps_arrow">"◀"</div></div>
+                        // <div
+                        // class="section_size_selector"
+                        // on:click=move|_| {
+                        // set_show_navbar.update(|n| *n = !*n);
+                        // }
+                        // ><div class="collaps_arrow">"◀"</div></div>
+                        // <div
+                        // class="section_size_selector"
+                        // on:click=move|_| {
+                        // set_show_navbar.update(|n| *n = !*n);
+                        // }
+                        // ><div class="collaps_arrow">"◀"</div></div>
+                        // <div
+                        // class="section_size_selector"
+                        // on:click=move|_| {
+                        // set_show_navbar.update(|n| *n = !*n);
+                        // }
+                        // ><div class="collaps_arrow">"◀"</div></div>
                         // <div
                         // class="section_size_selector"
                         // on:click=move|_| {

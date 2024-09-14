@@ -86,24 +86,22 @@ pub async fn get_personal_profile(user: String) -> Result<PersonalContent, Serve
     Ok(result_content)
 }
 #[component]
-pub fn PersonalContentPage(user: Option<String>) -> impl IntoView {
+pub fn PersonalContentPage(user: String) -> impl IntoView {
     let (content, set_content) = create_signal(PersonalContent::default());
 
-    if user != None {
-        spawn_local(
-            async move {
-                match get_personal_profile(user.unwrap().clone()).await {
-                    Ok(data) => {
-                        set_content.set(data)
-                    },
-                    Err(e) => {
-                        set_content.set(PersonalContent::default());
-                        logging::log!("ERROR<user/profile/info/mod.rs>: {}", e.to_string());
-                    },
-                }
-           }
-        )
-    }
+    spawn_local(
+        async move {
+            match get_personal_profile(user).await {
+                Ok(data) => {
+                    set_content.set(data)
+                },
+                Err(e) => {
+                    set_content.set(PersonalContent::default());
+                    logging::log!("ERROR<user/profile/info/mod.rs>: {}", e.to_string());
+                },
+            }
+       }
+    );
 
     view! {
         <div class="profile_contents">

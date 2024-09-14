@@ -16,8 +16,6 @@ pub fn ProfilePage() -> impl IntoView {
 
     let (show_layer, set_show_layer) = create_signal(true);
 
-    let async_data = create_resource(move || username, |_| async move { extract_session_user().await });
-
     view! {
         <Await
             // `future` provides the `Future` to be resolved
@@ -90,16 +88,10 @@ pub fn ProfilePage() -> impl IntoView {
                                 </div>
                                 <Transition fallback=move || view! { <h1>"正在运行..."</h1> }>
                                     <div class:display=move || show_layer.get() == false>
-                                        <CourseContentPage user=async_data
-                                            .get()
-                                            .unwrap_or(Ok(None))
-                                            .expect("REASON") />
+                                        <CourseContentPage user=username.get() />
                                     </div>
                                     <div class:display=move || show_layer.get() == true>
-                                        <PersonalContentPage user=async_data
-                                            .get()
-                                            .unwrap_or(Ok(None))
-                                            .expect("REASON") />
+                                        <PersonalContentPage user=username.get() />
                                     </div>
                                 </Transition>
                             }

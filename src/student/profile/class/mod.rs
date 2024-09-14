@@ -109,25 +109,23 @@ pub async fn get_user_courses(user: String) -> Result<Vec<CourseContent>, Server
 }
 
 #[component]
-pub fn CourseContentPage(user: Option<String>) -> impl IntoView {
+pub fn CourseContentPage(user: String) -> impl IntoView {
 
     let (content, set_content) = create_signal(Vec::new());
 
-    if user != None {
-        spawn_local(
-            async move {
-                match get_user_courses(user.unwrap().clone()).await {
-                    Ok(data) => {
-                        set_content.set(data)
-                    },
-                    Err(e) => {
-                        set_content.set(Vec::new());
-                        logging::log!("{}", e.to_string());
-                    },
-                }
-           }
-        )
-    }
+    spawn_local(
+        async move {
+            match get_user_courses(user).await {
+                Ok(data) => {
+                    set_content.set(data)
+                },
+                Err(e) => {
+                    set_content.set(Vec::new());
+                    logging::log!("{}", e.to_string());
+                },
+            }
+       }
+    );
 
     view! {
         <div class="contents">

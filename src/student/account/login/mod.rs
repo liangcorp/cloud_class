@@ -15,7 +15,7 @@ pub fn LoginPage() -> impl IntoView {
     let (show_layer, set_show_layer) = create_signal(true);
 
     view! {
-        <Title text="浩天数智化教学" />
+        <Title text="数智化教学" />
 
         <div class="full-height">
             <div class="login_div" align="center">

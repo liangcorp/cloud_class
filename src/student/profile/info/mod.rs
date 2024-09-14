@@ -67,36 +67,34 @@ pub async fn get_personal_profile(user: String) -> Result<PersonalContent, Serve
     .bind(&user)
     .fetch_one(&pool)
     .await {
-        Ok(pc) => personal_content = pc,
+        Ok(ok_personal_content) => personal_content = PersonalContent {
+            username: ok_personal_content.username.clone(),
+            full_name: ok_personal_content.full_name.clone(),
+            start_date: ok_personal_content.start_date.clone(),
+            status: ok_personal_content.status.clone(),
+            address: ok_personal_content.address.clone(),
+            email: ok_personal_content.email.clone(),
+            mobile: ok_personal_content.mobile.clone(),
+        },
         Err(e) => {
             return Err(ServerFnError::Args(e.to_string()))
         },
     }
 
-    let result_content = PersonalContent {
-        username: personal_content.username.clone(),
-        full_name: personal_content.full_name.clone(),
-        start_date: personal_content.start_date.clone(),
-        status: personal_content.status.clone(),
-        address: personal_content.address.clone(),
-        email: personal_content.email.clone(),
-        mobile: personal_content.mobile.clone(),
-    };
-
-    Ok(result_content)
+    Ok(personal_content)
 }
 #[component]
 pub fn PersonalContentPage(user: String) -> impl IntoView {
-    let (content, set_content) = create_signal(PersonalContent::default());
+    let (personal_content, set_peronsal_content) = create_signal(PersonalContent::default());
 
     spawn_local(
         async move {
             match get_personal_profile(user).await {
-                Ok(data) => {
-                    set_content.set(data)
+                Ok(ok_personal_content) => {
+                    set_peronsal_content.set(ok_personal_content)
                 },
                 Err(e) => {
-                    set_content.set(PersonalContent::default());
+                    set_peronsal_content.set(PersonalContent::default());
                     logging::log!("ERROR<user/profile/info/mod.rs>: {}", e.to_string());
                 },
             }
@@ -109,31 +107,31 @@ pub fn PersonalContentPage(user: String) -> impl IntoView {
             <table style="width:100%">
                 <tr>
                     <td>
-                        <h1>{move || content.get().full_name}</h1>
+                        <h1>{move || personal_content.get().full_name}</h1>
                         <table>
                             <tr>
                                 <td>
                                     <b>"注册日:"</b>
                                 </td>
-                                <td>{move || content.get().start_date}</td>
+                                <td>{move || personal_content.get().start_date}</td>
                             </tr>
                             <tr>
                                 <td>
                                     <b>"邮件地址:"</b>
                                 </td>
-                                <td>{move || content.get().email}</td>
+                                <td>{move || personal_content.get().email}</td>
                             </tr>
                             <tr>
                                 <td>
                                     <b>"手机号:"</b>
                                 </td>
-                                <td>{move || content.get().mobile}</td>
+                                <td>{move || personal_content.get().mobile}</td>
                             </tr>
                             <tr>
                                 <td>
                                     <b>"地址:"</b>
                                 </td>
-                                <td>{move || content.get().address}</td>
+                                <td>{move || personal_content.get().address}</td>
                             </tr>
                         </table>
                     </td>

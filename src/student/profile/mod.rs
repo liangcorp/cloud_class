@@ -25,9 +25,10 @@ pub fn ProfilePage() -> impl IntoView {
             let:session_user
         >
             {match session_user {
-                Ok(uname) => {
-                    match uname {
-                        Some(u) => {
+                Ok(ok_username) => {
+                    match ok_username {
+                        Some(some_username) => {
+                            set_username.set(some_username.clone());
                             view! {
                                 <div class="contents">
                                     <table>
@@ -69,10 +70,7 @@ pub fn ProfilePage() -> impl IntoView {
                                             <td class="header_menu"></td>
                                             <td class="header_login">
                                                 <a class="header" href="/profile">
-                                                    {
-                                                        set_username.set(u.clone());
-                                                        u
-                                                    }
+                                                    {some_username}
                                                 </a>
                                             </td>
                                             <td class="header_login">

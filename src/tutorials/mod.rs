@@ -54,9 +54,9 @@ pub fn TutorialPage() -> impl IntoView {
             let:session_user
         >
             {match session_user {
-                Ok(uname) => {
-                    match uname {
-                        Some(_u) => {
+                Ok(ok_username) => {
+                    match ok_username {
+                        Some(_some_username) => {
                             view! {
                                 <div class="tutorial">
                                     <form on:submit=on_submit>

@@ -11,8 +11,8 @@ pub async fn user_logout() -> Result<Option<()>, ServerFnError> {
     let mut header: HeaderMap<HeaderValue> = HeaderMap::new();
 
     match extract().await {
-        Ok(h) => {
-            header = h;
+        Ok(ok_header) => {
+            header = ok_header;
         }
         Err(e) => {
             logging::log!("ERROR<session/mod.rs>: {}", e.to_string());
@@ -20,13 +20,13 @@ pub async fn user_logout() -> Result<Option<()>, ServerFnError> {
     }
 
     let cookie = match header.get("cookie") {
-        Some(c) => c.to_str().unwrap().to_string(),
+        Some(some_cookie) => some_cookie.to_str().unwrap().to_string(),
         None => return Err(ServerFnError::Args("cookie not found".to_string())),
     };
 
     let exit_message;
     match cookie.split('=').nth(1) {
-        Some(e) => exit_message = e,
+        Some(some_exit_message) => exit_message = some_exit_message,
         None => return Err(ServerFnError::Args("malformed cookie".to_string())),
     }
 

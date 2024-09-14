@@ -93,16 +93,16 @@ cfg_if! {
                 cookie.session_token = token.to_string();
 
                 if is_session_only {
-                    if let Ok(c) = HeaderValue::from_str(&cookie.to_string()) {
+                    if let Ok(cookie_content) = HeaderValue::from_str(&cookie.to_string()) {
                         // pull ResponseOptions from context
                         let response = expect_context::<ResponseOptions>();
-                        response.insert_header(header::SET_COOKIE, c);
+                        response.insert_header(header::SET_COOKIE, cookie_content);
                     }
                 } else {
-                    if let Ok(c) = HeaderValue::from_str(&cookie.to_session_only_string()) {
+                    if let Ok(cookie_content) = HeaderValue::from_str(&cookie.to_session_only_string()) {
                         // pull ResponseOptions from context
                         let response = expect_context::<ResponseOptions>();
-                        response.insert_header(header::SET_COOKIE, c);
+                        response.insert_header(header::SET_COOKIE, cookie_content);
                     }
                 }
 
@@ -116,10 +116,10 @@ cfg_if! {
                 cookie.max_age = "0".to_string();
                 cookie.expire_date = "Thu, 01 Jan 1970 00:00:00 GMT".to_string();
 
-                if let Ok(c) = HeaderValue::from_str(&cookie.to_string()) {
+                if let Ok(cookie_content) = HeaderValue::from_str(&cookie.to_string()) {
                     // pull ResponseOptions from context
                     let response = expect_context::<ResponseOptions>();
-                    response.insert_header(header::SET_COOKIE, c);
+                    response.insert_header(header::SET_COOKIE, cookie_content);
                 }
 
                 Ok(())

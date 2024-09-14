@@ -62,13 +62,13 @@ pub fn HomePage() -> impl IntoView {
                         let:session_user
                     >
                         {match session_user {
-                            Ok(username) => {
-                                match username {
-                                    Some(u) => {
+                            Ok(ok_username) => {
+                                match ok_username {
+                                    Some(some_username) => {
                                         view! {
                                             <td class="header_login">
                                                 <a class="header" href="/profile">
-                                                    {u}
+                                                    {some_username}
                                                 </a>
                                             </td>
                                             <td class="header_login">

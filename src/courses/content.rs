@@ -94,7 +94,7 @@ pub async fn get_course_chapters(course_id: String) -> Result<Vec<Chapter>, Serv
     .bind(&course_id)
     .fetch_all(&pool)
     .await {
-        Ok(cc) => chapters = cc,
+        Ok(c) => chapters = c,
         Err(e) => {
             return Err(ServerFnError::Args(e.to_string()))
         },
@@ -181,9 +181,9 @@ pub fn ContentPage() -> impl IntoView {
             let:session_user
         >
             {match session_user {
-                Ok(uname) => {
-                    match uname {
-                        Some(u) => {
+                Ok(ok_username) => {
+                    match ok_username {
+                        Some(some_username) => {
                             view! {
                                 {if course_id() != None {
                                     spawn_local(async move {
@@ -212,7 +212,7 @@ pub fn ContentPage() -> impl IntoView {
                                             </td>
                                             <td class="header_login">
                                                 <a class="header" href="/courses">
-                                                    {u}
+                                                    {some_username}
                                                 </a>
                                             </td>
                                             <td class="header_login">

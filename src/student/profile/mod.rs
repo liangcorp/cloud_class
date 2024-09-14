@@ -53,11 +53,12 @@ pub fn ProfilePage() -> impl IntoView {
                         </a>
                     </td>
                     <td class="header_menu">
-                        <input
-                            class="course_search_box_profile"
-                            style="text"
-                            placeholder="搜索"
-                        />
+                    </td>
+                    <td class="header_menu">
+                    </td>
+                    <td class="header_menu">
+                    </td>
+                    <td class="header_menu">
                     </td>
                     <Await
                         // `future` provides the `Future` to be resolved

@@ -114,11 +114,12 @@ cfg_if! {
             }
 
             pub fn delete_cookie() -> Result<(), ServerFnError> {
-                let mut cookie = Cookie::default();
-
-                cookie.session_token = "".to_string();
-                cookie.max_age = "0".to_string();
-                cookie.expire_date = "Thu, 01 Jan 1970 00:00:00 GMT".to_string();
+                let cookie = Cookie {
+                    session_token: "".to_string(),
+                    max_age: "0".to_string(),
+                    expire_date: "Thu, 01 Jan 1970 00:00:00 GMT".to_string(),
+                    .. Default::default()
+                };
 
                 if let Ok(ok_cookie_content) = HeaderValue::from_str(&cookie.to_string()) {
                     // pull ResponseOptions from context

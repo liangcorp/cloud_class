@@ -140,7 +140,7 @@ pub async fn get_course_chapters(course_id: String) -> Result<Vec<Chapter>, Serv
                 .map(|cc| Chapter {
                         chapter_id: cc.chapter_id.clone(),
                         title: cc.title.clone(),
-                        chapter_number: cc.chapter_number.clone(),
+                        chapter_number: cc.chapter_number,
                         course_id: cc.course_id.clone(),
                 })
                 .collect(),

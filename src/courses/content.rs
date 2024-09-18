@@ -210,7 +210,7 @@ pub fn ContentPage() -> impl IntoView {
 }
 
 #[component]
-pub fn CourseContentGate(username: String) -> impl IntoView {
+fn CourseContentGate(username: String) -> impl IntoView {
     let params = use_params_map();
 
     // id: || -> Option<String>
@@ -255,7 +255,7 @@ pub fn CourseContentGate(username: String) -> impl IntoView {
 }
 
 #[component]
-pub fn CourseContent(username: String, course_id: String, disable: ReadSignal<bool>) -> impl IntoView {
+fn CourseContent(username: String, course_id: String, disable: ReadSignal<bool>) -> impl IntoView {
     let (chapter_id, set_chapter_id) = create_signal("welcome-0000".to_string());
     let (show_chapters, set_show_chapters) = create_signal(Vec::new());
 

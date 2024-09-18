@@ -31,7 +31,7 @@ pub fn ProfilePage() -> impl IntoView {
 }
 
 #[component]
-pub fn ProfilePageContent(username: String) -> impl IntoView {
+fn ProfilePageContent(username: String) -> impl IntoView {
     use class::CourseContentPage;
     use info::PersonalContentPage;
 

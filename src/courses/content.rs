@@ -249,11 +249,7 @@ pub fn CourseContentGate(username: String) -> impl IntoView {
             class:cover_up_chapter=move || !blur_effect.get()
             class:isDisabled=move || !blur_effect.get()
         >
-            <CourseContent
-                username=username
-                course_id=course_id().unwrap()
-                disable=blur_effect
-            />
+            <CourseContent username=username course_id=course_id().unwrap() disable=blur_effect />
         </div>
     }
 }

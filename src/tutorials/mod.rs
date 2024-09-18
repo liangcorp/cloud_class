@@ -99,11 +99,12 @@ pub fn TutorialContentGate(username: String) -> impl IntoView {
     let (display_tutorial, set_display_tutorial) = create_signal(true);
 
     let username_clone = username.clone();
+    let course_id_clone = course_id().unwrap().clone();
 
     view! {
         {
             spawn_local(async move {
-                match check_user_courses(username_clone, course_id().unwrap().clone()).await {
+                match check_user_courses(username_clone, course_id_clone).await {
                     Ok(result_bool) => set_display_tutorial.set(result_bool),
                     Err(_) => set_display_tutorial.set(true),
                 }
@@ -127,7 +128,6 @@ pub fn TutorialContentGate(username: String) -> impl IntoView {
 fn TutorialContent(username: String, course_id: String) -> impl IntoView {
     use leptos::ev::KeyboardEvent;
 
-    // let _ = username;
     let (code, set_code) = create_signal("".to_string());
 
     let input_element: NodeRef<html::Textarea> = create_node_ref();

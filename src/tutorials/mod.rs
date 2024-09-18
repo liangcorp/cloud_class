@@ -132,6 +132,19 @@ fn TutorialContent(username: String, course_id: String) -> impl IntoView {
 
     view! {
         <div style="float:left; font-weight:bold; padding-top:10px">"用户: "{username}</div>
+        // <div>
+        //     <select
+        //         on:change=move |ev| {
+        //             let new_value = event_target_value(&ev);
+        //             set_value(new_value.parse().unwrap());
+        //         }
+        //         prop:value=move || value.get().to_string()
+        //     >
+        //         <option value="0">"0"</option>
+        //         <option value="1">"1"</option>
+        //         <option value="2">"2"</option>
+        //     </select>
+        // </div>
         <TutorialEditorArea code=code set_code=set_code />
         <TutorialOutputArea code=code />
     }

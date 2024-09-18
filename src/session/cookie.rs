@@ -3,11 +3,12 @@ use cfg_if::cfg_if;
 cfg_if! {
     if #[cfg(feature = "ssr")] {
         use leptos::*;
+        use std::fmt;
         use server_fn::ServerFnError;
         use chrono::{Datelike, Timelike, Utc};
         use http::{header, HeaderValue};
-        // use leptos::expect_context;
         use leptos_axum::ResponseOptions;
+        // use leptos::expect_context;
 
         #[derive(Debug)]
         pub struct Cookie {
@@ -62,26 +63,27 @@ cfg_if! {
             }
         }
 
-        impl Cookie {
-
-            pub fn to_session_only_string(&self) -> String {
-                format!("session_token={};domain={};path={};{};{};SameSite={}",
-                    self.session_token,
-                    self.domain,
-                    self.path,
-                    self.secure,
-                    self.http_only,
-                    self.same_site
-                )
-            }
-
-            pub fn to_string(&self) -> String {
-                format!("session_token={};domain={};path={};Max-Age={};Expires={};{};{};SameSite={}",
+        impl fmt::Display for Cookie {
+            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                write!(f, "{}", format!("session_token={};domain={};path={};Max-Age={};Expires={};{};{};SameSite={}",
                     self.session_token,
                     self.domain,
                     self.path,
                     self.max_age,
                     self.expire_date,
+                    self.secure,
+                    self.http_only,
+                    self.same_site
+                ))
+            }
+        }
+
+        impl Cookie {
+            pub fn to_session_only_string(&self) -> String {
+                format!("session_token={};domain={};path={};{};{};SameSite={}",
+                    self.session_token,
+                    self.domain,
+                    self.path,
                     self.secure,
                     self.http_only,
                     self.same_site

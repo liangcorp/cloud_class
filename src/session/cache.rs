@@ -3,6 +3,7 @@ use cfg_if::cfg_if;
 cfg_if! {
     if #[cfg(feature = "ssr")] {
         use leptos::*;
+        use std::fmt;
         use server_fn::ServerFnError;
         use crate::utils::redis::Redis;
         use redis::Commands;
@@ -22,9 +23,9 @@ cfg_if! {
             }
         }
 
-        impl Display for Cache {
-            pub fn to_string(&self) -> String {
-                format!("Cache: ( {} {} )", self.value, self.key)
+        impl fmt::Display for Cache {
+            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                write!(f, "{}", format!("Cache: ( {} {} )", self.value, self.key))
             }
         }
 

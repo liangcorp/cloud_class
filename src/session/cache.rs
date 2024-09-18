@@ -22,11 +22,13 @@ cfg_if! {
             }
         }
 
-        impl Cache {
+        impl Display for Cache {
             pub fn to_string(&self) -> String {
                 format!("Cache: ( {} {} )", self.value, self.key)
             }
+        }
 
+        impl Cache {
             pub fn set_cache(key: &str, value: &str) -> Result<(), ServerFnError> {
                 let mut cache = Cache::default();
                 cache.value = value.to_string();

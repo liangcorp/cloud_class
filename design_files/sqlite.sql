@@ -39,7 +39,7 @@ CREATE TABLE courses (
     tag_line varchar(300),
     update_date varchar(40),
     status varchar(100),
-    series_id char(36),
+    series_id char(36)
 );
 
 CREATE TABLE student_course (
@@ -62,14 +62,9 @@ CREATE TABLE chapters (
     title varchar(400),
     content TEXT,
     chapter_number INT,
-    course_id varchar(400)
+    course_id char(36)
 );
 
-CREATE TABLE course_chapter (
-    course_id char(36) NOT NULL,
-    chapter_id char(36) NOT NULL,
-    PRIMARY KEY (course_id, chapter_id)
-);
 
 CREATE TABLE series (
     series_id char(36) NOT NULL PRIMARY KEY,
@@ -106,10 +101,10 @@ INSERT INTO instructors (username, salt, pw_hash, start_date, full_name, about, 
 VALUES ('teacher1', 'x1z2S4jDbLrigzigZp9CdA', 'zhZt3RLLVZV9watjOg/gIvAhjuOvSox9JOf2nxdZ2S8', '2024-0821', '教师 1', '10 年教学经验', 'active',  'teacher1@example.com', '18602341237');
 
 INSERT INTO courses (course_id, title, price, course_language, rating, target_level, requirement, duration_minutes, about, description, tag_line, update_date, status, series_id)
-VALUES ('97931561-7689-44a4-bf80-f2e7c9e8d2dd', 'Python - 面向物联网控制', 100.00, '中文', 9, '初学者', '无需经验', 960, '对Python语言有基本的了解.对物联网有基本的了解.','面对小学生和初中生的Python编成教学课程。以物联网为背景。','以物联网为背景,面对小学生和初中生的Python编成教学课程。', '2024-08-20', 'live', NULL);
+VALUES ('97931561-7689-44a4-bf80-f2e7c9e8d2dd', 'Python - 面向物联网控制', 100.00, '中文', 9, '初学者', '无需经验', 960, '对Python语言有基本的了解.对物联网有基本的了解.','面对小学生和初中生的Python编成教学课程。以物联网为背景。','以物联网为背景,面对小学生和初中生的Python编成教学课程。', '2024-08-20', 'live', 'series-01');
 
 INSERT INTO courses (course_id, title, price, course_language, rating, target_level, requirement, duration_minutes, about, description, tag_line, update_date, status, series_id)
-VALUES ('10031561-7689-44a4-bf80-f2e7c9e8d2dd', 'C 编程语言基础', 100.00, '中文', 9, '初学者', '无需经验', 960, '对C语言有基本的了解.','面对所有人的C编成教学课程。','基础C语言编成教学课程。', '2024-08-21', 'live', NULL);
+VALUES ('10031561-7689-44a4-bf80-f2e7c9e8d2dd', 'C 编程语言基础', 100.00, '中文', 9, '初学者', '无需经验', 960, '对C语言有基本的了解.','面对所有人的C编成教学课程。','基础C语言编成教学课程。', '2024-08-21', 'live', 'series-01');
 
 INSERT INTO student_course (username, course_id, allow_code, priority)
 VALUES ('student1', '97931561-7689-44a4-bf80-f2e7c9e8d2dd', true, 1);
@@ -130,10 +125,17 @@ INSERT INTO course_instructor (course_id, username)
 VALUES ('97931561-7689-44a4-bf80-f2e7c9e8d2dd', 'teacher1');
 
 INSERT INTO chapters (chapter_id, title, content, chapter_number, course_id)
-VALUES ('welcome-0000', '欢迎', '# 欢迎来到Python - 面向物联网控制', 0, '97931561-7689-44a4-bf80-f2e7c9e8d2dd');
+VALUES ('welcome-0000', '欢迎', '# 欢迎来到课程', 0, '00000000-0000-0000-0000-000000000000');
 
 INSERT INTO chapters (chapter_id, title, content, chapter_number, course_id)
 VALUES ('python-0000-001', '介绍', '# 介绍', 1, '97931561-7689-44a4-bf80-f2e7c9e8d2dd');
 
 INSERT INTO chapters (chapter_id, title, content, chapter_number, course_id)
 VALUES ('python-0000-002', '背景', '# 背景', 2, '97931561-7689-44a4-bf80-f2e7c9e8d2dd');
+
+INSERT INTO chapters (chapter_id, title, content, chapter_number, course_id)
+VALUES ('c-0000-001', '介绍', '# 介绍', 1, '10031561-7689-44a4-bf80-f2e7c9e8d2dd');
+
+INSERT INTO chapters (chapter_id, title, content, chapter_number, course_id)
+VALUES ('c-0000-002', '背景', '# 背景', 2, '10031561-7689-44a4-bf80-f2e7c9e8d2dd');
+

@@ -53,7 +53,7 @@ cfg_if! {
 
         #[derive(Clone, Debug, PartialEq)]
         #[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
-        pub struct ChapterQuery {
+        pub struct CourseChapterQuery {
             chapter_id: String,
             title: String,
             chapter_number: u32,
@@ -68,6 +68,43 @@ cfg_if! {
             content: String,
             chapter_number: u32,
         }
+
+        #[derive(Clone, Debug, PartialEq)]
+        #[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
+        pub struct UserChapterQuery {
+            username: String,
+            course_id: String
+        }
+    }
+}
+
+#[server]
+pub async fn check_user_courses(user: String, course_id: String) -> Result<bool, ServerFnError> {
+    use crate::state::AppState;
+
+    //  取得软件状态
+    let state;
+    match use_context::<AppState>() {
+        Some(s) => state = s,
+        None => return Ok(false),
+    }
+
+    //  取得数据库信息
+    let pool = state.pool;
+
+    // let user_courses: (String, String);
+
+    match sqlx::query_as::<_, UserChapterQuery>(
+        "SELECT DISTINCT username, course_id
+        FROM student_course
+        WHERE username = $1 AND course_id = $2"
+    )
+    .bind(&user)
+    .bind(&course_id)
+    .fetch_one(&pool)
+    .await {
+        Ok(_) => Ok(true),
+        Err(_) => Ok(false), // Course not found
     }
 }
 
@@ -88,7 +125,7 @@ pub async fn get_course_chapters(course_id: String) -> Result<Vec<Chapter>, Serv
     /*---   提取用户数据    ---*/
     let chapters;
 
-    match sqlx::query_as::<_, ChapterQuery>(
+    match sqlx::query_as::<_, CourseChapterQuery>(
         "SELECT *
         FROM chapters
         WHERE course_id = $1
@@ -137,17 +174,12 @@ pub async fn get_chapter_content(chapter_id: String) -> Result<String, ServerFnE
     .fetch_one(&pool)
     .await {
         Ok(ok_chapter_content) => chapter_content = ok_chapter_content,
-        Err(e) => return Err(ServerFnError::Args(e.to_string())),
+        Err(e) => return Err(ServerFnError::Args(format!("get_chapter_content: {}", e.to_string()))),
     }
     // logging::log!("transform content to raw HTML");
     let result_html = markdown_to_html(chapter_content.content.as_str(), &Options::default());
 
     Ok(result_html)
-}
-
-#[server]
-pub async fn is_subscripted() -> Result<bool, ServerFnError> {
-    todo!()
 }
 
 #[component]
@@ -166,8 +198,8 @@ pub fn ContentPage() -> impl IntoView {
                 Ok(ok_username) => {
                     match ok_username {
                         Some(some_username) => {
-                            view! { <UserCourseContent username=some_username.to_string() /> }
-                        }
+                            view! { <BlurryPanel username=some_username.to_string() /> }
+                        },
                         None => view! { <Redirect path="/courses" /> },
                     }
                 }
@@ -178,18 +210,61 @@ pub fn ContentPage() -> impl IntoView {
 }
 
 #[component]
-pub fn UserCourseContent(username: String) -> impl IntoView {
-    let (chapter_id, set_chapter_id) = create_signal("welcome-0000".to_string());
-    let (show_content, set_show_content) = create_signal(false);
-    let (show_chapters, set_show_chapters) = create_signal(Vec::new());
-
-    // @TODO: collapsible side navigation panel
-    // let (show_navbar, set_show_navbar) = create_signal(true);
-
+pub fn BlurryPanel(username: String) -> impl IntoView {
     let params = use_params_map();
 
     // id: || -> Option<String>
     let course_id = move || params.with_untracked(|params| params.get("course_id").cloned());
+
+    let (blur_effect, set_blur_effect) = create_signal(true);
+
+    let username_clone = username.clone();
+
+    view! {
+        {
+            if course_id().unwrap() == "" {
+                return vec![view! { <Redirect path="/courses" /> }];
+            }
+            spawn_local(async move {
+                match check_user_courses(username_clone, course_id().unwrap().clone()).await {
+                    Ok(result_bool) => set_blur_effect.set(result_bool),
+                    Err(_) => set_blur_effect.set(true),
+                }
+            });
+        }
+
+        <div class:display=move || blur_effect.get()>
+            <div>
+                <a class="header" href="/courses">
+                    "回到个人主页"
+                </a>
+            </div>
+            <div style="margin-left:40%">
+                <h2>
+                    <p style="color:red">"您不能访问这节课程"</p>
+                </h2>
+            </div>
+        </div>
+        <div
+            class:cover_up_chapter=move || !blur_effect.get()
+            class:isDisabled=move || !blur_effect.get()
+        >
+            <UserCourseContent
+                username=username
+                course_id=course_id().unwrap()
+                disable=blur_effect
+            />
+        </div>
+    }
+}
+
+#[component]
+pub fn UserCourseContent(username: String, course_id: String, disable: ReadSignal<bool>) -> impl IntoView {
+    let (chapter_id, set_chapter_id) = create_signal("welcome-0000".to_string());
+    let (show_chapters, set_show_chapters) = create_signal(Vec::new());
+
+    // @TODO: collapsible side navigation panel
+    // let (show_navbar, set_show_navbar) = create_signal(true);
 
     // create_resource takes two arguments after its scope
     let async_data = create_resource(
@@ -201,84 +276,80 @@ pub fn UserCourseContent(username: String) -> impl IntoView {
         |value| async move { get_chapter_content(value).await },
     );
 
+    let course_id_clone = course_id.clone();
 
     view! {
         {
-            if course_id().unwrap() == "" {
-                return vec![view! { <Redirect path="/courses" /> }];
-            }
-
             spawn_local(async move {
-                match get_course_chapters(course_id().unwrap().clone()).await {
+                match get_course_chapters(course_id_clone).await {
                     Ok(ok_course_chapters) => set_show_chapters.set(ok_course_chapters),
                     Err(_) => set_show_chapters.set(Vec::new()),
                 }
-            })
+            });
         }
-        <div class:display=move || show_content.get() style="opacity:0.1">
-            <div align="right" style="height:30px">
-                <table>
-                    <tr>
-                        <td style="padding-right:20px">
+        <div align="right" style="height:30px">
+            <table>
+                <tr>
+                    <td style="padding-right:20px">
+                        <a
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            href=format!("/tutorials/{}", course_id)
+                            class="tutorial_link"
+                        >
+                            "⚒ 实验室"
+                        </a>
+                    </td>
+                    <td class="header_login">
+                        <a class="header" href="/courses">
+                            {username}
+                        </a>
+                    </td>
+                    <td class="header_login">
+                        <a href="/logout" class="home_login">
+                            "退出"
+                        </a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="sidenav">
+            <ul style="list-style-type:none">
+                <For
+                    each=move || show_chapters.get()
+                    key=|state| (state.chapter_id.clone())
+                    let:chapter
+                >
+                    <li>
+                        <p>
                             <a
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                href=format!("/tutorials/{}", course_id().unwrap())
-                                class="tutorial_link"
+                                on:click=move |_| {
+                                    set_chapter_id.set(chapter.chapter_id.clone());
+                                }
+                                class:isDisabled=move || !disable.get()
+                                href="#"
                             >
-                                "⚒ 实验室"
-                            </a>
-                        </td>
-                        <td class="header_login">
-                            <a class="header" href="/courses">
-                                {username}
-                            </a>
-                        </td>
-                        <td class="header_login">
-                            <a href="/logout" class="home_login">
-                                "退出"
-                            </a>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-            <div class="sidenav">
-                <ul style="list-style-type:none">
-                    <For
-                        each=move || show_chapters.get()
-                        key=|state| (state.chapter_id.clone())
-                        let:chapter
-                    >
-                        <li>
-                            <p>
-                                <a
-                                    on:click=move |_| {
-                                        set_chapter_id.set(chapter.chapter_id.clone());
-                                    }
-                                    href="#"
+                                <div
+                                    style="float: left;"
+                                    class:display=move || chapter.chapter_number == 0
                                 >
-                                    <div
-                                        style="float: left;"
-                                        class:display=move || chapter.chapter_number == 0
-                                    >
-                                        <b style="padding-right:5px;">{chapter.chapter_number}"."</b>
-                                    </div>
-                                    {chapter.title}
-                                </a>
-                            </p>
-                        </li>
-                    </For>
-                </ul>
-            </div>
-            <div class="chapter_content">
-                <Transition fallback=move || {
-                    view! { <p>"正在下载课程章节..."</p> }
-                }>
-                    <div inner_html=move || {
-                        async_data.get().map(|value| value.unwrap().to_string())
-                    } />
-                </Transition>
-            </div>
+                                    <b style="padding-right:5px;">{chapter.chapter_number}"."</b>
+                                </div>
+                                {chapter.title}
+                            </a>
+                        </p>
+                    </li>
+                </For>
+            </ul>
+        </div>
+        <div class="chapter_content">
+            <Transition fallback=move || {
+                view! { <p>"正在下载课程章节..."</p> }
+            }>
+                <div inner_html=move || {
+                    async_data.get().map(|value| value.unwrap().to_string())
+                } />
+            </Transition>
         </div>
     }
 }

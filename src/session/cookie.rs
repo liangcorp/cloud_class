@@ -65,7 +65,7 @@ cfg_if! {
 
         impl fmt::Display for Cookie {
             fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                write!(f, "{}", format!("session_token={};domain={};path={};Max-Age={};Expires={};{};{};SameSite={}",
+                write!(f, "session_token={};domain={};path={};Max-Age={};Expires={};{};{};SameSite={}",
                     self.session_token,
                     self.domain,
                     self.path,
@@ -74,7 +74,7 @@ cfg_if! {
                     self.secure,
                     self.http_only,
                     self.same_site
-                ))
+                )
             }
         }
 

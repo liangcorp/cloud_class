@@ -20,11 +20,10 @@ async fn main() {
     let addr = leptos_options.site_addr;
     let routes = generate_route_list(App);
 
-    let db_pool;
-    match create_pool().await {
-        Ok(p) => db_pool = p,
+    let db_pool = match create_pool().await {
+        Ok(p) => p,
         Err(e) => panic!("{}", e.to_string()),
-    }
+    };
 
     let app_state = AppState {
         pool: db_pool.clone(),

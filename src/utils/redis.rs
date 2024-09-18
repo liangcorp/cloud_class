@@ -2,8 +2,9 @@ use cfg_if::cfg_if;
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
-        use redis::{Client, Connection, cluster::{ClusterClient, ClusterConnection}};
+        use std::fmt;
         use leptos::{server_fn::ServerFnError};
+        use redis::{Client, Connection, cluster::{ClusterClient, ClusterConnection}};
 
         #[allow(dead_code)]
         pub struct Redis {
@@ -31,12 +32,14 @@ cfg_if! {
             }
         }
 
-        impl Redis {
-            fn to_string(&self) -> String {
+        impl fmt::Display for Redis {
+            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
                 let redis = Redis::default();
-                format!("{}://{}:{}@{}:{}/", redis.uri_scheme, redis.username, redis.password, redis.hostname, redis.port)
+                write!(f, "{}://{}:{}@{}:{}/", redis.uri_scheme, redis.username, redis.password, redis.hostname, redis.port)
             }
+        }
 
+        impl Redis {
             pub fn get_single_connection() -> Result<Connection, ServerFnError> {
                 let client;
                 match Client::open(Redis::default().to_string()) {

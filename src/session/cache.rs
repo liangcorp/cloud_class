@@ -25,7 +25,7 @@ cfg_if! {
 
         impl fmt::Display for Cache {
             fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                write!(f, "{}", format!("Cache: ( {} {} )", self.value, self.key))
+                write!(f, "Cache: ( {} {} )", self.value, self.key)
             }
         }
 

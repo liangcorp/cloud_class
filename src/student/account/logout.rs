@@ -8,16 +8,15 @@ pub async fn user_logout() -> Result<Option<()>, ServerFnError> {
     use axum::http::header::{HeaderMap, HeaderValue};
     use crate::session::{cache::Cache, cookie::Cookie};
 
-    let mut header: HeaderMap<HeaderValue> = HeaderMap::new();
-
-    match extract().await {
+    let header: HeaderMap<HeaderValue> = match extract().await {
         Ok(ok_header) => {
-            header = ok_header;
+            ok_header
         }
         Err(e) => {
             logging::log!("ERROR<session/mod.rs>: {}", e.to_string());
+            HeaderMap::new()
         }
-    }
+    };
 
     let cookie = match header.get("cookie") {
         Some(some_cookie) => some_cookie.to_str().unwrap().to_string(),

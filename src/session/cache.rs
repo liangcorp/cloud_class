@@ -37,15 +37,13 @@ cfg_if! {
                     key: key.to_string(),
                 };
 
-                let mut redis_conn;
-                match Redis::get_single_connection() {
-                    Ok(ok_redis_conn) => redis_conn = ok_redis_conn,
+                let mut redis_conn = match Redis::get_single_connection() {
+                    Ok(ok_redis_conn) => ok_redis_conn,
                     Err(e) => {
                         // logging::log!("DEBUG<session/cache.rs>: set_cache - {}", e.to_string());
-                        return Err(ServerFnError::Args(e.to_string()));
-                    }
-
-                }
+                        return Err(ServerFnError::Args(e.to_string()))
+                    },
+                };
                 // logging::log!("DEBUG<session/cache.rs>: set_cache - {}", cache.to_string());
 
                 let _: () = redis_conn.set(&cache.key, &cache.value)?;
@@ -55,14 +53,13 @@ cfg_if! {
             }
 
             pub fn delete_cache(key: &str) -> Result<(), ServerFnError> {
-                let mut redis_conn;
-                match Redis::get_single_connection() {
-                    Ok(ok_redis_conn) => redis_conn = ok_redis_conn,
+                let mut redis_conn = match Redis::get_single_connection() {
+                    Ok(ok_redis_conn) => ok_redis_conn,
                     Err(e) => {
                         // logging::log!("DEBUG<session/cache.rs>: set_cache - {}", e.to_string());
-                        return Err(ServerFnError::Args(e.to_string()));
-                    }
-                }
+                        return Err(ServerFnError::Args(e.to_string()))
+                    },
+                };
                 // logging::log!("DEBUG<session/cache.rs>: delete_cache - {}", &key);
 
                 let _: () = redis_conn.expire(key, 0)?;

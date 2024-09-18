@@ -36,15 +36,16 @@ cfg_if! {
             //
             // NOTE: hash params from `parsed_hash` are used instead of what is configured in the
             // `Argon2` instance.
-            let mut parsed_hash = String::new();
-            match PasswordHash::new(&password_hash) {
+            let parsed_hash = match PasswordHash::new(&password_hash) {
                 Ok(pass_h) => {
                     if let Some(p) = pass_h.hash {
-                        parsed_hash = p.to_string();
+                        p.to_string()
+                    } else {
+                        String::new()
                     }
                 },
                 Err(e) => return Err(ServerFnError::Args(e.to_string())),
-            }
+            };
 
             Ok(parsed_hash)
         }

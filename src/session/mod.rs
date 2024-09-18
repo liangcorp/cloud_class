@@ -57,7 +57,7 @@ pub async fn extract_session_user() -> Result<Option<String>, ServerFnError> {
         None => return Ok(None),
     }
 
-    let mut redis_cluster_conn = Redis::get_cluster_connection()?;
+    let mut redis_cluster_conn = Redis::get_single_connection()?;
 
     if let Ok(Some(session_user)) = redis_cluster_conn.get(session_token) {
         Ok(Some(session_user))

@@ -2,7 +2,7 @@ use cfg_if::cfg_if;
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
-        use redis::cluster::{ClusterClient, ClusterConnection};
+        use redis::{Client, Connection, cluster::{ClusterClient, ClusterConnection}};
         use leptos::{server_fn::ServerFnError};
 
         #[allow(dead_code)]
@@ -25,13 +25,34 @@ cfg_if! {
                     username: String::from(""),
                     password: String::from("cikq5XxudvHKUzdPgbQWokCOOhfT8wGQKPsLhBx8Tlw="),
                     uri_scheme: String::from("redis"),
-                    hostname: String::from("192.168.110.228"),
-                    port: String::from("7000")
+                    hostname: String::from("127.0.0.1"),
+                    port: String::from("6379")
                 }
             }
         }
 
         impl Redis {
+            fn to_string(&self) -> String {
+                let redis = Redis::default();
+                format!("{}://{}:{}@{}:{}/", redis.uri_scheme, redis.username, redis.password, redis.hostname, redis.port)
+            }
+
+            pub fn get_single_connection() -> Result<Connection, ServerFnError> {
+                let client;
+                match Client::open(Redis::default().to_string()) {
+                    Ok(c) => client = c,
+                    Err(e) => return Err(ServerFnError::Args(e.to_string())),
+                }
+
+                let connection;
+                match client.get_connection() {
+                    Ok(c) => connection = c,
+                    Err(e) => return Err(ServerFnError::Args(e.to_string())),
+                }
+
+                Ok(connection)
+            }
+
             pub fn get_cluster_connection() -> Result<ClusterConnection, ServerFnError> {
 
                 // let nodes = vec![format!("{}://{}:{}@{}:{}/",

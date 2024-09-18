@@ -32,20 +32,35 @@ cfg_if! {
                 cache.value = value.to_string();
                 cache.key = key.to_string();
 
-                let mut redis_cluster_conn = Redis::get_cluster_connection().unwrap();
+                let mut redis_conn;
+                match Redis::get_single_connection() {
+                    Ok(ok_redis_conn) => redis_conn = ok_redis_conn,
+                    Err(e) => {
+                        // logging::log!("DEBUG<session/cache.rs>: set_cache - {}", e.to_string());
+                        return Err(ServerFnError::Args(e.to_string()));
+                    }
+
+                }
                 // logging::log!("DEBUG<session/cache.rs>: set_cache - {}", cache.to_string());
 
-                let _: () = redis_cluster_conn.set(&cache.key, &cache.value)?;
-                let _: () = redis_cluster_conn.expire(cache.key, 2592000)?;
+                let _: () = redis_conn.set(&cache.key, &cache.value)?;
+                let _: () = redis_conn.expire(cache.key, 2592000)?;
 
                 Ok(())
             }
 
             pub fn delete_cache(key: &str) -> Result<(), ServerFnError> {
-                let mut redis_cluster_conn = Redis::get_cluster_connection().unwrap();
+                let mut redis_conn;
+                match Redis::get_single_connection() {
+                    Ok(ok_redis_conn) => redis_conn = ok_redis_conn,
+                    Err(e) => {
+                        // logging::log!("DEBUG<session/cache.rs>: set_cache - {}", e.to_string());
+                        return Err(ServerFnError::Args(e.to_string()));
+                    }
+                }
                 // logging::log!("DEBUG<session/cache.rs>: delete_cache - {}", &key);
 
-                let _: () = redis_cluster_conn.expire(key, 0)?;
+                let _: () = redis_conn.expire(key, 0)?;
 
                 Ok(())
             }

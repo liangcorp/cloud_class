@@ -199,7 +199,7 @@ pub fn ContentPage() -> impl IntoView {
                     match ok_username {
                         Some(some_username) => {
                             view! { <BlurryPanel username=some_username.to_string() /> }
-                        },
+                        }
                         None => view! { <Redirect path="/courses" /> },
                     }
                 }

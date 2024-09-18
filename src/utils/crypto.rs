@@ -21,11 +21,10 @@ cfg_if! {
             let b_password = password.to_string().into_bytes();
             // let salt = SaltString::generate(&mut OsRng);
 
-            let salt;
-            match SaltString::from_b64(salt_seed) {
-                Ok(s) => salt = s,
+            let salt = match SaltString::from_b64(salt_seed) {
+                Ok(s) => s,
                 Err(e) => return Err(ServerFnError::Args(e.to_string())),
-            }
+            };
 
             // Raw Hash password - $argon2id$v=19$...
             let password_hash = match argon2_hash.hash_password(&b_password, &salt) {

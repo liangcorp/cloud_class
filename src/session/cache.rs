@@ -35,7 +35,6 @@ cfg_if! {
                 let cache = Cache {
                     value: value.to_string(),
                     key: key.to_string(),
-                    .. Default::default()
                 };
 
                 let mut redis_conn;

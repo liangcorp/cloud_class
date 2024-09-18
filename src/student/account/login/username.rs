@@ -22,11 +22,10 @@ pub async fn user_auth(user: String, password: String, remember_user: String) ->
     use crate::utils::{ crypto::*, uuid::* };
 
     //  取得软件状态
-    let state;
-    match use_context::<AppState>() {
-        Some(s) => state = s,
+    let state = match use_context::<AppState>() {
+        Some(s) => s,
         None => return Err(ServerFnError::Args("ERROR<user/account/login.rs>: during application state retrieval".to_string())),
-    }
+    };
 
     //  取得数据库信息
     let pool = state.pool;

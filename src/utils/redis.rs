@@ -46,11 +46,10 @@ cfg_if! {
                     Err(e) => return Err(ServerFnError::Args(e.to_string())),
                 };
 
-                let connection;
-                match client.get_connection() {
-                    Ok(c) => connection = c,
+                let connection = match client.get_connection() {
+                    Ok(c) => c,
                     Err(e) => return Err(ServerFnError::Args(e.to_string())),
-                }
+                };
 
                 Ok(connection)
             }

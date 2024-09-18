@@ -3,8 +3,55 @@ pub mod output;
 // pub mod console;
 
 use leptos::*;
+use leptos_router::*;
+use server_fn::ServerFnError;
+use cfg_if::cfg_if;
 
+#[derive(Params, PartialEq)]
+struct CourseParams {
+    id: Option<String>
+}
 
+cfg_if! {
+    if #[cfg(feature = "ssr")] {
+        #[derive(Clone, Debug, PartialEq)]
+        #[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
+        pub struct UserChapterQuery {
+            username: String,
+            course_id: String
+        }
+    }
+}
+
+#[server]
+pub async fn check_user_courses(user: String, course_id: String) -> Result<bool, ServerFnError> {
+    use crate::state::AppState;
+
+    //  取得软件状态
+    let state;
+    match use_context::<AppState>() {
+        Some(s) => state = s,
+        None => return Ok(false),
+    }
+
+    //  取得数据库信息
+    let pool = state.pool;
+
+    // let user_courses: (String, String);
+
+    match sqlx::query_as::<_, UserChapterQuery>(
+        "SELECT DISTINCT username, course_id
+        FROM student_course
+        WHERE username = $1 AND course_id = $2"
+    )
+    .bind(&user)
+    .bind(&course_id)
+    .fetch_one(&pool)
+    .await {
+        Ok(_) => Ok(true),
+        Err(_) => Ok(false), // Course not found
+    }
+}
 // use editor::TutorialEditorArea;
 // use output::TutorialOutputArea;
 // use console::TutorialConsoleArea;
@@ -28,7 +75,7 @@ pub fn TutorialPage() -> impl IntoView {
                         Some(some_username) => {
                             view! {
                                 <div class="tutorial">
-                                    <TutorialContent username=some_username.to_string() />
+                                    <BlurryPanel username=some_username.to_string() />
                                 </div>
                             }
                                 .into_view()
@@ -43,7 +90,41 @@ pub fn TutorialPage() -> impl IntoView {
 }
 
 #[component]
-fn TutorialContent(username: String) -> impl IntoView {
+pub fn BlurryPanel(username: String) -> impl IntoView {
+    let params = use_params_map();
+
+    // id: || -> Option<String>
+    let course_id = move || params.with_untracked(|params| params.get("course_id").cloned());
+
+    let (blur_effect, set_blur_effect) = create_signal(true);
+
+    let username_clone = username.clone();
+
+    view! {
+        {
+            spawn_local(async move {
+                match check_user_courses(username_clone, course_id().unwrap().clone()).await {
+                    Ok(result_bool) => set_blur_effect.set(result_bool),
+                    Err(_) => set_blur_effect.set(true),
+                }
+            });
+        }
+
+        <div class:display=move || blur_effect.get()>
+            <div style="margin-left:40%">
+                <h2>
+                    <p style="color:red">"您不能访问这节课程的实验室"</p>
+                </h2>
+            </div>
+        </div>
+        <div class:display=move || !blur_effect.get()>
+            <TutorialContent username=username course_id=course_id().unwrap() />
+        </div>
+    }
+}
+
+#[component]
+fn TutorialContent(username: String, course_id: String) -> impl IntoView {
     use leptos::ev::KeyboardEvent;
 
     // let _ = username;

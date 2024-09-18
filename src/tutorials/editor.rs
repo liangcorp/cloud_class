@@ -1,16 +1,52 @@
 use leptos::*;
 use leptos::ev::KeyboardEvent;
-// use web_sys::KeyboardEvent;
 
 #[component]
-pub fn TutorialEditorArea() -> impl IntoView {
+pub fn TutorialEditorArea(code: ReadSignal<String>, set_code: WriteSignal<String>) -> impl IntoView {
+    let input_element: NodeRef<html::Textarea> = create_node_ref();
+
+    let on_keydown = move |ev: KeyboardEvent| {
+
+        if ev.code() == "Tab" {
+            // stop the key action!
+            ev.prevent_default();
+        }
+    };
+
+    let on_submit = move |ev: leptos::ev::SubmitEvent| {
+        // stop the page from reloading!
+        ev.prevent_default();
+
+        // here, we'll extract the value from the input
+        let value = input_element
+            .get()
+            // event handlers can only fire after the view
+            // is mounted to the DOM, so the `NodeRef` will be `Some`
+            .expect("<input> should be mounted")
+            // `leptos::HtmlElement<html::Input>` implements `Deref`
+            // to a `web_sys::HtmlInputElement`.
+            // this means we can call`HtmlInputElement::value()`
+            // to get the current value of the input
+            .value();
+        set_code.set(value);
+    };
 
     view! {
-       //  <div class="text_area">
-       //      1<br/>2
-       //      <div class="editor" contenteditable="true" spellcheck="false" on:keydown=on_keydown>
-       //          <div inner_html={move || code.get()} />
-       //     </div>
-       // </div>
+        <form on:submit=on_submit>
+            <div class="toolbar">
+                <input class="run_code" type="submit" value="⯈ 运行" />
+            </div>
+            <div class="editor_area">
+                <div class="text_area">
+                    <textarea
+                        class="editor"
+                        spellcheck="false"
+                        prop:value=move || code.get()
+                        on:keydown=on_keydown
+                        node_ref=input_element
+                    ></textarea>
+                </div>
+            </div>
+        </form>
     }
 }

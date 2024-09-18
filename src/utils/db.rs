@@ -23,11 +23,5 @@ cfg_if! {
                 .max_connections(5)
                 .connect("sqlite:Cloud_class.db").await?)
         }
-
-        // use crate::utils::app_state::AppState;
-        // pub async fn get_sqlite_conn() -> Result<SqliteConnection, ServerFnError> {
-        //     let state = use_context::<AppState>();
-        //     Ok(state.unwrap().pool.aquire().await?)
-        // }
     }
 }

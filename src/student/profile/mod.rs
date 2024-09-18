@@ -3,8 +3,6 @@ pub mod info;
 
 use leptos::*;
 use leptos_router::Redirect;
-use crate::student::profile::class::CourseContentPage;
-use crate::student::profile::info::PersonalContentPage;
 
 /// Renders the profile page of your application.
 #[component]
@@ -34,6 +32,9 @@ pub fn ProfilePage() -> impl IntoView {
 
 #[component]
 pub fn ProfilePageContent(username: String) -> impl IntoView {
+    use class::CourseContentPage;
+    use info::PersonalContentPage;
+
     let (show_layer, set_show_layer) = create_signal(true);
 
     view! {

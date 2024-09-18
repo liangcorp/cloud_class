@@ -2,6 +2,11 @@ use leptos::*;
 
 #[component]
 pub fn TutorialConsoleArea() -> impl IntoView {
-
-    view! { <textarea class="console"></textarea> }
+    view! {
+        <div class="output_area">
+            <pre>
+                <code>{move || code.get()}</code>
+            </pre>
+        </div>
+    }
 }

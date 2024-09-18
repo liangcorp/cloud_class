@@ -1,7 +1,13 @@
 use leptos::*;
 
 #[component]
-pub fn TutorialOutputArea() -> impl IntoView {
+pub fn TutorialOutputArea(code: ReadSignal<String>) -> impl IntoView {
 
-    view! { <h1>Output</h1> }
+    view! {
+        <div class="output_area">
+            <pre>
+                <code>{move || code.get()}</code>
+            </pre>
+        </div>
+    }
 }

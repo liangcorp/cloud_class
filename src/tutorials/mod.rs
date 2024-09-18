@@ -75,7 +75,7 @@ pub fn TutorialPage() -> impl IntoView {
                         Some(some_username) => {
                             view! {
                                 <div class="tutorial">
-                                    <BlurryPanel username=some_username.to_string() />
+                                    <TutorialContentGate username=some_username.to_string() />
                                 </div>
                             }
                                 .into_view()
@@ -90,13 +90,13 @@ pub fn TutorialPage() -> impl IntoView {
 }
 
 #[component]
-pub fn BlurryPanel(username: String) -> impl IntoView {
+pub fn TutorialContentGate(username: String) -> impl IntoView {
     let params = use_params_map();
 
     // id: || -> Option<String>
     let course_id = move || params.with_untracked(|params| params.get("course_id").cloned());
 
-    let (blur_effect, set_blur_effect) = create_signal(true);
+    let (display_tutorial, set_display_tutorial) = create_signal(true);
 
     let username_clone = username.clone();
 
@@ -104,20 +104,20 @@ pub fn BlurryPanel(username: String) -> impl IntoView {
         {
             spawn_local(async move {
                 match check_user_courses(username_clone, course_id().unwrap().clone()).await {
-                    Ok(result_bool) => set_blur_effect.set(result_bool),
-                    Err(_) => set_blur_effect.set(true),
+                    Ok(result_bool) => set_display_tutorial.set(result_bool),
+                    Err(_) => set_display_tutorial.set(true),
                 }
             });
         }
 
-        <div class:display=move || blur_effect.get()>
+        <div class:display=move || display_tutorial.get()>
             <div style="margin-left:40%">
                 <h2>
                     <p style="color:red">"您不能访问这节课程的实验室"</p>
                 </h2>
             </div>
         </div>
-        <div class:display=move || !blur_effect.get()>
+        <div class:display=move || !display_tutorial.get()>
             <TutorialContent username=username course_id=course_id().unwrap() />
         </div>
     }

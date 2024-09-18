@@ -198,7 +198,7 @@ pub fn ContentPage() -> impl IntoView {
                 Ok(ok_username) => {
                     match ok_username {
                         Some(some_username) => {
-                            view! { <BlurryPanel username=some_username.to_string() /> }
+                            view! { <CourseContentGate username=some_username.to_string() /> }
                         }
                         None => view! { <Redirect path="/courses" /> },
                     }
@@ -210,7 +210,7 @@ pub fn ContentPage() -> impl IntoView {
 }
 
 #[component]
-pub fn BlurryPanel(username: String) -> impl IntoView {
+pub fn CourseContentGate(username: String) -> impl IntoView {
     let params = use_params_map();
 
     // id: || -> Option<String>
@@ -249,7 +249,7 @@ pub fn BlurryPanel(username: String) -> impl IntoView {
             class:cover_up_chapter=move || !blur_effect.get()
             class:isDisabled=move || !blur_effect.get()
         >
-            <UserCourseContent
+            <CourseContent
                 username=username
                 course_id=course_id().unwrap()
                 disable=blur_effect
@@ -259,7 +259,7 @@ pub fn BlurryPanel(username: String) -> impl IntoView {
 }
 
 #[component]
-pub fn UserCourseContent(username: String, course_id: String, disable: ReadSignal<bool>) -> impl IntoView {
+pub fn CourseContent(username: String, course_id: String, disable: ReadSignal<bool>) -> impl IntoView {
     let (chapter_id, set_chapter_id) = create_signal("welcome-0000".to_string());
     let (show_chapters, set_show_chapters) = create_signal(Vec::new());
 

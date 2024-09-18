@@ -174,7 +174,7 @@ pub async fn get_chapter_content(chapter_id: String) -> Result<String, ServerFnE
     .fetch_one(&pool)
     .await {
         Ok(ok_chapter_content) => chapter_content = ok_chapter_content,
-        Err(e) => return Err(ServerFnError::Args(format!("get_chapter_content: {}", e.to_string()))),
+        Err(e) => return Err(ServerFnError::Args(format!("get_chapter_content: {}", e))),
     }
     // logging::log!("transform content to raw HTML");
     let result_html = markdown_to_html(chapter_content.content.as_str(), &Options::default());

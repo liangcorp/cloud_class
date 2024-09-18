@@ -28,11 +28,10 @@ pub async fn check_user_courses(user: String, course_id: String) -> Result<bool,
     use crate::state::AppState;
 
     //  取得软件状态
-    let state;
-    match use_context::<AppState>() {
-        Some(s) => state = s,
+    let state = match use_context::<AppState>() {
+        Some(s) => s,
         None => return Ok(false),
-    }
+    };
 
     //  取得数据库信息
     let pool = state.pool;
@@ -128,6 +127,7 @@ fn TutorialContent(username: String, course_id: String) -> impl IntoView {
     use output::TutorialOutputArea;
     // use console::TutorialConsoleArea;
 
+    let _ = course_id;
     let (code, set_code) = create_signal("".to_string());
 
     view! {

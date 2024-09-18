@@ -91,9 +91,11 @@ cfg_if! {
             }
 
             pub fn set_cookie(token: &str, is_session_only: bool) -> Result<(), ServerFnError> {
-                let mut cookie = Cookie::default();
-                // set session token in cookie
-                cookie.session_token = token.to_string();
+                // create cookie with custom session token
+                let cookie = Cookie {
+                    session_token: token.to_string(),
+                    .. Default::default()
+                };
 
                 // pull ResponseOptions from context
                 let response = expect_context::<ResponseOptions>();

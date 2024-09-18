@@ -83,11 +83,10 @@ pub async fn check_user_courses(user: String, course_id: String) -> Result<bool,
     use crate::state::AppState;
 
     //  取得软件状态
-    let state;
-    match use_context::<AppState>() {
-        Some(s) => state = s,
+    let state = match use_context::<AppState>() {
+        Some(s) => s,
         None => return Ok(false),
-    }
+    };
 
     //  取得数据库信息
     let pool = state.pool;
@@ -113,19 +112,16 @@ pub async fn get_course_chapters(course_id: String) -> Result<Vec<Chapter>, Serv
     use crate::state::AppState;
 
     //  取得软件状态
-    let state;
-    match use_context::<AppState>() {
-        Some(some_state) => state = some_state,
+    let state = match use_context::<AppState>() {
+        Some(some_state) => some_state,
         None => return Ok(vec![Chapter::default()]),
-    }
+    };
 
     //  取得数据库信息
     let pool = state.pool;
 
     /*---   提取用户数据    ---*/
-    let chapters;
-
-    match sqlx::query_as::<_, CourseChapterQuery>(
+    let chapters = match sqlx::query_as::<_, CourseChapterQuery>(
         "SELECT *
         FROM chapters
         WHERE course_id = $1
@@ -134,8 +130,7 @@ pub async fn get_course_chapters(course_id: String) -> Result<Vec<Chapter>, Serv
     .bind(&course_id)
     .fetch_all(&pool)
     .await {
-        Ok(ok_chapters) => chapters =
-            ok_chapters
+        Ok(ok_chapters) => ok_chapters
                 .iter()
                 .map(|cc| Chapter {
                         chapter_id: cc.chapter_id.clone(),
@@ -145,7 +140,7 @@ pub async fn get_course_chapters(course_id: String) -> Result<Vec<Chapter>, Serv
                 })
                 .collect(),
         Err(e) => return Err(ServerFnError::Args(e.to_string())),
-    }
+    };
 
     Ok(chapters)
 }
@@ -155,27 +150,25 @@ pub async fn get_chapter_content(chapter_id: String) -> Result<String, ServerFnE
     use crate::state::AppState;
 
     //  取得软件状态
-    let state;
-    match use_context::<AppState>() {
-        Some(some_state) => state = some_state,
+    let state = match use_context::<AppState>() {
+        Some(some_state) => some_state,
         None => return Ok("".to_string()),
-    }
+    };
 
     //  取得数据库信息
     let pool = state.pool;
 
     /*---   提取用户数据    ---*/
-    let chapter_content;
-
-    match sqlx::query_as::<_, ChapterContentQuery>(
+    let chapter_content = match sqlx::query_as::<_, ChapterContentQuery>(
         "SELECT * FROM chapters WHERE chapter_id = $1;",
     )
     .bind(&chapter_id)
     .fetch_one(&pool)
     .await {
-        Ok(ok_chapter_content) => chapter_content = ok_chapter_content,
+        Ok(ok_chapter_content) => ok_chapter_content,
         Err(e) => return Err(ServerFnError::Args(format!("get_chapter_content: {}", e))),
-    }
+    };
+
     // logging::log!("transform content to raw HTML");
     let result_html = markdown_to_html(chapter_content.content.as_str(), &Options::default());
 

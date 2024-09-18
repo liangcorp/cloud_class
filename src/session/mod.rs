@@ -12,16 +12,13 @@ pub async fn extract_session_token() -> Result<Option<String>, ServerFnError> {
     use axum::http::header::{HeaderMap, HeaderValue};
     use leptos_axum::extract;
 
-    let header: HeaderMap<HeaderValue>;
-
-    match extract().await {
-        Ok(h) => header = h,
+    let header: HeaderMap<HeaderValue> = match extract().await {
+        Ok(h) => h,
         Err(e) => return Err(ServerFnError::Args(e.to_string())),
-    }
+    };
 
-    let cookie_header;
-    match header.get("cookie") {
-        Some(c) => cookie_header = c.to_str().unwrap().to_string(),
+    let cookie_header = match header.get("cookie") {
+        Some(c) => c.to_str().unwrap().to_string(),
         None => return Ok(None),
     };
 
@@ -38,24 +35,21 @@ pub async fn extract_session_user() -> Result<Option<String>, ServerFnError> {
     use axum::http::header::{HeaderMap, HeaderValue};
     use leptos_axum::extract;
     use redis::Commands;
-    let header: HeaderMap<HeaderValue>;
 
-    match extract().await {
-        Ok(h) => header = h,
+    let header: HeaderMap<HeaderValue> = match extract().await {
+        Ok(h) => h,
         Err(e) => return Err(ServerFnError::Args(e.to_string())),
-    }
+    };
 
-    let cookie_header;
-    match header.get("cookie") {
-        Some(c) => cookie_header = c.to_str().unwrap().to_string(),
+    let cookie_header = match header.get("cookie") {
+        Some(c) => c.to_str().unwrap().to_string(),
         None => return Ok(None),
     };
 
-    let session_token;
-    match cookie_header.split('=').nth(1) {
-        Some(s) => session_token = s,
+    let session_token = match cookie_header.split('=').nth(1) {
+        Some(s) => s,
         None => return Ok(None),
-    }
+    };
 
     let mut redis_cluster_conn = Redis::get_single_connection()?;
 

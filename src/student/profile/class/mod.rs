@@ -64,19 +64,16 @@ pub async fn get_user_courses(user: String) -> Result<Vec<CourseContent>, Server
     use crate::state::AppState;
 
     //  取得软件状态
-    let state;
-    match use_context::<AppState>() {
-        Some(s) => state = s,
+    let state = match use_context::<AppState>() {
+        Some(s) => s,
         None => return Ok(vec![CourseContent::default()]),
-    }
+    };
 
     //  取得数据库信息
     let pool = state.pool;
 
     /*---   提取用户数据    ---*/
-    let user_courses;
-
-    match sqlx::query_as::<_, CourseContentQuery>(
+    let user_courses = match sqlx::query_as::<_, CourseContentQuery>(
         "SELECT c.*
         FROM student_course sc
         INNER JOIN courses c ON sc.course_id = c.course_id
@@ -86,8 +83,7 @@ pub async fn get_user_courses(user: String) -> Result<Vec<CourseContent>, Server
     .bind(&user)
     .fetch_all(&pool)
     .await {
-        Ok(ok_user_courses) => user_courses =
-            ok_user_courses
+        Ok(ok_user_courses) => ok_user_courses
                 .iter()
                 .map(|ok_user_courses| CourseContent {
                         course_id: ok_user_courses.course_id.clone(),
@@ -104,7 +100,7 @@ pub async fn get_user_courses(user: String) -> Result<Vec<CourseContent>, Server
                         update_date: ok_user_courses.update_date.clone()})
                 .collect(),
         Err(e) => return Err(ServerFnError::Args(e.to_string())),
-    }
+    };
 
     Ok(user_courses)
 }

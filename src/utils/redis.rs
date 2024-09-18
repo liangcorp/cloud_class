@@ -41,11 +41,10 @@ cfg_if! {
 
         impl Redis {
             pub fn get_single_connection() -> Result<Connection, ServerFnError> {
-                let client;
-                match Client::open(Redis::default().to_string()) {
-                    Ok(c) => client = c,
+                let client = match Client::open(Redis::default().to_string()) {
+                    Ok(c) => c,
                     Err(e) => return Err(ServerFnError::Args(e.to_string())),
-                }
+                };
 
                 let connection;
                 match client.get_connection() {

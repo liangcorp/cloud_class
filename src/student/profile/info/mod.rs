@@ -49,11 +49,10 @@ pub async fn get_personal_profile(user: String) -> Result<PersonalContent, Serve
     use crate::state::AppState;
 
     //  取得软件状态
-    let state;
-    match use_context::<AppState>() {
-        Some(s) => state = s,
+    let state = match use_context::<AppState>() {
+        Some(s) => s,
         None => return Ok(PersonalContent::default()),
-    }
+    };
 
     //  取得数据库信息
     let pool = state.pool;

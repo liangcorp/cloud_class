@@ -28,11 +28,10 @@ cfg_if! {
             }
 
             // Raw Hash password - $argon2id$v=19$...
-            let password_hash;
-            match argon2_hash.hash_password(&b_password, &salt) {
-                Ok(p) => password_hash = p.to_string(),
+            let password_hash = match argon2_hash.hash_password(&b_password, &salt) {
+                Ok(p) => p.to_string(),
                 Err(e) => return Err(ServerFnError::Args(e.to_string())),
-            }
+            };
 
             // Create PHC string.
             //

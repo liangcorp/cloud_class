@@ -31,9 +31,12 @@ cfg_if! {
 
         impl Cache {
             pub fn set_cache(key: &str, value: &str) -> Result<(), ServerFnError> {
-                let mut cache = Cache::default();
-                cache.value = value.to_string();
-                cache.key = key.to_string();
+                // create cache with custom session token and key
+                let cache = Cache {
+                    value: value.to_string(),
+                    key: key.to_string(),
+                    .. Default::default()
+                };
 
                 let mut redis_conn;
                 match Redis::get_single_connection() {

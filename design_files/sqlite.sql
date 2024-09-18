@@ -65,6 +65,12 @@ CREATE TABLE chapters (
     course_id char(36)
 );
 
+CREATE TABLE tutorials (
+	tutorial_id char(36) NOT NULL PRIMARY KEY,
+	course_id char(36),
+	chapter_number INT,
+	code_content varchar(3000)
+);
 
 CREATE TABLE series (
     series_id char(36) NOT NULL PRIMARY KEY,
@@ -139,3 +145,5 @@ VALUES ('c-0000-001', '介绍', '# 介绍', 1, '10031561-7689-44a4-bf80-f2e7c9e8
 INSERT INTO chapters (chapter_id, title, content, chapter_number, course_id)
 VALUES ('c-0000-002', '背景', '# 背景', 2, '10031561-7689-44a4-bf80-f2e7c9e8d2dd');
 
+INSERT INTO tutorials (tutorial_id, chapter_number, code_content, course_id)
+VALUES ('t-0000-001', 1, 'print("Hello, World")', 'python-0000-001')

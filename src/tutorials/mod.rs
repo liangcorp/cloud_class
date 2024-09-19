@@ -30,6 +30,7 @@ cfg_if! {
 }
 
 #[server]
+/// Currently not used
 pub async fn is_subscribed(user: String, course_id: String) -> Result<bool, ServerFnError> {
     use crate::state::AppState;
 

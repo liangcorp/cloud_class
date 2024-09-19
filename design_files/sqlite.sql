@@ -146,4 +146,7 @@ INSERT INTO chapters (chapter_id, title, content, chapter_number, course_id)
 VALUES ('c-0000-002', '背景', '# 背景', 2, '10031561-7689-44a4-bf80-f2e7c9e8d2dd');
 
 INSERT INTO tutorials (tutorial_id, chapter_number, code_content, course_id)
-VALUES ('t-0000-001', 1, 'print("Hello, World")', 'python-0000-001')
+VALUES ('t-0000-001', 1, 'print("Hello, 1")', 'python-0000-001')
+
+INSERT INTO tutorials (tutorial_id, chapter_number, code_content, course_id)
+VALUES ('t-0000-001', 1, 'print("Hello, 2")', 'python-0000-001')

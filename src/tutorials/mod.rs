@@ -83,7 +83,7 @@ pub async fn get_user_course_title(user: String, course_id: String) -> Result<Op
     .fetch_one(&pool)
     .await {
         Ok(t) => Ok(Some(t.title)),
-        Err(_) => return Ok(None),
+        Err(_) => Ok(None),
     }
 }
 
@@ -144,7 +144,7 @@ pub async fn get_tutorial_chapter(course_id: String, chapter_number: u32) -> Res
         WHERE course_id = $1 AND chapter_number = $2;"
     )
     .bind(&course_id)
-    .bind(&chapter_number)
+    .bind(chapter_number)
     .fetch_one(&pool)
     .await {
         Ok(code) => Ok(Some(code.code_content)),

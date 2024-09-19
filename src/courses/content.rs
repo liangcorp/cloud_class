@@ -4,11 +4,6 @@ use server_fn::ServerFnError;
 use serde::{Serialize, Deserialize};
 use cfg_if::cfg_if;
 
-#[derive(Params, PartialEq)]
-struct CourseParams {
-    id: Option<String>
-}
-
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Chapter {
     chapter_id: String,

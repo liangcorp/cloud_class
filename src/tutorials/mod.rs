@@ -4,8 +4,28 @@ pub mod output;
 
 use leptos::*;
 use leptos_router::*;
+use serde::{Serialize, Deserialize};
 use server_fn::ServerFnError;
 use cfg_if::cfg_if;
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct Chapter {
+    chapter_id: String,
+    title: String,
+    chapter_number: u32,
+    course_id: String
+}
+
+impl Default for Chapter {
+    fn default() -> Chapter {
+        Chapter {
+            chapter_id: "".to_string(),
+            title: "".to_string(),
+            chapter_number: 0,
+            course_id: "".to_string()
+        }
+    }
+}
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
@@ -21,34 +41,15 @@ cfg_if! {
         pub struct CourseTitleQuery {
             title: String,
         }
-    }
-}
 
-#[server]
-/// Currently not used
-pub async fn is_subscribed(user: String, course_id: String) -> Result<bool, ServerFnError> {
-    use crate::state::AppState;
-
-    //  取得软件状态
-    let state = match use_context::<AppState>() {
-        Some(s) => s,
-        None => return Ok(false),
-    };
-
-    //  取得数据库信息
-    let pool = state.pool;
-
-    match sqlx::query_as::<_, UserChapterQuery>(
-        "SELECT DISTINCT username, course_id
-        FROM student_course
-        WHERE username = $1 AND course_id = $2"
-    )
-    .bind(&user)
-    .bind(&course_id)
-    .fetch_one(&pool)
-    .await {
-        Ok(_) => Ok(true),
-        Err(_) => Ok(false), // Course not found
+        #[derive(Clone, Debug, PartialEq)]
+        #[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
+        pub struct CourseChapterQuery {
+            chapter_id: String,
+            title: String,
+            chapter_number: u32,
+            course_id: String
+        }
     }
 }
 
@@ -65,8 +66,6 @@ pub async fn get_user_course_title(user: String, course_id: String) -> Result<Op
     //  取得数据库信息
     let pool = state.pool;
 
-    // let user_courses: (String, String);
-
     match sqlx::query_as::<_, CourseTitleQuery>(
         "SELECT c.*
         FROM student_course sc
@@ -80,6 +79,44 @@ pub async fn get_user_course_title(user: String, course_id: String) -> Result<Op
         Ok(t) => Ok(Some(t.title)),
         Err(_) => return Ok(None),
     }
+}
+
+#[server]
+pub async fn get_course_chapters(course_id: String) -> Result<Vec<Chapter>, ServerFnError> {
+    use crate::state::AppState;
+
+    //  取得软件状态
+    let state = match use_context::<AppState>() {
+        Some(some_state) => some_state,
+        None => return Ok(vec![Chapter::default()]),
+    };
+
+    //  取得数据库信息
+    let pool = state.pool;
+
+    /*---   提取用户数据    ---*/
+    let chapters = match sqlx::query_as::<_, CourseChapterQuery>(
+        "SELECT *
+        FROM chapters
+        WHERE course_id = $1
+        ORDER BY chapter_number;"
+    )
+    .bind(&course_id)
+    .fetch_all(&pool)
+    .await {
+        Ok(ok_chapters) => ok_chapters
+                .iter()
+                .map(|cc| Chapter {
+                        chapter_id: cc.chapter_id.clone(),
+                        title: cc.title.clone(),
+                        chapter_number: cc.chapter_number,
+                        course_id: cc.course_id.clone(),
+                })
+                .collect(),
+        Err(e) => return Err(ServerFnError::Args(e.to_string())),
+    };
+
+    Ok(chapters)
 }
 
 #[component]
@@ -132,21 +169,21 @@ fn TutorialContentGate(username: String) -> impl IntoView {
         {
             spawn_local(async move {
                 match get_user_course_title(username_clone, course_id_clone).await {
-                    Ok(title) => match title {
-                        Some(t) => {
-                            logging::log!("{}", t.clone());
-                            set_display_tutorial.set(true);
-                            set_course_title.set(t)
-                        },
-                        None => {
-                            set_display_tutorial.set(false);
-                        },
+                    Ok(title) => {
+                        match title {
+                            Some(t) => {
+                                set_display_tutorial.set(true);
+                                set_course_title.set(t)
+                            }
+                            None => {
+                                set_display_tutorial.set(false);
+                            }
+                        }
                     }
                     Err(_) => set_display_tutorial.set(false),
                 }
             });
         }
-
         <div class:display=move || display_tutorial.get()>
             <div style="margin-left:40%">
                 <h2>
@@ -155,7 +192,11 @@ fn TutorialContentGate(username: String) -> impl IntoView {
             </div>
         </div>
         <div class:display=move || !display_tutorial.get()>
-            <TutorialContent username=username course_id=course_id().unwrap() course_title=course_title />
+            <TutorialContent
+                username=username
+                course_id=course_id().unwrap()
+                course_title=course_title
+            />
         </div>
     }
 }
@@ -166,30 +207,44 @@ fn TutorialContent(username: String, course_id: String, course_title: ReadSignal
     use output::TutorialOutputArea;
     // use console::TutorialConsoleArea;
 
-    let _ = course_id;
     let (code, set_code) = create_signal("".to_string());
-    let (value, set_value) = create_signal(1_u32);
+    let (chapter_list, set_chapter_list) = create_signal(vec![Chapter::default()]);
+    let (chapter_number, set_chapter_number) = create_signal("".to_string());
 
     view! {
+        {
+            spawn_local(async move {
+                match get_course_chapters(course_id).await {
+                    Ok(chapters) => set_chapter_list.set(chapters),
+                    Err(_) => set_chapter_list.set(Vec::new()),
+                }
+            });
+        }
+
         <div style="float:left; font-weight:bold; padding-top:10px">
             <table>
                 <tr>
+                    <td style="padding-right: 50px">"用户: "{username}</td>
+                    <td style="padding-right: 50px">"课程: "{move || course_title.get()}</td>
                     <td style="padding-right: 50px">
-                        "用户: "{username}
-                    </td>
-                    <td style="padding-right: 50px">
-                        "课程: "{move || course_title.get()}
-                    </td>
-                    <td style="padding-right: 50px">
-                        "章节: "<select
+                        "章节: "
+                        <select
                             on:change=move |ev| {
                                 let new_value = event_target_value(&ev);
-                                set_value.set(new_value.parse().unwrap());
+                                set_chapter_number.set(new_value.parse().unwrap());
                             }
-                            prop:value=move || value.get().to_string()
+                            prop:chapter_number=move || chapter_number.get().to_string()
                         >
-                            <option value="1">"1"</option>
-                            <option value="2">"2"</option>
+                            <For
+                                each=move || chapter_list.get()
+                                key=|state| (state.chapter_id.clone())
+                                let:chapter
+                            >
+                                <option chapter_number=chapter
+                                    .chapter_number>
+                                    {chapter.chapter_number}". "{chapter.title}
+                                </option>
+                            </For>
                         </select>
                     </td>
                 </tr>

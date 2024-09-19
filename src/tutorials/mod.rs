@@ -209,7 +209,7 @@ fn TutorialContent(username: String, course_id: String, course_title: ReadSignal
 
     let (code, set_code) = create_signal("".to_string());
     let (chapter_list, set_chapter_list) = create_signal(vec![Chapter::default()]);
-    let (chapter_number, set_chapter_number) = create_signal("".to_string());
+    let (chapter_number, set_chapter_number) = create_signal(1_u32);
 
     view! {
         {
@@ -231,7 +231,14 @@ fn TutorialContent(username: String, course_id: String, course_title: ReadSignal
                         <select
                             on:change=move |ev| {
                                 let new_value = event_target_value(&ev);
-                                set_chapter_number.set(new_value.parse().unwrap());
+                                set_chapter_number
+                                    .set(
+                                        new_value
+                                            .split(".")
+                                            .collect::<Vec<&str>>()[0]
+                                            .parse()
+                                            .unwrap(),
+                                    );  // Really ugly hack to get selected chapter number
                             }
                             prop:chapter_number=move || chapter_number.get().to_string()
                         >
@@ -247,6 +254,7 @@ fn TutorialContent(username: String, course_id: String, course_title: ReadSignal
                             </For>
                         </select>
                     </td>
+                    <td>{chapter_number}</td>
                 </tr>
             </table>
         </div>

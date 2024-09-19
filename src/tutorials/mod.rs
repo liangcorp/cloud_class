@@ -315,13 +315,20 @@ fn TutorialContent(username: String, course_id: String, course_title: ReadSignal
                     move || match code_content.get() {
                         Some(some_code_data) => match some_code_data {
                             Ok(ok_code_data) => match ok_code_data {
-                                Some(code_data) => set_code.set(code_data),
-                                None => set_code.set("".to_string()),
+                                Some(code_data) => {
+                                    set_code_exe_result.set("".to_string());
+                                    set_code.set(code_data)
+                                },
+                                None => {
+                                    set_code_exe_result.set("".to_string());
+                                    set_code.set("".to_string())
+                                },
                             },
                             Err(_) => set_code.set("".to_string()),
                         },
                         None => set_code.set("".to_string()),
                     }
+
                 }
                 <TutorialEditorArea code=code set_code_exe_result=set_code_exe_result />
             </Transition>

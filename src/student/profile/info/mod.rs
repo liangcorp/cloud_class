@@ -58,15 +58,13 @@ pub async fn get_personal_profile(user: String) -> Result<PersonalContent, Serve
     let pool = state.pool;
 
     /*---   提取用户数据    ---*/
-    let personal_content;
-
-    match sqlx::query_as::<_, PersonalContentQuery>(
+    let personal_content = match sqlx::query_as::<_, PersonalContentQuery>(
         "SELECT * FROM students WHERE username = $1;",
     )
     .bind(&user)
     .fetch_one(&pool)
     .await {
-        Ok(ok_personal_content) => personal_content = PersonalContent {
+        Ok(ok_personal_content) => PersonalContent {
             username: ok_personal_content.username.clone(),
             full_name: ok_personal_content.full_name.clone(),
             start_date: ok_personal_content.start_date.clone(),
@@ -78,7 +76,7 @@ pub async fn get_personal_profile(user: String) -> Result<PersonalContent, Serve
         Err(e) => {
             return Err(ServerFnError::Args(e.to_string()))
         },
-    }
+    };
 
     Ok(personal_content)
 }

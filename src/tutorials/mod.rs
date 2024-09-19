@@ -84,10 +84,7 @@ pub async fn get_user_course_title(user: String, course_id: String) -> Result<Op
     .fetch_one(&pool)
     .await {
         Ok(t) => Ok(Some(t.title)),
-        Err(e) => {
-            logging::log!("ERROR <tutorials/mod.rs:88>: {}", e.to_string());
-            return Ok(None)
-        },
+        Err(_) => return Ok(None),
     }
 }
 
@@ -132,6 +129,7 @@ fn TutorialContentGate(username: String) -> impl IntoView {
     let course_id = move || params.with_untracked(|params| params.get("course_id").cloned());
 
     let (display_tutorial, set_display_tutorial) = create_signal(true);
+    let (course_title, set_course_title) = create_signal("".to_string());
 
     let username_clone = username.clone();
     let course_id_clone = course_id().unwrap().clone();
@@ -139,12 +137,20 @@ fn TutorialContentGate(username: String) -> impl IntoView {
     view! {
         {
             spawn_local(async move {
-                match is_subscribed(username_clone, course_id_clone).await {
-                    Ok(result_bool) => set_display_tutorial.set(result_bool),
-                    Err(_) => set_display_tutorial.set(true),
+                match get_user_course_title(username_clone, course_id_clone).await {
+                    Ok(title) => match title {
+                        Some(t) => {
+                            logging::log!("{}", t.clone());
+                            set_display_tutorial.set(true);
+                            set_course_title.set(t)
+                        },
+                        None => {
+                            set_display_tutorial.set(false);
+                        },
+                    }
+                    Err(_) => set_display_tutorial.set(false),
                 }
             });
-
         }
 
         <div class:display=move || display_tutorial.get()>
@@ -155,13 +161,13 @@ fn TutorialContentGate(username: String) -> impl IntoView {
             </div>
         </div>
         <div class:display=move || !display_tutorial.get()>
-            <TutorialContent username=username course_id=course_id().unwrap() />
+            <TutorialContent username=username course_id=course_id().unwrap() course_title=course_title />
         </div>
     }
 }
 
 #[component]
-fn TutorialContent(username: String, course_id: String) -> impl IntoView {
+fn TutorialContent(username: String, course_id: String, course_title: ReadSignal<String>) -> impl IntoView {
     use editor::TutorialEditorArea;
     use output::TutorialOutputArea;
     // use console::TutorialConsoleArea;
@@ -170,24 +176,7 @@ fn TutorialContent(username: String, course_id: String) -> impl IntoView {
     let (code, set_code) = create_signal("".to_string());
     let (value, set_value) = create_signal(1_u32);
 
-    let (course_title, set_course_title) = create_signal("".to_string());
-
-    let username_clone = username.clone();
-    let course_id_clone = course_id.clone();
-
     view! {
-        {
-            spawn_local(async move {
-                match get_user_course_title(username_clone, course_id_clone).await {
-                    Ok(title) => match title {
-                        Some(t) => set_course_title.set(t),
-                        None => set_course_title.set("".to_string()),
-                    }
-                    Err(_) => set_course_title.set("".to_string()),
-                }
-            });
-        }
-
         <div style="float:left; font-weight:bold; padding-top:10px">
             <table>
                 <tr>
@@ -195,7 +184,7 @@ fn TutorialContent(username: String, course_id: String) -> impl IntoView {
                         "用户: "{username}
                     </td>
                     <td style="padding-right: 50px">
-                        "课程: "{course_title}
+                        "课程: "{move || course_title.get()}
                     </td>
                     <td style="padding-right: 50px">
                         "章节: "<select

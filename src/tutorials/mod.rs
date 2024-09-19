@@ -1,5 +1,5 @@
 pub mod editor;
-pub mod output;
+pub mod execution;
 // pub mod console;
 
 use leptos::*;
@@ -237,7 +237,7 @@ fn TutorialContentGate(username: String) -> impl IntoView {
 #[component]
 fn TutorialContent(username: String, course_id: String, course_title: ReadSignal<String>) -> impl IntoView {
     use editor::TutorialEditorArea;
-    use output::TutorialOutputArea;
+    use execution::TutorialExecutionArea;
     // use console::TutorialConsoleArea;
 
     let (code, set_code) = create_signal("".to_string());
@@ -325,7 +325,7 @@ fn TutorialContent(username: String, course_id: String, course_title: ReadSignal
                 }
                 <TutorialEditorArea code=code set_code_exe_result=set_code_exe_result />
             </Transition>
-            <TutorialOutputArea code_exe_result=code_exe_result />
+            <TutorialExecutionArea code_exe_result=code_exe_result />
         </div>
     }
 }

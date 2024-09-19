@@ -1,7 +1,7 @@
 use leptos::*;
 
 #[component]
-pub fn TutorialOutputArea(code_exe_result: ReadSignal<String>) -> impl IntoView {
+pub fn TutorialExecutionArea(code_exe_result: ReadSignal<String>) -> impl IntoView {
 
     // @TODO actually implement code execution
     view! {

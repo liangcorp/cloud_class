@@ -135,8 +135,6 @@ pub async fn get_tutorial_chapter(course_id: String, chapter_number: u32) -> Res
         None => return Ok(None),
     };
 
-    logging::log!("{} {}", course_id, chapter_number);
-
     //  取得数据库信息
     let pool = state.pool;
 
@@ -150,10 +148,7 @@ pub async fn get_tutorial_chapter(course_id: String, chapter_number: u32) -> Res
     .fetch_one(&pool)
     .await {
         Ok(code) => Ok(Some(code.code_content)),
-        Err(e) => {
-            logging::log!("ERROR<tutorials/mod.rs:154>: {}", e.to_string());
-            Ok(None)
-        },
+        Err(_) => Ok(None),
     }
 }
 
@@ -258,7 +253,7 @@ fn TutorialContent(username: String, course_id: String, course_title: ReadSignal
         move |value| {
             let course_id_clone = course_id.clone();
             async move {
-                logging::log!("loading course code from tutorial");
+                // logging::log!("loading course code from tutorial");
                 get_tutorial_chapter(course_id_clone, value).await
             }
         },
@@ -312,19 +307,23 @@ fn TutorialContent(username: String, course_id: String, course_title: ReadSignal
             </table>
         </div>
         <div>
-            {
-                move || match code_content.get() {
-                    Some(some_code_data) => match some_code_data {
-                        Ok(ok_code_data) => match ok_code_data {
-                            Some(code_data) => set_code.set(code_data),
-                            None => set_code.set("".to_string()),
+            <Transition
+                fallback=move || view! { <p>"下载课程代码..."</p> }
+            >
+                {
+                    move || match code_content.get() {
+                        Some(some_code_data) => match some_code_data {
+                            Ok(ok_code_data) => match ok_code_data {
+                                Some(code_data) => set_code.set(code_data),
+                                None => set_code.set("".to_string()),
+                            },
+                            Err(_) => set_code.set("".to_string()),
                         },
-                        Err(_) => set_code.set("".to_string()),
-                    },
-                    None => set_code.set("".to_string()),
+                        None => set_code.set("".to_string()),
+                    }
                 }
-            }
-            <TutorialEditorArea code=code set_code=set_code />
+                <TutorialEditorArea code=code set_code=set_code />
+            </Transition>
             <TutorialOutputArea code=code />
         </div>
     }

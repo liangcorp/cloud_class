@@ -7,11 +7,6 @@ use leptos_router::*;
 use server_fn::ServerFnError;
 use cfg_if::cfg_if;
 
-#[derive(Params, PartialEq)]
-struct CourseParams {
-    id: Option<String>
-}
-
 cfg_if! {
     if #[cfg(feature = "ssr")] {
         #[derive(Clone, Debug, PartialEq)]
@@ -42,8 +37,6 @@ pub async fn is_subscribed(user: String, course_id: String) -> Result<bool, Serv
 
     //  取得数据库信息
     let pool = state.pool;
-
-    // let user_courses: (String, String);
 
     match sqlx::query_as::<_, UserChapterQuery>(
         "SELECT DISTINCT username, course_id

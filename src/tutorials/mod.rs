@@ -50,6 +50,12 @@ cfg_if! {
             chapter_number: u32,
             course_id: String
         }
+
+        #[derive(Clone, Debug, PartialEq)]
+        #[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
+        pub struct TutorialQuery {
+            code_content: String
+        }
     }
 }
 
@@ -117,6 +123,38 @@ pub async fn get_course_chapters(course_id: String) -> Result<Vec<Chapter>, Serv
     };
 
     Ok(chapters)
+}
+
+#[server]
+pub async fn get_tutorial_chapter(course_id: String, chapter_number: u32) -> Result<Option<String>, ServerFnError> {
+    use crate::state::AppState;
+
+    //  取得软件状态
+    let state = match use_context::<AppState>() {
+        Some(s) => s,
+        None => return Ok(None),
+    };
+
+    logging::log!("{} {}", course_id, chapter_number);
+
+    //  取得数据库信息
+    let pool = state.pool;
+
+    match sqlx::query_as::<_, TutorialQuery>(
+        "SELECT *
+        FROM tutorials
+        WHERE course_id = $1 AND chapter_number = $2;"
+    )
+    .bind(&course_id)
+    .bind(&chapter_number)
+    .fetch_one(&pool)
+    .await {
+        Ok(code) => Ok(Some(code.code_content)),
+        Err(e) => {
+            logging::log!("ERROR<tutorials/mod.rs:154>: {}", e.to_string());
+            Ok(None)
+        },
+    }
 }
 
 #[component]
@@ -211,10 +249,25 @@ fn TutorialContent(username: String, course_id: String, course_title: ReadSignal
     let (chapter_list, set_chapter_list) = create_signal(vec![Chapter::default()]);
     let (chapter_number, set_chapter_number) = create_signal(1_u32);
 
+    let course_id_clone = course_id.clone();
+
+    // our resource
+    let code_content = create_resource(
+        move || chapter_number.get(),
+        // every time `chapter_number` changes, this will run
+        move |value| {
+            let course_id_clone = course_id.clone();
+            async move {
+                logging::log!("loading course code from tutorial");
+                get_tutorial_chapter(course_id_clone, value).await
+            }
+        },
+    );
+
     view! {
         {
             spawn_local(async move {
-                match get_course_chapters(course_id).await {
+                match get_course_chapters(course_id_clone).await {
                     Ok(chapters) => set_chapter_list.set(chapters),
                     Err(_) => set_chapter_list.set(Vec::new()),
                 }
@@ -254,11 +307,23 @@ fn TutorialContent(username: String, course_id: String, course_title: ReadSignal
                             </For>
                         </select>
                     </td>
-                    <td>{chapter_number}</td>
+                    // <td>{chapter_number}</td>
                 </tr>
             </table>
         </div>
         <div>
+            {
+                move || match code_content.get() {
+                    Some(some_code_data) => match some_code_data {
+                        Ok(ok_code_data) => match ok_code_data {
+                            Some(code_data) => set_code.set(code_data),
+                            None => set_code.set("".to_string()),
+                        },
+                        Err(_) => set_code.set("".to_string()),
+                    },
+                    None => set_code.set("".to_string()),
+                }
+            }
             <TutorialEditorArea code=code set_code=set_code />
             <TutorialOutputArea code=code />
         </div>

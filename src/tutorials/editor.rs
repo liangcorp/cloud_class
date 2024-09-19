@@ -2,7 +2,7 @@ use leptos::*;
 use leptos::ev::KeyboardEvent;
 
 #[component]
-pub fn TutorialEditorArea(code: ReadSignal<String>, set_code: WriteSignal<String>) -> impl IntoView {
+pub fn TutorialEditorArea(code: ReadSignal<String>, set_code_exe_result: WriteSignal<String>) -> impl IntoView {
     let input_element: NodeRef<html::Textarea> = create_node_ref();
 
     let on_keydown = move |ev: KeyboardEvent| {
@@ -28,7 +28,7 @@ pub fn TutorialEditorArea(code: ReadSignal<String>, set_code: WriteSignal<String
             // this means we can call`HtmlInputElement::value()`
             // to get the current value of the input
             .value();
-        set_code.set(value);
+        set_code_exe_result.set(value);
     };
 
     view! {

@@ -26,8 +26,8 @@ async fn main() {
     };
 
     let app_state = AppState {
-        pool: db_pool.clone(),
         leptos_options,
+        pool: db_pool.clone(),
     };
 
     // build our application with a route

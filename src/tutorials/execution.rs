@@ -21,16 +21,14 @@ pub async fn execute_user_code(code: String) -> Result<(), ServerFnError> {
                 .arg("student_codes/streamlist_student1.py")
                 .arg("student1:streamlit_app.py")
                 .output() {
-                    Ok(_output) => {
-                        Ok(())
-                    },
+                    Ok(_output) => Ok(()),
                     Err(e) => {
                         // logging::log!("ERROR <tutorials/execution.rs:26>: {}", e.to_string());
-                        return Err(ServerFnError::Args(e.to_string()))
-                    }
+                        Err(ServerFnError::Args(e.to_string()))
+                    },
                 }
         },
-        Err(e) => return Err(ServerFnError::Args(e.to_string())),
+        Err(e) => Err(ServerFnError::Args(e.to_string())),
     }
 }
 

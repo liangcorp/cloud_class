@@ -1,8 +1,22 @@
 use leptos::*;
 
 #[server]
-pub async fn execute_user_code(code: String) -> Result<String, ServerFnError> {
-    Ok(code)
+pub async fn execute_user_code(code: String) -> Result<(), ServerFnError> {
+    use std::fs::File;
+    use std::io::prelude::*;
+
+    let mut file = match File::create("streamlist_student.py") {
+        Ok(f) => f,
+        Err(e) => {
+            logging::log!("ERROR <tutorials/execution.rs:9>: {}", e.to_string());
+            return Err(ServerFnError::Args(e.to_string()))
+        },
+    };
+
+    match file.write_all(&code.into_bytes()) {
+        Ok(_) => Ok(()),
+        Err(e) => Err(ServerFnError::Args(e.to_string())),
+    }
 }
 
 #[component]
@@ -20,23 +34,17 @@ pub fn TutorialExecutionArea(user_code: ReadSignal<String>) -> impl IntoView {
 
     view! {
         <div class="output_area">
-            <Transition fallback=move || view! { <p>"Loading..."</p> }>
+            <Suspense fallback=move || view! { <p>"Loading..."</p> }>
                 <pre>
                     <code>
                     {move || match user_code_execution_result.get(){
-                        Some(some_code_data) => {
-                            match some_code_data {
-                                Ok(ok_code_data) => {
-                                    ok_code_data
-                                }
-                                Err(_) => "".to_string(),
-                            }
-                        }
+                        Some(_) => "".to_string(),
                         None => "".to_string(),
                     }}
                     </code>
                 </pre>
-            </Transition>
+                <iframe style="width:100%;height:890px;border:none;" src="http://localhost:8501/"></iframe>
+            </Suspense>
         </div>
     }
 }

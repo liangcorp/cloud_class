@@ -4,6 +4,10 @@ async fn main() {
     use axum::Router;
     use leptos::*;
     use leptos_axum::{generate_route_list, LeptosRoutes};
+    use tower_http::compression::{
+        predicate::{NotForContentType, SizeAbove},
+        CompressionLayer, CompressionLevel, Predicate,
+    };
     use cloud_class::app::*;
     use cloud_class::fileserv::file_and_error_handler;
 
@@ -30,9 +34,24 @@ async fn main() {
         pool: db_pool.clone(),
     };
 
+    // files smaller than 1501 bytes are not compressed, since
+    // the MTU (Maximum Transmission Unit) of a TCP packet is 1500 bytes
+    let predicate = SizeAbove::new(1500)
+        .and(NotForContentType::GRPC)
+        .and(NotForContentType::IMAGES)
+        // prevent compressing assets that are already statically compressed
+        .and(NotForContentType::const_new("application/javascript"))
+        .and(NotForContentType::const_new("application/wasm"))
+        .and(NotForContentType::const_new("text/css"));
+
     // build our application with a route
     let app = Router::new()
         .leptos_routes(&app_state, routes, App)
+        .layer(
+            CompressionLayer::new()
+                .quality(CompressionLevel::Fastest)
+                .compress_when(predicate),
+        )
         .fallback(file_and_error_handler)
         .with_state(app_state);
 

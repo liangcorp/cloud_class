@@ -15,7 +15,11 @@ leptos_meta = { version = "0.6" }
 leptos_router = { version = "0.6" }
 tokio = { version = "1", features = ["rt-multi-thread"], optional = true }
 tower = { version = "0.4.13", optional = true }
-tower-http = { version = "0.5", features = ["fs"], optional = true }
+tower-http = { version = "0.5.2", features = [
+  "fs",
+  "compression-gzip",
+  "compression-br",
+], optional = true }
 wasm-bindgen = "=0.2.93"
 thiserror = "1"
 tracing = { version = "0.1", optional = true }
@@ -113,6 +117,12 @@ bin-features = ["ssr"]
 # Optional. Defaults to false.
 bin-default-features = false
 
+# This feature will add a hash to the filename of assets.
+# This is useful here because our files are precompressed and use a `Cache-Control` policy to reduce HTTP requests
+#
+# Optional. Defaults to false.
+hash_file = true
+
 # The features to use when compiling the lib target
 #
 # Optional. Can be over-ridden with the command line parameter --lib-features
@@ -127,3 +137,4 @@ lib-default-features = false
 #
 # Optional. Defaults to "release".
 lib-profile-release = "wasm-release"
+

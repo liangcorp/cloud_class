@@ -21,7 +21,7 @@ pub async fn execute_user_code(code: String) -> Result<(), ServerFnError> {
                 .arg("student_codes/streamlist_student1.py")
                 .arg("student1:streamlit_app.py")
                 .output() {
-                    Ok(output) => {
+                    Ok(_output) => {
                         Ok(())
                     },
                     Err(e) => {

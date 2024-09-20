@@ -287,7 +287,7 @@ fn TutorialContent(username: String, course_id: String, course_title: ReadSignal
                                             .collect::<Vec<&str>>()[0]
                                             .parse()
                                             .unwrap(),
-                                    );  // Really ugly hack to get selected chapter number
+                                    );
                             }
                             prop:chapter_number=move || chapter_number.get().to_string()
                         >
@@ -303,34 +303,31 @@ fn TutorialContent(username: String, course_id: String, course_title: ReadSignal
                             </For>
                         </select>
                     </td>
-                    // <td>{chapter_number}</td>
                 </tr>
             </table>
         </div>
         <div>
-            <Transition
-                fallback=move || view! { <p>"下载课程代码..."</p> }
-            >
-                {
-                    move || match code_content.get() {
-                        Some(some_code_data) => match some_code_data {
-                            Ok(ok_code_data) => match ok_code_data {
-                                Some(code_data) => {
-                                    set_user_code.set("".to_string());
-                                    set_initial_code.set(code_data)
-                                },
-                                None => {
-                                    set_user_code.set("".to_string());
-                                    set_initial_code.set("".to_string())
-                                },
-                            },
+            <Transition fallback=move || {
+                view! { <p>"下载课程代码..."</p> }
+            }>
+                {move || match code_content.get() {
+                    Some(some_code_data) => {
+                        match some_code_data {
+                            Ok(ok_code_data) => {
+                                match ok_code_data {
+                                    Some(code_data) => {
+                                        set_initial_code.set(code_data)
+                                    }
+                                    None => {
+                                        set_initial_code.set("".to_string())
+                                    }
+                                }
+                            }
                             Err(_) => set_initial_code.set("".to_string()),
-                        },
-                        None => set_initial_code.set("".to_string()),
+                        }
                     }
-
-                }
-                <TutorialEditorArea initial_code=initial_code set_user_code=set_user_code />
+                    None => set_initial_code.set("".to_string()),
+                }} <TutorialEditorArea initial_code=initial_code set_user_code=set_user_code />
             </Transition>
             <TutorialExecutionArea user_code=user_code />
         </div>

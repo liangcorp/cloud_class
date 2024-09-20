@@ -240,10 +240,10 @@ fn TutorialContent(username: String, course_id: String, course_title: ReadSignal
     use execution::TutorialExecutionArea;
     // use console::TutorialConsoleArea;
 
-    let (code, set_code) = create_signal("".to_string());
+    let (initial_code, set_initial_code) = create_signal("".to_string());
     let (chapter_list, set_chapter_list) = create_signal(vec![Chapter::default()]);
     let (chapter_number, set_chapter_number) = create_signal(1_u32);
-    let (code_exe_result, set_code_exe_result) = create_signal("".to_string());
+    let (user_code, set_user_code) = create_signal("".to_string());
 
     let course_id_clone = course_id.clone();
 
@@ -254,7 +254,7 @@ fn TutorialContent(username: String, course_id: String, course_title: ReadSignal
         move |value| {
             let course_id_clone = course_id.clone();
             async move {
-                // logging::log!("loading course code from tutorial");
+                // logging::log!("loading course initial code from tutorial");
                 get_tutorial_chapter(course_id_clone, value).await
             }
         },
@@ -316,23 +316,23 @@ fn TutorialContent(username: String, course_id: String, course_title: ReadSignal
                         Some(some_code_data) => match some_code_data {
                             Ok(ok_code_data) => match ok_code_data {
                                 Some(code_data) => {
-                                    set_code_exe_result.set("".to_string());
-                                    set_code.set(code_data)
+                                    set_user_code.set("".to_string());
+                                    set_initial_code.set(code_data)
                                 },
                                 None => {
-                                    set_code_exe_result.set("".to_string());
-                                    set_code.set("".to_string())
+                                    set_user_code.set("".to_string());
+                                    set_initial_code.set("".to_string())
                                 },
                             },
-                            Err(_) => set_code.set("".to_string()),
+                            Err(_) => set_initial_code.set("".to_string()),
                         },
-                        None => set_code.set("".to_string()),
+                        None => set_initial_code.set("".to_string()),
                     }
 
                 }
-                <TutorialEditorArea code=code set_code_exe_result=set_code_exe_result />
+                <TutorialEditorArea initial_code=initial_code set_user_code=set_user_code />
             </Transition>
-            <TutorialExecutionArea code_exe_result=code_exe_result />
+            <TutorialExecutionArea user_code=user_code />
         </div>
     }
 }

@@ -1,5 +1,6 @@
 use leptos::*;
 
+#[server]
 pub async fn execute_user_code(code: String) -> Result<String, ServerFnError> {
     Ok(code)
 }
@@ -19,7 +20,7 @@ pub fn TutorialExecutionArea(user_code: ReadSignal<String>) -> impl IntoView {
 
     view! {
         <div class="output_area">
-            <Suspense fallback=move || view! { <p>"Loading..."</p> }>
+            <Transition fallback=move || view! { <p>"Loading..."</p> }>
                 <pre>
                     <code>
                     {move || match user_code_execution_result.get(){
@@ -35,7 +36,7 @@ pub fn TutorialExecutionArea(user_code: ReadSignal<String>) -> impl IntoView {
                     }}
                     </code>
                 </pre>
-            </Suspense>
+            </Transition>
         </div>
     }
 }

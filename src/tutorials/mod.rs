@@ -315,12 +315,8 @@ fn TutorialContent(username: String, course_id: String, course_title: ReadSignal
                         match some_code_data {
                             Ok(ok_code_data) => {
                                 match ok_code_data {
-                                    Some(code_data) => {
-                                        set_initial_code.set(code_data)
-                                    }
-                                    None => {
-                                        set_initial_code.set("".to_string())
-                                    }
+                                    Some(code_data) => set_initial_code.set(code_data),
+                                    None => set_initial_code.set("".to_string()),
                                 }
                             }
                             Err(_) => set_initial_code.set("".to_string()),

@@ -4,24 +4,38 @@ use leptos::*;
 pub async fn execute_user_code(code: String) -> Result<(), ServerFnError> {
     use std::fs::File;
     use std::io::prelude::*;
+    use std::process::Command;
 
-    let mut file = match File::create("streamlist_student.py") {
+    let mut file = match File::create("./student_codes/streamlist_student1.py") {
         Ok(f) => f,
         Err(e) => {
-            logging::log!("ERROR <tutorials/execution.rs:9>: {}", e.to_string());
+            // logging::log!("ERROR <tutorials/execution.rs:9>: {}", e.to_string());
             return Err(ServerFnError::Args(e.to_string()))
         },
     };
 
     match file.write_all(&code.into_bytes()) {
-        Ok(_) => Ok(()),
-        Err(e) => Err(ServerFnError::Args(e.to_string())),
+        Ok(_) => {
+            match Command::new("podman")
+                .arg("cp")
+                .arg("student_codes/streamlist_student1.py")
+                .arg("student1:streamlit_app.py")
+                .output() {
+                    Ok(output) => {
+                        Ok(())
+                    },
+                    Err(e) => {
+                        // logging::log!("ERROR <tutorials/execution.rs:26>: {}", e.to_string());
+                        return Err(ServerFnError::Args(e.to_string()))
+                    }
+                }
+        },
+        Err(e) => return Err(ServerFnError::Args(e.to_string())),
     }
 }
 
 #[component]
 pub fn TutorialExecutionArea(user_code: ReadSignal<String>) -> impl IntoView {
-
     // our resource
     let user_code_execution_result = create_resource(
         move || user_code.get(),
@@ -34,17 +48,20 @@ pub fn TutorialExecutionArea(user_code: ReadSignal<String>) -> impl IntoView {
 
     view! {
         <div class="output_area">
-            <Suspense fallback=move || view! { <p>"Loading..."</p> }>
+            <Transition fallback=move || view! { <p>"Loading..."</p> }>
                 <pre>
                     <code>
-                    {move || match user_code_execution_result.get(){
-                        Some(_) => "".to_string(),
-                        None => "".to_string(),
-                    }}
+                        {move || match user_code_execution_result.get() {
+                            Some(_) => "".to_string(),
+                            None => "".to_string(),
+                        }}
                     </code>
                 </pre>
-                <iframe style="width:100%;height:890px;border:none;" src="http://localhost:8501/"></iframe>
-            </Suspense>
+                <iframe
+                    style="width:100%;height:890px;border:none;"
+                    src="http://localhost:8501/"
+                ></iframe>
+            </Transition>
         </div>
     }
 }

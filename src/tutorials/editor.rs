@@ -2,7 +2,7 @@ use leptos::*;
 use leptos::ev::KeyboardEvent;
 
 #[server]
-pub async fn execute_user_code(code: String) -> Result<(), ServerFnError> {
+pub async fn execute_user_code(code: String, username: String) -> Result<(), ServerFnError> {
     use std::fs::File;
     use std::io::prelude::*;
     use std::process::Command;
@@ -19,11 +19,11 @@ pub async fn execute_user_code(code: String) -> Result<(), ServerFnError> {
         Ok(_) => {
             match Command::new("docker")
                 .arg("cp")
-                .arg("student_codes/streamlist_student1.py")
+                .arg(format!("student_codes/streamlist_{}.py", username))
                 .arg("student1:streamlit_app.py")
-                .output()
+                .spawn()
             {
-                Ok(_output) => Ok(()),
+                Ok(_) => Ok(()),
                 Err(e) => {
                     // logging::log!("ERROR <tutorials/execution.rs:26>: {}", e.to_string());
                     Err(ServerFnError::Args(e.to_string()))
@@ -35,7 +35,7 @@ pub async fn execute_user_code(code: String) -> Result<(), ServerFnError> {
 }
 
 #[component]
-pub fn TutorialEditorArea(initial_code: ReadSignal<String>) -> impl IntoView {
+pub fn TutorialEditorArea(initial_code: ReadSignal<String>, username: String) -> impl IntoView {
     let input_element: NodeRef<html::Textarea> = create_node_ref();
 
     let on_keydown = move |ev: KeyboardEvent| {
@@ -46,10 +46,12 @@ pub fn TutorialEditorArea(initial_code: ReadSignal<String>) -> impl IntoView {
         }
     };
 
+
     let on_submit = move |ev: leptos::ev::SubmitEvent| {
         // stop the page from reloading!
         ev.prevent_default();
 
+        let username_clone = username.clone();
         // here, we'll extract the value from the input
         let value = input_element
             .get()
@@ -64,7 +66,7 @@ pub fn TutorialEditorArea(initial_code: ReadSignal<String>) -> impl IntoView {
 
         spawn_local (
             async move {
-                let _ = execute_user_code(value).await;
+                let _ = execute_user_code(value, username_clone).await;
         });
     };
 

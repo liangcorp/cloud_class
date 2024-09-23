@@ -272,7 +272,7 @@ fn TutorialContent(username: String, course_id: String, course_title: ReadSignal
         <div style="float:left; font-weight:bold; padding-top:10px">
             <table>
                 <tr>
-                    <td style="padding-right: 50px">"用户: "{username}</td>
+                    <td style="padding-right: 50px">"用户: "{username.to_string()}</td>
                     <td style="padding-right: 50px">"课程: "{move || course_title.get()}</td>
                     <td style="padding-right: 50px">
                         "章节: "
@@ -322,7 +322,7 @@ fn TutorialContent(username: String, course_id: String, course_title: ReadSignal
                         }
                     }
                     None => set_initial_code.set("".to_string()),
-                }} <TutorialEditorArea initial_code=initial_code />
+                }} <TutorialEditorArea initial_code=initial_code username=username.to_string()/>
             </Transition>
             <TutorialExecutionArea />
         </div>

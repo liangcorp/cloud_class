@@ -1,7 +1,7 @@
 body {
-	font-family: sans-serif;
-    background-color: #FAFAFA;
-    height: 100%;
+  font-family: sans-serif;
+  background-color: #fafafa;
+  height: 100%;
 }
 
 html {
@@ -26,12 +26,11 @@ div.profile_contents {
 }
 
 div.sidebar-scrollbox {
-  width:20%;
+  width: 20%;
   display: inline-block;
   float: left;
   overflow-y: scroll;
 }
-
 
 .header {
   padding-top: 25px;
@@ -51,7 +50,7 @@ div.sidebar-scrollbox {
 
 td.header_image {
   padding: 10px;
-  align:center;
+  align: center;
   width: 200px;
 }
 
@@ -62,7 +61,7 @@ td.header_menu {
 }
 
 td.header_login {
-  padding:10px;
+  padding: 10px;
   width: 100px;
   align: center;
 }
@@ -74,23 +73,23 @@ a.header {
 }
 
 a.header:hover {
-  color: #0F7ED0;
+  color: #0f7ed0;
   text-decoration-line: underline;
 }
 
 a.header:focus {
-  color: #0F7ED0;
+  color: #0f7ed0;
   text-decoration-line: underline;
 }
 
 a.home_login {
   font-weight: bold;
   text-decoration-line: none;
-  padding-top:10px;
-  padding-bottom:10px;
-  padding-left:20px;
-  padding-right:20px;
-  color:#FAFAFA;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+  color: #fafafa;
   background-color: #333333;
 }
 
@@ -101,7 +100,7 @@ a.home_login:focus {
   padding-bottom: 10px;
   padding-left: 20px;
   padding-right: 20px;
-  color: #FAFAFA;
+  color: #fafafa;
   background-color: gray;
 }
 
@@ -111,11 +110,11 @@ a.login_switch {
 }
 
 a.login_switch:hover {
-  color: #0F7ED0;
+  color: #0f7ed0;
 }
 
 a.login_switch:focus {
-  color: #0F7ED0;
+  color: #0f7ed0;
 }
 
 a.tutorial_link {
@@ -163,7 +162,7 @@ div.full-height {
   left: 0px;
   width: 100%;
   height: 100%;
-  background-color:#009DC7;
+  background-color: #009dc7;
 }
 
 div.login_div {
@@ -194,28 +193,28 @@ div.each_class:hover {
 }
 
 div.sidebar-resize-handle {
-  width:10px;
-  background-color:gray;
+  width: 10px;
+  background-color: gray;
   display: inline-block;
 }
 
 b.login_box {
-  padding:10px;
-  border:0px;
-  font-size:20px;
+  padding: 10px;
+  border: 0px;
+  font-size: 20px;
 }
 
 input.login_form {
-  padding:10px;
+  padding: 10px;
   /* border:0px; */
-  font-size:20px;
+  font-size: 20px;
 }
 
 input.submit_button {
-  border:0px;
-  background-color:#333333;
-  color:white;
-  font-size:15px;
+  border: 0px;
+  background-color: #333333;
+  color: white;
+  font-size: 15px;
   padding-top: 5px;
   padding-bottom: 5px;
   padding-left: 45px;
@@ -223,10 +222,10 @@ input.submit_button {
 }
 
 input.submit_button:active {
-  border:0px;
+  border: 0px;
   background-color: #666666;
-  color:white;
-  font-size:15px;
+  color: white;
+  font-size: 15px;
   padding-top: 5px;
   padding-bottom: 5px;
   padding-left: 45px;
@@ -234,8 +233,8 @@ input.submit_button:active {
 }
 
 input.register_button {
-  border:0px;
-  font-size:15px;
+  border: 0px;
+  font-size: 15px;
   padding-top: 5px;
   padding-bottom: 5px;
   padding-left: 45px;
@@ -244,7 +243,7 @@ input.register_button {
 
 input:focus {
   /* outline: none; */
-  outline-color: #0F7ED0;
+  outline-color: #0f7ed0;
 }
 
 input.course_search_box_home {
@@ -252,7 +251,7 @@ input.course_search_box_home {
   padding: 2px;
   height: 30px;
   border-radius: 5px;
-  border: 1px solid #0F7ED0;
+  border: 1px solid #0f7ed0;
 }
 
 input.course_search_box_profile {
@@ -261,24 +260,24 @@ input.course_search_box_profile {
   width: 350px;
   height: 30px;
   border-radius: 5px;
-  border: 1px solid #0F7ED0;
+  border: 1px solid #0f7ed0;
 }
 
 input.run_code {
   font-size: 18;
-  border:0px;
-  color:white;
+  border: 0px;
+  color: white;
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 30px;
   padding-right: 30px;
-  background-color:#1a73e8;
+  background-color: #1a73e8;
 }
 
 input.run_code:active {
   font-size: 18;
-  border:0px;
-  color:white;
+  border: 0px;
+  color: white;
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 30px;
@@ -287,7 +286,7 @@ input.run_code:active {
 }
 
 img.banner {
-  width:100%;
+  width: 100%;
 }
 
 img.header {
@@ -296,12 +295,12 @@ img.header {
 }
 
 hr.page_divider {
-  border: 1px solid #0F7ED0;
+  border: 1px solid #0f7ed0;
 }
 
 li:before {
-  content:\5143;
-  font-family:Arial;
+  content: \5143;
+  font-family: Arial;
 }
 
 li.chapter_select {
@@ -340,8 +339,8 @@ div.section_size_selector {
   color: red;
   /* font-size: 400; */
   /* width:5px; */
-  height:100%;
-  top:0px;
+  height: 100%;
+  top: 0px;
   display: inline-block;
   /* float: left; */
   margin-left: 240px;
@@ -351,8 +350,8 @@ div:hover.section_size_selector {
   position: fixed; /* Fixed Sidebar (stay in place on scroll) */
   background-color: gray;
   color: red;
-  height:100%;
-  top:0px;
+  height: 100%;
+  top: 0px;
   display: inline-block;
   margin-left: 240px;
   background-color: #474747;
@@ -417,16 +416,15 @@ div.output_area {
 
 div.text_area {
   /* padding-left:15px; */
-  background-color:#1a1b26;
-  margin-right:20px;
+  background-color: #1a1b26;
+  margin-right: 20px;
 }
 
 div.console_area {
-
 }
 
 textarea.editor {
-  font-family: 'JetBrains Mono';
+  font-family: "JetBrains Mono";
   font-size: 20;
   color: #c0caf5;
   width: 95%;
@@ -454,8 +452,18 @@ textarea.console {
   display: none;
 }
 
+iframe.code_execution {
+  width: 100%;
+  height: 890px;
+  border: none;
+}
+
 /* On smaller screens, where height is less than 450px, change the style of the sidebar (less padding and a smaller font size) */
 @media screen and (max-height: 450px) {
-  .sidenav {padding-top: 15px;}
-  .sidenav a {font-size: 18px;}
+  .sidenav {
+    padding-top: 15px;
+  }
+  .sidenav a {
+    font-size: 18px;
+  }
 }

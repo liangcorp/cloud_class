@@ -2,7 +2,6 @@ use leptos::*;
 
 #[component]
 pub fn TutorialExecutionArea() -> impl IntoView {
-
     view! {
         <div class="output_area">
             <Transition fallback=move || view! { <p>"正在联系..."</p> }>

@@ -9,12 +9,8 @@ pub fn HomePage() -> impl IntoView {
     use header::*;
 
     view! {
-        <div class="contents">
-            <HeaderMenu />
-        </div>
-        <div>
-            <hr class="page_divider" />
-        </div>
+        <HeaderMenu />
+
         <div class="contents">
             <img src="images/logo.png" />
         </div>

@@ -118,13 +118,13 @@ pub fn UsernameLoginLayer() -> impl IntoView {
             <table>
                 <tr style:display=move || auth_success.get() style="color:red">
                     <td>
-                        <h4>用户名或者密码不正确</h4>
+                        <h4>"用户名或者密码不正确"</h4>
                     </td>
                 </tr>
                 <tr>
                     <td style="padding-left:10px">
                         <input
-                            placeholder="请输入账号"
+                            placeholder="请输入用户名"
                             class="login_form"
                             style="width:100%"
                             type="text"
@@ -161,10 +161,10 @@ pub fn UsernameLoginLayer() -> impl IntoView {
                                 set_checkbox_value.set(new_value);
                             }
                         />
-                        记住账号
+                        "记住账号"
                     </td>
                     <td style="padding: 10px">
-                        <a href="#">忘记密码</a>
+                        <a href="#">"忘记密码"</a>
                     </td>
                 </tr>
             </table>
@@ -176,7 +176,7 @@ pub fn UsernameLoginLayer() -> impl IntoView {
                     </td>
                     <td style="padding:10px">
                         <a href="/register" class="login_switch">
-                            注册
+                            "注册"
                         </a>
                     </td>
                 </tr>

@@ -15,7 +15,7 @@ pub fn LoginPage() -> impl IntoView {
     let (show_layer, set_show_layer) = create_signal(true);
 
     view! {
-        <Title text="数智化教学" />
+        <Title text="学员登陆" />
 
         <div class="full-height">
             <div class="login_div" align="center">
@@ -48,7 +48,7 @@ pub fn LoginPage() -> impl IntoView {
                                                     set_show_layer.update(|n| *n = true);
                                                 }
                                             >
-                                                密码登录
+                                                "密码登录"
                                             </a>
                                         </td>
                                         <td>
@@ -59,7 +59,7 @@ pub fn LoginPage() -> impl IntoView {
                                                     set_show_layer.update(|n| *n = false);
                                                 }
                                             >
-                                                短信登录
+                                                "短信登录"
                                             </a>
                                         </td>
                                     </tr>
@@ -83,7 +83,7 @@ pub fn LoginPage() -> impl IntoView {
                 <br />
                 <br />
                 <br />
-                <a href="/">返回主页</a>
+                <a href="/">"返回主页"</a>
             </div>
         </div>
     }

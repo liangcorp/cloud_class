@@ -322,7 +322,7 @@ fn TutorialContent(username: String, course_id: String, course_title: ReadSignal
                         }
                     }
                     None => set_initial_code.set("".to_string()),
-                }} <TutorialEditorArea initial_code=initial_code username=username.to_string()/>
+                }} <TutorialEditorArea initial_code=initial_code username=username.to_string() />
             </Transition>
             <TutorialExecutionArea />
         </div>

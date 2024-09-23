@@ -243,7 +243,6 @@ fn TutorialContent(username: String, course_id: String, course_title: ReadSignal
     let (initial_code, set_initial_code) = create_signal("".to_string());
     let (chapter_list, set_chapter_list) = create_signal(vec![Chapter::default()]);
     let (chapter_number, set_chapter_number) = create_signal(1_u32);
-    let (user_code, set_user_code) = create_signal("".to_string());
 
     let course_id_clone = course_id.clone();
 
@@ -323,9 +322,9 @@ fn TutorialContent(username: String, course_id: String, course_title: ReadSignal
                         }
                     }
                     None => set_initial_code.set("".to_string()),
-                }} <TutorialEditorArea initial_code=initial_code set_user_code=set_user_code />
+                }} <TutorialEditorArea initial_code=initial_code />
             </Transition>
-            <TutorialExecutionArea user_code=user_code />
+            <TutorialExecutionArea />
         </div>
     }
 }

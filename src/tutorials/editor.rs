@@ -1,8 +1,41 @@
 use leptos::*;
 use leptos::ev::KeyboardEvent;
 
+#[server]
+pub async fn execute_user_code(code: String) -> Result<(), ServerFnError> {
+    use std::fs::File;
+    use std::io::prelude::*;
+    use std::process::Command;
+
+    let mut file = match File::create("./student_codes/streamlist_student1.py") {
+        Ok(f) => f,
+        Err(e) => {
+            // logging::log!("ERROR <tutorials/execution.rs:9>: {}", e.to_string());
+            return Err(ServerFnError::Args(e.to_string()));
+        }
+    };
+
+    match file.write_all(&code.into_bytes()) {
+        Ok(_) => {
+            match Command::new("docker")
+                .arg("cp")
+                .arg("student_codes/streamlist_student1.py")
+                .arg("student1:streamlit_app.py")
+                .output()
+            {
+                Ok(_output) => Ok(()),
+                Err(e) => {
+                    // logging::log!("ERROR <tutorials/execution.rs:26>: {}", e.to_string());
+                    Err(ServerFnError::Args(e.to_string()))
+                }
+            }
+        }
+        Err(e) => Err(ServerFnError::Args(e.to_string())),
+    }
+}
+
 #[component]
-pub fn TutorialEditorArea(initial_code: ReadSignal<String>, set_user_code: WriteSignal<String>) -> impl IntoView {
+pub fn TutorialEditorArea(initial_code: ReadSignal<String>) -> impl IntoView {
     let input_element: NodeRef<html::Textarea> = create_node_ref();
 
     let on_keydown = move |ev: KeyboardEvent| {
@@ -28,7 +61,11 @@ pub fn TutorialEditorArea(initial_code: ReadSignal<String>, set_user_code: Write
             // this means we can call`HtmlInputElement::value()`
             // to get the current value of the input
             .value();
-        set_user_code.set(value);
+
+        spawn_local (
+            async move {
+                let _ = execute_user_code(value).await;
+        });
     };
 
     view! {

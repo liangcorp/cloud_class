@@ -2,7 +2,7 @@ use leptos::*;
 
 /// Renders the header menu of your home page.
 #[component]
-pub fn HeaderMenu() -> impl IntoView {
+pub fn HeaderSection() -> impl IntoView {
     use crate::session::*;
 
     view! {

@@ -1,10 +1,12 @@
 use leptos::*;
+
+/// Render the about page
 #[component]
 pub fn AboutPage() -> impl IntoView {
-    use super::header::*;
+    use super::header::HeaderSection;
 
     view! {
-        <HeaderMenu />
+        <HeaderSection />
 
         <div class="contents">
             <img class="about" src="images/banners/marvin-meyer-SYTO3xs06fU.jpg" />

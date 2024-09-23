@@ -20,7 +20,7 @@ pub async fn execute_user_code(code: String, username: String) -> Result<(), Ser
             match Command::new("docker")
                 .arg("cp")
                 .arg(format!("student_codes/streamlist_{}.py", username))
-                .arg("student1:streamlit_app.py")
+                .arg(format!("{}:streamlit_app.py", username))
                 .spawn()
             {
                 Ok(_) => Ok(()),
@@ -41,7 +41,7 @@ pub fn TutorialEditorArea(initial_code: ReadSignal<String>, username: String) ->
     let on_keydown = move |ev: KeyboardEvent| {
 
         if ev.code() == "Tab" {
-            // stop the key action!
+            // stop the key action
             ev.prevent_default();
         }
     };

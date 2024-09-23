@@ -1,12 +1,9 @@
 use crate::admin::AdminPage;
+use crate::courses::{content::ContentPage, CoursesPage, NoCoursePage};
 use crate::error_template::{AppError, ErrorTemplate};
-use crate::home::HomePage;
-use crate::student::account::login::LoginPage;
-use crate::student::account::logout::LogoutPage;
-use crate::student::account::register::RegistrationPage;
+use crate::home::{about::AboutPage, HomePage};
+use crate::student::account::{login::LoginPage, logout::LogoutPage, register::RegistrationPage};
 use crate::student::profile::ProfilePage;
-use crate::courses::{CoursesPage, NoCoursePage};
-use crate::courses::content::ContentPage;
 use crate::tutorials::TutorialPage;
 
 use leptos::*;
@@ -34,6 +31,7 @@ pub fn App() -> impl IntoView {
             <main>
                 <Routes>
                     <Route path="/" view=HomePage />
+                    <Route path="/about" view=AboutPage />
                     <Route path="/login" view=LoginPage />
                     <Route path="/logout" view=LogoutPage />
                     <Route path="/register" view=RegistrationPage />

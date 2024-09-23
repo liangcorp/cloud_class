@@ -1,10 +1,6 @@
-pub mod about;
-
 use leptos::*;
-
-/// Renders the home page of your application.
 #[component]
-pub fn HomePage() -> impl IntoView {
+pub fn AboutPage() -> impl IntoView {
     use crate::session::*;
 
     view! {
@@ -90,12 +86,12 @@ pub fn HomePage() -> impl IntoView {
                                 view! {
                                     <td class="header_login">
                                         <a href="/login" class="home_login">
-                                            "登陆"
+                                            登陆
                                         </a>
                                     </td>
                                     <td class="header_login">
                                         <a href="/register" class="header">
-                                            "注册"
+                                            注册
                                         </a>
                                     </td>
                                 }
@@ -110,7 +106,8 @@ pub fn HomePage() -> impl IntoView {
             <hr class="page_divider" />
         </div>
         <div class="contents">
-            <img src="images/logo.png" />
+            <img class="about" src="images/banners/marvin-meyer-SYTO3xs06fU.jpg" />
+            <h1>"学校简介"</h1>
         </div>
     }
 }

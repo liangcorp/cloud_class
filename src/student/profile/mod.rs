@@ -47,7 +47,7 @@ fn ProfilePageContent(username: String) -> impl IntoView {
                         </a>
                     </td>
                     <td class="header_menu">
-                        <a class="header" href="/">
+                        <a href="/" class="header">
                             "首页"
                         </a>
                     </td>
@@ -76,6 +76,7 @@ fn ProfilePageContent(username: String) -> impl IntoView {
                     <td class="header_menu"></td>
                     <td class="header_menu"></td>
                     <td class="header_menu"></td>
+
                     <td class="header_login">
                         <a class="header" href="/profile">
                             {username.clone()}

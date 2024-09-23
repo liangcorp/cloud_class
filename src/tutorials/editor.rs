@@ -7,7 +7,7 @@ pub async fn execute_user_code(code: String, username: String) -> Result<(), Ser
     use std::io::prelude::*;
     use std::process::Command;
 
-    let mut file = match File::create("./student_codes/streamlist_student1.py") {
+    let mut file = match File::create(format!("/tmp/python_streamlit_{}.py", username)) {
         Ok(f) => f,
         Err(e) => {
             // logging::log!("ERROR <tutorials/execution.rs:9>: {}", e.to_string());
@@ -19,7 +19,7 @@ pub async fn execute_user_code(code: String, username: String) -> Result<(), Ser
         Ok(_) => {
             match Command::new("docker")
                 .arg("cp")
-                .arg(format!("student_codes/streamlist_{}.py", username))
+                .arg(format!("/tmp/python_streamlit_{}.py", username))
                 .arg(format!("{}:streamlit_app.py", username))
                 .spawn()
             {
@@ -45,7 +45,6 @@ pub fn TutorialEditorArea(initial_code: ReadSignal<String>, username: String) ->
             ev.prevent_default();
         }
     };
-
 
     let on_submit = move |ev: leptos::ev::SubmitEvent| {
         // stop the page from reloading!

@@ -1,6 +1,7 @@
 use leptos::*;
 use leptos_meta::*;
 use serde::{Serialize, Deserialize};
+use cfg_if::cfg_if;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct InputRegistrationInfo {
@@ -18,6 +19,7 @@ pub enum InputRegistrationErrorKind {
     PasswordNotMatch,
     MobileVerifyFailed,
     InvalidMobileVerifyCode,
+    InvalidUsername,
 }
 
 impl Default for InputRegistrationInfo {
@@ -34,16 +36,29 @@ impl Default for InputRegistrationInfo {
     }
 }
 
+cfg_if! {
+    if #[cfg(feature = "ssr")] {
+        fn verify_input_content(input_reg: InputRegistrationInfo) -> Result<(), InputRegistrationErrorKind> {
+            use crate::utils::sanitizer;
+            let result;
+
+            match sanitizer::sanitize_username(input_reg.username) {
+                Ok(_) => result = Ok(()),
+                Err(_) => result = Err(InputRegistrationErrorKind::InvalidUsername),
+            }
+
+            result
+        }
+    }
+}
+
 #[server]
 pub async fn send_mobile_code(mobile_num: String) -> Result<(), ServerFnError> {
     use crate::utils::*;
     let num: String = format!("{}", rapid::rapidhash(&uuid::get_random_token().into_bytes()));
     logging::log!("{}: {}", mobile_num, &num[..6]);
+    // probably need redis caching
     Ok(())
-}
-
-fn verify_input_content(_input_reg: InputRegistrationInfo) -> Result<(), InputRegistrationErrorKind> {
-    todo!()
 }
 
 #[server]
@@ -135,7 +150,11 @@ pub fn RegistrationPage() -> impl IntoView {
                             }
                             Some(InputRegistrationErrorKind::MobileVerifyFailed) => {
                                 set_is_show.set(true);
-                                set_reg_error_message.set("手机号不符合".to_string());
+                                set_reg_error_message.set("手机号无效".to_string());
+                            }
+                            Some(InputRegistrationErrorKind::InvalidUsername) => {
+                                set_is_show.set(true);
+                                set_reg_error_message.set("用户名无效".to_string());
                             }
                         }
                     },

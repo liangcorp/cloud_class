@@ -1,36 +1,41 @@
 use leptos::*;
 use leptos_meta::*;
+use serde::{Serialize, Deserialize};
 
-struct RegistrationInfo {
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+struct InputRegistrationInfo {
     username: String,
     password: String,
+    confirm_password: String,
     fullname: String,
     email: String,
     mobile_num: String,
+    mobile_verify_code: String,
 }
 
-enum RegistrationErrorKind {
+enum InputRegistrationErrorKind {
     None,
     PasswordNotMatch,
     MobileVerifyFailed,
     InvalidMobileVerifyCode,
 }
 
-impl Default for RegistrationInfo {
-    fn default() -> RegistrationInfo {
-        RegistrationInfo {
+impl Default for InputRegistrationInfo {
+    fn default() -> InputRegistrationInfo {
+        InputRegistrationInfo {
             username: "".to_string(),
             password: "".to_string(),
+            confirm_password: "".to_string(),
             fullname: "".to_string(),
             email: "".to_string(),
             mobile_num: "".to_string(),
+            mobile_verify_code: "".to_string(),
         }
     }
 }
 
 #[server]
 pub async fn send_mobile_code(mobile_num: String) -> Result<(), ServerFnError> {
-    use crate::utils::*;
     use crate::utils::*;
     let num: String = format!("{}", rapid::rapidhash(&uuid::get_random_token().into_bytes()));
     logging::log!("{}: {}", mobile_num, &num[..6]);
@@ -40,7 +45,7 @@ pub async fn send_mobile_code(mobile_num: String) -> Result<(), ServerFnError> {
 /// 提供注册页
 #[component]
 pub fn RegistrationPage() -> impl IntoView {
-    let (reg_error, set_reg_error) = create_signal(RegistrationErrorKind::None);
+    let (reg_error, set_reg_error) = create_signal(InputRegistrationErrorKind::None);
 
     let input_username: NodeRef<html::Input> = create_node_ref();
     let input_password: NodeRef<html::Input> = create_node_ref();
@@ -48,9 +53,9 @@ pub fn RegistrationPage() -> impl IntoView {
     let input_fullname: NodeRef<html::Input> = create_node_ref();
     let input_email: NodeRef<html::Input> = create_node_ref();
     let input_m_number: NodeRef<html::Input> = create_node_ref();
-    let input_mobile_verify_code: NodeRef<html::Input> = create_node_ref();
+    let input_m_verify_code: NodeRef<html::Input> = create_node_ref();
 
-    let mut registration_info = RegistrationInfo::default();
+    let mut input_reg_info = InputRegistrationInfo::default();
 
     let on_click = move |_| {
         let m_num_value = input_m_number
@@ -68,38 +73,37 @@ pub fn RegistrationPage() -> impl IntoView {
         // stop the page from reloading!
         ev.prevent_default();
 
-        registration_info.username = input_username
+        input_reg_info.username = input_username
             .get()
             .expect("<input> should be mounted")
             .value();
 
-        let password_value = input_password
+        input_reg_info.password = input_password
             .get()
             .expect("<input> should be mounted")
             .value();
 
-        let confirm_password_value = input_confirm_password
+        input_reg_info.confirm_password = input_confirm_password
             .get()
             .expect("<input> should be mounted")
             .value();
 
-        if password_value != confirm_password_value {
-            set_reg_error.set(RegistrationErrorKind::PasswordNotMatch);
-        } else {
-            registration_info.password = password_value;
-        }
-
-        registration_info.fullname = input_fullname
+        input_reg_info.fullname = input_fullname
             .get()
             .expect("<input> should be mounted")
             .value();
 
-        registration_info.email = input_email
+        input_reg_info.email = input_email
             .get()
             .expect("<input> should be mounted")
             .value();
 
-        registration_info.mobile_num = input_m_number
+        input_reg_info.mobile_num = input_m_number
+            .get()
+            .expect("<input> should be mounted")
+            .value();
+
+        input_reg_info.mobile_verify_code = input_m_verify_code
             .get()
             .expect("<input> should be mounted")
             .value();
@@ -201,7 +205,7 @@ pub fn RegistrationPage() -> impl IntoView {
                                         placeholder="请输入验证码"
                                         class="login-form"
                                         type="text"
-                                        node_ref=input_mobile_verify_code
+                                        node_ref=input_m_verify_code
                                     />
                                     <button
                                         on:click=on_click

@@ -23,25 +23,6 @@ impl Default for Chapter {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct ChapterContent {
-    chapter_id: String,
-    title: String,
-    content: String,
-    chapter_number: u32,
-}
-
-impl Default for ChapterContent {
-    fn default() -> ChapterContent {
-        ChapterContent {
-            chapter_id: "".to_string(),
-            title: "".to_string(),
-            content: "".to_string(),
-            chapter_number: 0,
-        }
-    }
-}
-
 cfg_if! {
     if #[cfg(feature = "ssr")] {
         use comrak::{markdown_to_html, Options};

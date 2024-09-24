@@ -582,6 +582,7 @@ dependencies = [
  "leptos_router",
  "rand_core",
  "redis",
+ "regex",
  "serde",
  "sqlx",
  "thiserror",

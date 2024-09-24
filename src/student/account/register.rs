@@ -38,9 +38,17 @@ impl Default for InputRegistrationInfo {
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
-        fn verify_username(dirty_username: String) -> Result<(), InputRegistrationErrorKind> {
+        use regex::Regex;
+        fn verify_username(input_username: String) -> Result<(), InputRegistrationErrorKind> {
+            let re = Regex::new(r"(?m)^[a-zA-Z0-9]{5,}$").unwrap();
 
-            Ok(())
+            logging::log!("DEBUG<student/account/register.rs:45>: {}", &input_username);
+
+            if re.is_match(input_username.as_str()) {
+                Ok(())
+            } else {
+                Err(InputRegistrationErrorKind::InvalidUsername)
+            }
         }
 
         fn verify_input_content(input_reg: InputRegistrationInfo) -> Result<(), InputRegistrationErrorKind> {

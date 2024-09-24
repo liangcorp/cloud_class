@@ -1,30 +1,74 @@
 use leptos::*;
 use leptos_meta::*;
 
-/// 提供登陆页
+struct RegistrationInfo {
+    username: String,
+    password: String,
+    fullname: String,
+    email: String,
+    mobile_num: String,
+}
+
+enum RegistrationErrorKind {
+    None,
+    PasswordNotMatch,
+    MobileVerifyFailed,
+    InvalidMobileVerifyCode,
+}
+
+impl Default for RegistrationInfo {
+    fn default() -> RegistrationInfo {
+        RegistrationInfo {
+            username: "".to_string(),
+            password: "".to_string(),
+            fullname: "".to_string(),
+            email: "".to_string(),
+            mobile_num: "".to_string(),
+        }
+    }
+}
+
+#[server]
+pub async fn send_mobile_code(mobile_num: String) -> Result<(), ServerFnError> {
+    use crate::utils::*;
+    use crate::utils::*;
+    let num: String = format!("{}", rapid::rapidhash(&uuid::get_random_token().into_bytes()));
+    logging::log!("{}: {}", mobile_num, &num[..6]);
+    Ok(())
+}
+
+/// 提供注册页
 #[component]
 pub fn RegistrationPage() -> impl IntoView {
-    let (username, set_username) = create_signal("".to_string());
-    let (password, set_password) = create_signal("".to_string());
-    let (confirm_password, set_confirm_password) = create_signal("".to_string());
-    let (fullname, set_fullname) = create_signal("".to_string());
-    let (email, set_email) = create_signal("".to_string());
-    let (mobile_no, set_mobile_no) = create_signal("".to_string());
-    let (mobile_verify_code, set_mobile_verify_code) = create_signal("".to_string());
+    let (reg_error, set_reg_error) = create_signal(RegistrationErrorKind::None);
 
     let input_username: NodeRef<html::Input> = create_node_ref();
     let input_password: NodeRef<html::Input> = create_node_ref();
     let input_confirm_password: NodeRef<html::Input> = create_node_ref();
     let input_fullname: NodeRef<html::Input> = create_node_ref();
     let input_email: NodeRef<html::Input> = create_node_ref();
-    let input_mobile_no: NodeRef<html::Input> = create_node_ref();
+    let input_m_number: NodeRef<html::Input> = create_node_ref();
     let input_mobile_verify_code: NodeRef<html::Input> = create_node_ref();
+
+    let mut registration_info = RegistrationInfo::default();
+
+    let on_click = move |_| {
+        let m_num_value = input_m_number
+            .get()
+            .expect("<input> should be mounted")
+            .value();
+
+        spawn_local(
+            async move {
+                let _ = send_mobile_code(m_num_value).await;
+            });
+    };
 
     let on_submit = move |ev: leptos::ev::SubmitEvent| {
         // stop the page from reloading!
         ev.prevent_default();
 
-        let username_value = input_username
+        registration_info.username = input_username
             .get()
             .expect("<input> should be mounted")
             .value();
@@ -39,22 +83,23 @@ pub fn RegistrationPage() -> impl IntoView {
             .expect("<input> should be mounted")
             .value();
 
-        let fullname_value = input_fullname
+        if password_value != confirm_password_value {
+            set_reg_error.set(RegistrationErrorKind::PasswordNotMatch);
+        } else {
+            registration_info.password = password_value;
+        }
+
+        registration_info.fullname = input_fullname
             .get()
             .expect("<input> should be mounted")
             .value();
 
-        let email_value = input_email
+        registration_info.email = input_email
             .get()
             .expect("<input> should be mounted")
             .value();
 
-        let mobile_no_value = input_mobile_no
-            .get()
-            .expect("<input> should be mounted")
-            .value();
-
-        let mobile_verify_code_value = input_mobile_verify_code
+        registration_info.mobile_num = input_m_number
             .get()
             .expect("<input> should be mounted")
             .value();
@@ -85,7 +130,6 @@ pub fn RegistrationPage() -> impl IntoView {
                                         class="login-form"
                                         style="width:100%"
                                         type="text"
-                                        value=username
                                         node_ref=input_username
                                     />
                                 </td>
@@ -98,7 +142,6 @@ pub fn RegistrationPage() -> impl IntoView {
                                         class="login-form"
                                         style="width:100%"
                                         type="password"
-                                        value=password
                                         node_ref=input_password
                                     />
                                 </td>
@@ -111,7 +154,6 @@ pub fn RegistrationPage() -> impl IntoView {
                                         class="login-form"
                                         style="width:100%"
                                         type="password"
-                                        value=confirm_password
                                         node_ref=input_confirm_password
                                     />
                                 </td>
@@ -124,7 +166,6 @@ pub fn RegistrationPage() -> impl IntoView {
                                         class="login-form"
                                         style="width:100%"
                                         type="text"
-                                        value=fullname
                                         node_ref=input_fullname
                                     />
                                 </td>
@@ -137,7 +178,6 @@ pub fn RegistrationPage() -> impl IntoView {
                                         class="login-form"
                                         style="width:100%"
                                         type="text"
-                                        value=email
                                         node_ref=input_email
                                     />
                                 </td>
@@ -150,8 +190,7 @@ pub fn RegistrationPage() -> impl IntoView {
                                         class="login-form"
                                         style="width:100%"
                                         type="text"
-                                        value=mobile_no
-                                        node_ref=input_mobile_no
+                                        node_ref=input_m_number
                                     />
                                 </td>
                             </tr>
@@ -162,10 +201,13 @@ pub fn RegistrationPage() -> impl IntoView {
                                         placeholder="请输入验证码"
                                         class="login-form"
                                         type="text"
-                                        value=mobile_verify_code
                                         node_ref=input_mobile_verify_code
                                     />
-                                    <button class="registration" style="margin-left:15px">
+                                    <button
+                                        on:click=on_click
+                                        class="registration"
+                                        style="margin-left:15px"
+                                    >
                                         "获取验证码"
                                     </button>
                                 </td>
@@ -183,10 +225,8 @@ pub fn RegistrationPage() -> impl IntoView {
                         </table>
                     </form>
                 </div>
-                <div style="padding-top:100px;magin-top:50px;" >
-                    <a href="/">
-                        "返回主页"
-                    </a>
+                <div style="padding-top:100px;">
+                    <a href="/">"返回主页"</a>
                 </div>
             </div>
         </div>

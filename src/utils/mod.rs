@@ -1,4 +1,5 @@
-pub mod db;
 pub mod crypto;
-pub mod uuid;
+pub mod db;
+pub mod rapid;
 pub mod redis;
+pub mod uuid;

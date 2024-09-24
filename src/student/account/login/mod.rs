@@ -64,17 +64,14 @@ pub fn LoginPage() -> impl IntoView {
                                     <MobileLoginLayer />
                                 </div>
                             </td>
-                            <td></td>
                             <td align="center">
                                 <QRLayer />
                             </td>
                         </tr>
                     </table>
                 </div>
-                <div style="padding-top:100px;" >
-                    <a href="/">
-                        "返回主页"
-                    </a>
+                <div style="padding-top:100px;">
+                    <a href="/">"返回主页"</a>
                 </div>
             </div>
         </div>

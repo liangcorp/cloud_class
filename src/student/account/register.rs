@@ -38,16 +38,15 @@ impl Default for InputRegistrationInfo {
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
+        fn verify_username(dirty_username: String) -> Result<(), InputRegistrationErrorKind> {
+
+            Ok(())
+        }
+
         fn verify_input_content(input_reg: InputRegistrationInfo) -> Result<(), InputRegistrationErrorKind> {
-            use crate::utils::sanitizer;
-            let result;
+            verify_username(input_reg.username)?;
 
-            match sanitizer::sanitize_username(input_reg.username) {
-                Ok(_) => result = Ok(()),
-                Err(_) => result = Err(InputRegistrationErrorKind::InvalidUsername),
-            }
-
-            result
+            Ok(())
         }
     }
 }

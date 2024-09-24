@@ -298,33 +298,40 @@ fn CourseContent(username: String, course_id: String, disable: ReadSignal<bool>)
             </table>
         </div>
         <div class="sidenav">
-            <ul style="list-style-type:none">
-                <For
-                    each=move || show_chapters.get()
-                    key=|state| (state.chapter_id.clone())
-                    let:chapter
-                >
-                    <li>
-                        <p>
-                            <a
-                                on:click=move |_| {
-                                    set_chapter_id.set(chapter.chapter_id.clone());
-                                }
-                                class:isDisabled=move || !disable.get()
-                                href="#"
-                            >
-                                <div
-                                    style="float: left;"
-                                    class:display=move || chapter.chapter_number == 0
+            <div style="padding-left:10px;padding-bottom:20px;">
+                <a class="header" href="/courses">
+                    "返回个人主页"
+                </a>
+            </div>
+            <div>
+                <ul style="list-style-type:none">
+                    <For
+                        each=move || show_chapters.get()
+                        key=|state| (state.chapter_id.clone())
+                        let:chapter
+                    >
+                        <li>
+                            <p>
+                                <a
+                                    on:click=move |_| {
+                                        set_chapter_id.set(chapter.chapter_id.clone());
+                                    }
+                                    class:isDisabled=move || !disable.get()
+                                    href="#"
                                 >
-                                    <b style="padding-right:5px;">{chapter.chapter_number}"."</b>
-                                </div>
-                                {chapter.title}
-                            </a>
-                        </p>
-                    </li>
-                </For>
-            </ul>
+                                    <div
+                                        style="float: left;"
+                                        class:display=move || chapter.chapter_number == 0
+                                    >
+                                        <b style="padding-right:5px;">{chapter.chapter_number}"."</b>
+                                    </div>
+                                    {chapter.title}
+                                </a>
+                            </p>
+                        </li>
+                    </For>
+                </ul>
+            </div>
         </div>
         <div class="chapter-content">
             <Transition fallback=move || {

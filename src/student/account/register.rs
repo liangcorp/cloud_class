@@ -2,8 +2,8 @@ use leptos::*;
 use leptos_meta::*;
 use serde::{Serialize, Deserialize};
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-struct InputRegistrationInfo {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct InputRegistrationInfo {
     username: String,
     password: String,
     confirm_password: String,
@@ -13,8 +13,8 @@ struct InputRegistrationInfo {
     mobile_verify_code: String,
 }
 
-enum InputRegistrationErrorKind {
-    None,
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub enum InputRegistrationErrorKind {
     PasswordNotMatch,
     MobileVerifyFailed,
     InvalidMobileVerifyCode,
@@ -42,23 +42,32 @@ pub async fn send_mobile_code(mobile_num: String) -> Result<(), ServerFnError> {
     Ok(())
 }
 
+fn verify_input_content(_input_reg: InputRegistrationInfo) -> Result<(), InputRegistrationErrorKind> {
+    todo!()
+}
+
+#[server]
+pub async fn commit_user(input_reg: InputRegistrationInfo) -> Result<Option<InputRegistrationErrorKind>, ServerFnError> {
+    let _ = verify_input_content(input_reg);
+    Ok(None)
+}
+
 /// 提供注册页
 #[component]
 pub fn RegistrationPage() -> impl IntoView {
-    let (reg_error, set_reg_error) = create_signal(InputRegistrationErrorKind::None);
+    let (reg_error_message, set_reg_error_message) = create_signal("".to_string());
+    let (is_show, set_is_show) = create_signal(false);
 
     let input_username: NodeRef<html::Input> = create_node_ref();
     let input_password: NodeRef<html::Input> = create_node_ref();
     let input_confirm_password: NodeRef<html::Input> = create_node_ref();
     let input_fullname: NodeRef<html::Input> = create_node_ref();
     let input_email: NodeRef<html::Input> = create_node_ref();
-    let input_m_number: NodeRef<html::Input> = create_node_ref();
+    let input_m_num: NodeRef<html::Input> = create_node_ref();
     let input_m_verify_code: NodeRef<html::Input> = create_node_ref();
 
-    let mut input_reg_info = InputRegistrationInfo::default();
-
     let on_click = move |_| {
-        let m_num_value = input_m_number
+        let m_num_value = input_m_num
             .get()
             .expect("<input> should be mounted")
             .value();
@@ -67,11 +76,13 @@ pub fn RegistrationPage() -> impl IntoView {
             async move {
                 let _ = send_mobile_code(m_num_value).await;
             });
-    };
+        };
 
     let on_submit = move |ev: leptos::ev::SubmitEvent| {
         // stop the page from reloading!
         ev.prevent_default();
+
+        let mut input_reg_info = InputRegistrationInfo::default();
 
         input_reg_info.username = input_username
             .get()
@@ -98,7 +109,7 @@ pub fn RegistrationPage() -> impl IntoView {
             .expect("<input> should be mounted")
             .value();
 
-        input_reg_info.mobile_num = input_m_number
+        input_reg_info.mobile_num = input_m_num
             .get()
             .expect("<input> should be mounted")
             .value();
@@ -107,6 +118,34 @@ pub fn RegistrationPage() -> impl IntoView {
             .get()
             .expect("<input> should be mounted")
             .value();
+
+        spawn_local(
+            async move {
+                match commit_user(input_reg_info).await {
+                    Ok(some_error) => {
+                        match some_error {
+                            None => set_is_show.set(false),
+                            Some(InputRegistrationErrorKind::PasswordNotMatch) => {
+                                set_is_show.set(true);
+                                set_reg_error_message.set("密码不符合".to_string());
+                            },
+                            Some(InputRegistrationErrorKind::InvalidMobileVerifyCode) => {
+                                set_is_show.set(true);
+                                set_reg_error_message.set("验证码不符合".to_string());
+                            }
+                            Some(InputRegistrationErrorKind::MobileVerifyFailed) => {
+                                set_is_show.set(true);
+                                set_reg_error_message.set("手机号不符合".to_string());
+                            }
+                        }
+                    },
+                    Err(_) => {
+                        set_reg_error_message.set("未知问题".to_string());
+                        set_is_show.set(false)
+                    },
+                }
+            }
+        )
     };
 
     view! {
@@ -121,11 +160,14 @@ pub fn RegistrationPage() -> impl IntoView {
                 <div>
                     <form on:submit=on_submit style="margin-top:40px">
                         <table>
-                            // <tr style:display=move || auth_success.get() style="color:red">
-                            // <td>
-                            // <h4>"用户名或者密码不正确"</h4>
-                            // </td>
-                            // </tr>
+                            // error message
+                            <tr class:display=move || is_show.get()>
+                                <td></td>
+                                <td>
+                                    <p style="color:red">{ reg_error_message }</p>
+                                </td>
+                            </tr>
+                            // actual form
                             <tr>
                                 <td>"用户名"</td>
                                 <td style="padding-left:10px">
@@ -194,7 +236,7 @@ pub fn RegistrationPage() -> impl IntoView {
                                         class="login-form"
                                         style="width:100%"
                                         type="text"
-                                        node_ref=input_m_number
+                                        node_ref=input_m_num
                                     />
                                 </td>
                             </tr>
@@ -216,6 +258,8 @@ pub fn RegistrationPage() -> impl IntoView {
                                     </button>
                                 </td>
                             </tr>
+                        </table>
+                        <table>
                             <tr>
                                 <td style="padding-top:15px;">
                                     <input class="submit-button" type="submit" value="注册" />

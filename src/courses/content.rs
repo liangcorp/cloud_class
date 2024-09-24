@@ -323,7 +323,9 @@ fn CourseContent(username: String, course_id: String, disable: ReadSignal<bool>)
                                         style="float: left;"
                                         class:display=move || chapter.chapter_number == 0
                                     >
-                                        <b style="padding-right:5px;">{chapter.chapter_number}"."</b>
+                                        <b style="padding-right:5px;">
+                                            {chapter.chapter_number}"."
+                                        </b>
                                     </div>
                                     {chapter.title}
                                 </a>

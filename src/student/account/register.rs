@@ -10,8 +10,10 @@ pub fn RegistrationPage() -> impl IntoView {
 
         <div class="full-height">
             <div class="register-div" align="center">
+            <img src="images/registration/registration_logo.png" style="height:50px;width:50px;" />
+            <hr style="width:100%" />
                 // <form on:submit=on_submit>
-                <form>
+                <form style="margin-top:40px">
                     <table>
                         // <tr style:display=move || auth_success.get() style="color:red">
                         //     <td>
@@ -58,6 +60,19 @@ pub fn RegistrationPage() -> impl IntoView {
                             </td>
                         </tr>
                         <tr>
+                            <td>"姓名"</td>
+                            <td style="padding-left:10px">
+                                <input
+                                    placeholder="请输入姓名"
+                                    class="login-form"
+                                    style="width:100%"
+                                    type="text"
+                                    // value=fullname
+                                    // node_ref=input_fullname
+                                />
+                            </td>
+                        </tr>
+                        <tr>
                             <td>"邮件地址"</td>
                             <td style="padding-left:10px">
                                 <input
@@ -96,10 +111,10 @@ pub fn RegistrationPage() -> impl IntoView {
                                 <button class="registration" style="margin-left:15px">"获取验证码"</button>
                             </td>
                         </tr>
-                        <tr>
-                            <td><button class="registration">"注册"</button></td>
-                            <td style="padding-left:10px;">
-                                <a href="/" class="header" style="font-size:20">"返回主页"</a>
+                        <tr >
+                            <td style="padding-top:15px;"><input class="submit-button" type="submit" value="注册"/></td>
+                            <td style="padding-top:15px;padding-left:10px;">
+                                <a href="/login" class="login-switch">"返回登陆"</a>
                             </td>
                         </tr>
                     </table>

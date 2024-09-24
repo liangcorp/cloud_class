@@ -58,7 +58,7 @@ pub fn MobileLoginLayer() -> impl IntoView {
                         <input
                             placeholder="请输入手机号"
                             style="width:94%"
-                            class="login_form"
+                            class="login-form"
                             type="text"
                             value=mobile_no
                             node_ref=input_mobile_no
@@ -70,7 +70,7 @@ pub fn MobileLoginLayer() -> impl IntoView {
                     <td>
                         <input
                             placeholder="验证密码"
-                            class="login_form"
+                            class="login-form"
                             type="text"
                             value=sms
                             node_ref=input_sms
@@ -83,7 +83,7 @@ pub fn MobileLoginLayer() -> impl IntoView {
                 <tr>
                     <td colspan="2">
                         <input
-                            class="submit_button"
+                            class="submit-button"
                             style="width:100%; padding-top:10px; padding-bottom:10px"
                             type="submit"
                             value="登陆"

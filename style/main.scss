@@ -19,7 +19,7 @@ html {
   width: 1100px;
 }
 
-div.profile_contents {
+div.profile-contents {
   width: 800px;
   margin-left: auto;
   margin-right: auto;
@@ -48,21 +48,20 @@ div.sidebar-scrollbox {
   width: 25%;
 }
 
-td.header_image {
+td.header-image {
   padding: 10px;
   width: 200px;
 }
 
-td.header_menu {
+td.header-menu {
   font-size: 20;
   width: 100px;
   text-align: center;
 }
 
-td.header_login {
+td.header-login {
   padding: 10px;
   width: 100px;
-  text-align: center;
 }
 
 a.header {
@@ -81,7 +80,7 @@ a.header:focus {
   text-decoration-line: underline;
 }
 
-a.home_login {
+a.home-login {
   font-weight: bold;
   text-decoration-line: none;
   padding-top: 10px;
@@ -90,9 +89,10 @@ a.home_login {
   padding-right: 20px;
   color: #fafafa;
   background-color: #333333;
+  border-radius: 4px;
 }
 
-a.home_login:focus {
+a.home-login:focus {
   font-weight: bold;
   text-decoration-line: none;
   padding-top: 10px;
@@ -101,22 +101,23 @@ a.home_login:focus {
   padding-right: 20px;
   color: #fafafa;
   background-color: gray;
+  border-radius: 4px;
 }
 
-a.login_switch {
+a.login-switch {
   color: #333333;
   text-decoration-line: none;
 }
 
-a.login_switch:hover {
+a.login-switch:hover {
   color: #0f7ed0;
 }
 
-a.login_switch:focus {
+a.login-switch:focus {
   color: #0f7ed0;
 }
 
-a.tutorial_link {
+a.tutorial-link {
   font-size: 20;
   /* margin-right: 50px; */
   color: white;
@@ -129,7 +130,7 @@ a.tutorial_link {
   z-index: 1;
 }
 
-a.tutorial_link:hover {
+a.tutorial-link:hover {
   font-size: 20;
   font-weight: bold;
   /* margin-right: 50px; */
@@ -142,7 +143,7 @@ a.tutorial_link:hover {
   z-index: 1;
 }
 
-a.tutorial_link:active {
+a.tutorial-link:active {
   font-size: 20;
   font-weight: bold;
   /* margin-right: 50px; */
@@ -164,7 +165,7 @@ div.full-height {
   background-color: #333333;
 }
 
-div.login_div {
+div.login-div {
   margin: auto;
   width: 70%;
   padding: 50px;
@@ -172,7 +173,7 @@ div.login_div {
   border-radius: 15px;
 }
 
-div.register_div {
+div.register-div {
   margin: auto;
   width: 70%;
   padding: 50px;
@@ -184,14 +185,14 @@ div.display {
   display: none;
 }
 
-div.each_class {
+div.each-class {
   width: 100%;
   margin-top: 10px;
   display: inline-block;
   /* border: 1px solid gray; */
 }
 
-div.each_class:hover {
+div.each-class:hover {
   width: 100%;
   margin-top: 10px;
   background-color: #f7f9ff;
@@ -205,19 +206,13 @@ div.sidebar-resize-handle {
   display: inline-block;
 }
 
-b.login_box {
-  padding: 10px;
-  border: 0px;
-  font-size: 20px;
-}
-
-input.login_form {
+input.login-form {
   padding: 10px;
   /* border:0px; */
   font-size: 20px;
 }
 
-input.submit_button {
+input.submit-button {
   border: 0px;
   background-color: #333333;
   color: white;
@@ -226,9 +221,10 @@ input.submit_button {
   padding-bottom: 5px;
   padding-left: 45px;
   padding-right: 45px;
+  border-radius: 4px;
 }
 
-input.submit_button:active {
+input.submit-button:active {
   border: 0px;
   background-color: #666666;
   color: white;
@@ -237,15 +233,7 @@ input.submit_button:active {
   padding-bottom: 5px;
   padding-left: 45px;
   padding-right: 45px;
-}
-
-input.register_button {
-  border: 0px;
-  font-size: 15px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  padding-left: 45px;
-  padding-right: 45px;
+  border-radius: 4px;
 }
 
 input:focus {
@@ -253,24 +241,7 @@ input:focus {
   outline-color: #0f7ed0;
 }
 
-input.course_search_box_home {
-  margin: 10px;
-  padding: 2px;
-  height: 30px;
-  border-radius: 5px;
-  border: 1px solid #0f7ed0;
-}
-
-input.course_search_box_profile {
-  margin: 10px;
-  padding: 2px;
-  width: 350px;
-  height: 30px;
-  border-radius: 5px;
-  border: 1px solid #0f7ed0;
-}
-
-input.run_code {
+input.run-code {
   font-size: 18;
   border: 0px;
   color: white;
@@ -281,7 +252,7 @@ input.run_code {
   background-color: #1a73e8;
 }
 
-input.run_code:active {
+input.run-code:active {
   font-size: 18;
   border: 0px;
   color: white;
@@ -307,17 +278,13 @@ img.header {
   height: auto;
 }
 
-hr.page_divider {
+hr.page-divider {
   border: 1px solid #0f7ed0;
 }
 
 li:before {
   content: \5143;
   font-family: Arial;
-}
-
-li.chapter_select {
-  content: \5143;
 }
 
 /* The sidebar menu */
@@ -346,35 +313,6 @@ div.sidenav a {
   display: block;
 }
 
-div.section_size_selector {
-  position: fixed; /* Fixed Sidebar (stay in place on scroll) */
-  background-color: gray;
-  color: red;
-  /* font-size: 400; */
-  /* width:5px; */
-  height: 100%;
-  top: 0px;
-  display: inline-block;
-  /* float: left; */
-  margin-left: 240px;
-}
-
-div:hover.section_size_selector {
-  position: fixed; /* Fixed Sidebar (stay in place on scroll) */
-  background-color: gray;
-  color: red;
-  height: 100%;
-  top: 0px;
-  display: inline-block;
-  margin-left: 240px;
-  background-color: #474747;
-}
-
-div.collaps_arrow {
-  // position: fixed; /* Fixed Sidebar (stay in place on scroll) */
-  margin-top: 400px;
-}
-
 /* When you mouse over the navigation links, change their color */
 div.sidenav a:hover {
   color: yellow;
@@ -382,13 +320,13 @@ div.sidenav a:hover {
 }
 
 /* Style page content */
-div.chapter_content {
+div.chapter-content {
   margin-left: 250px; /* Same as the width of the sidebar */
   padding: 0px 300px;
   display: inline-block;
 }
 
-div.cover_up_chapter {
+div.cover-up-chapter {
   /* Add the blur effect */
   filter: blur(8px);
   -webkit-filter: blur(8px);
@@ -409,7 +347,7 @@ div.toolbar {
   padding-bottom: 5px;
 }
 
-div.editor_area {
+div.editor-area {
   width: 50%;
   display: inline-block;
   float: left;
@@ -422,18 +360,15 @@ div.middlebar {
   display: inline-block;
 }
 
-div.output_area {
+div.output-area {
   width: 50%;
   display: inline-block;
 }
 
-div.text_area {
+div.text-area {
   /* padding-left:15px; */
   background-color: #1a1b26;
   margin-right: 20px;
-}
-
-div.console_area {
 }
 
 textarea.editor {
@@ -465,12 +400,35 @@ textarea.console {
   display: none;
 }
 
-iframe.code_execution {
+iframe.code-execution {
   width: 100%;
   height: 890px;
   border: none;
 }
 
+button.registration {
+  background-color: #333333; /* Light Black */
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 18px;
+  border-radius: 4px;
+}
+
+button.registration:active {
+  background-color: gray;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 18px;
+  border-radius: 4px;
+}
 /* On smaller screens, where height is less than 450px, change the style of the sidebar (less padding and a smaller font size) */
 @media screen and (max-height: 450px) {
   .sidenav {

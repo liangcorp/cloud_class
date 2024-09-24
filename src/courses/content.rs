@@ -161,7 +161,7 @@ pub async fn get_chapter_content(chapter_id: String) -> Result<String, ServerFnE
     .fetch_one(&pool)
     .await {
         Ok(ok_chapter_content) => ok_chapter_content,
-        Err(e) => return Err(ServerFnError::Args(format!("get_chapter_content: {}", e))),
+        Err(e) => return Err(ServerFnError::Args(format!("ERROR:<courses/content.rs:get_chapter_content>: {}", e))),
     };
 
     // logging::log!("transform content to raw HTML");
@@ -234,7 +234,7 @@ fn CourseContentGate(username: String) -> impl IntoView {
             </div>
         </div>
         <div
-            class:cover_up_chapter=move || !blur_effect.get()
+            class:cover-up-chapter=move || !blur_effect.get()
             class:isDisabled=move || !blur_effect.get()
         >
             <CourseContent username=username course_id=course_id().unwrap() disable=blur_effect />
@@ -279,18 +279,18 @@ fn CourseContent(username: String, course_id: String, disable: ReadSignal<bool>)
                             target="_blank"
                             rel="noopener noreferrer"
                             href=format!("/tutorials/{}", course_id)
-                            class="tutorial_link"
+                            class="tutorial-link"
                         >
                             "⚒ 实验室"
                         </a>
                     </td>
-                    <td class="header_login">
+                    <td class="header-login">
                         <a class="header" href="/courses">
                             {username}
                         </a>
                     </td>
-                    <td class="header_login">
-                        <a href="/logout" class="home_login">
+                    <td class="header-login">
+                        <a href="/logout" class="home-login">
                             "退出"
                         </a>
                     </td>
@@ -326,7 +326,7 @@ fn CourseContent(username: String, course_id: String, disable: ReadSignal<bool>)
                 </For>
             </ul>
         </div>
-        <div class="chapter_content">
+        <div class="chapter-content">
             <Transition fallback=move || {
                 view! { <p>"正在下载课程章节..."</p> }
             }>

@@ -72,10 +72,10 @@ pub fn TutorialEditorArea(initial_code: ReadSignal<String>, username: String) ->
     view! {
         <form on:submit=on_submit>
             <div class="toolbar">
-                <input class="run_code" type="submit" value="⯈ 运行" />
+                <input class="run-code" type="submit" value="⯈ 运行" />
             </div>
-            <div class="editor_area">
-                <div class="text_area">
+            <div class="editor-area">
+                <div class="text-area">
                     <textarea
                         class="editor"
                         spellcheck="false"

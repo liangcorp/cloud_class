@@ -9,37 +9,37 @@ pub fn HeaderSection() -> impl IntoView {
         <div class="contents">
             <table>
                 <tr>
-                    <td class="header_image">
+                    <td class="header-image">
                         <a href="/" class="header">
                             <img class="header" src="images/logo.png" />
                         </a>
                     </td>
-                    <td class="header_menu">
+                    <td class="header-menu">
                         <a href="/" class="header">
                             "首页"
                         </a>
                     </td>
-                    <td class="header_menu">
+                    <td class="header-menu">
                         <a href="/profile" class="header">
                             "个人中心"
                         </a>
                     </td>
-                    <td class="header_menu">
+                    <td class="header-menu">
                         <a href="#" class="header">
                             "合作中心"
                         </a>
                     </td>
-                    <td class="header_menu">
+                    <td class="header-menu">
                         <a href="instructors" class="header">
                             "教师中心"
                         </a>
                     </td>
-                    <td class="header_menu">
+                    <td class="header-menu">
                         <a href="about" class="header">
                             "关于我们"
                         </a>
                     </td>
-                    <td class="header_menu"></td>
+                    <td class="header-menu"></td>
 
                     <Await
                         // `future` provides the `Future` to be resolved
@@ -53,13 +53,13 @@ pub fn HeaderSection() -> impl IntoView {
                                 match ok_username {
                                     Some(some_username) => {
                                         view! {
-                                            <td class="header_login">
+                                            <td class="header-login">
                                                 <a class="header" href="/profile">
                                                     {some_username}
                                                 </a>
                                             </td>
-                                            <td class="header_login">
-                                                <a href="/logout" class="home_login">
+                                            <td class="header-login">
+                                                <a href="/logout" class="home-login">
                                                     "退出"
                                                 </a>
                                             </td>
@@ -68,12 +68,12 @@ pub fn HeaderSection() -> impl IntoView {
                                     }
                                     None => {
                                         view! {
-                                            <td class="header_login">
-                                                <a href="/login" class="home_login">
+                                            <td class="header-login">
+                                                <a href="/login" class="home-login">
                                                     "登陆"
                                                 </a>
                                             </td>
-                                            <td class="header_login">
+                                            <td class="header-login">
                                                 <a href="/register" class="header">
                                                     "注册"
                                                 </a>
@@ -85,12 +85,12 @@ pub fn HeaderSection() -> impl IntoView {
                             }
                             Err(_) => {
                                 view! {
-                                    <td class="header_login">
-                                        <a href="/login" class="home_login">
+                                    <td class="header-login">
+                                        <a href="/login" class="home-login">
                                             "登陆"
                                         </a>
                                     </td>
-                                    <td class="header_login">
+                                    <td class="header-login">
                                         <a href="/register" class="header">
                                             "注册"
                                         </a>
@@ -104,7 +104,7 @@ pub fn HeaderSection() -> impl IntoView {
             </table>
         </div>
         <div>
-            <hr class="page_divider" />
+            <hr class="page-divider" />
         </div>
     }
 }

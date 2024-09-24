@@ -124,7 +124,7 @@ pub fn CourseContentPage(user: String) -> impl IntoView {
 
     view! {
         <For each=move || content.get() key=|state| (state.course_id.clone()) let:course_content>
-            <div class="each_class">
+            <div class="each-class">
                 <a
                     href=format!("/courses/{}", course_content.course_id)
                     style="text-decoration-line: none;color: #333333;"
@@ -203,7 +203,7 @@ pub fn CourseContentPage(user: String) -> impl IntoView {
                     target="_blank"
                     rel="noopener noreferrer"
                     href=format!("/tutorials/{}", course_content.course_id)
-                    class="tutorial_link"
+                    class="tutorial-link"
                 >
                     "⚒ 实验室"
                 </a>

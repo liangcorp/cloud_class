@@ -125,7 +125,7 @@ pub fn UsernameLoginLayer() -> impl IntoView {
                     <td style="padding-left:10px">
                         <input
                             placeholder="请输入用户名"
-                            class="login_form"
+                            class="login-form"
                             style="width:100%"
                             type="text"
                             value=username
@@ -140,7 +140,7 @@ pub fn UsernameLoginLayer() -> impl IntoView {
                     <td style="padding-left:10px">
                         <input
                             placeholder="请输入密码"
-                            class="login_form"
+                            class="login-form"
                             style="width:100%"
                             type="password"
                             value=password
@@ -172,10 +172,10 @@ pub fn UsernameLoginLayer() -> impl IntoView {
             <table>
                 <tr>
                     <td style="padding:10px">
-                        <input class="submit_button" type="submit" value="登陆" />
+                        <input class="submit-button" type="submit" value="登陆" />
                     </td>
                     <td style="padding:10px">
-                        <a href="/register" class="login_switch">
+                        <a href="/register" class="login-switch">
                             "注册"
                         </a>
                     </td>

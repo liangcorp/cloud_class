@@ -9,7 +9,7 @@ pub fn RegistrationPage() -> impl IntoView {
         <Title text="学员注册" />
 
         <div class="full-height">
-            <div class="register_div" align="center">
+            <div class="register-div" align="center">
                 // <form on:submit=on_submit>
                 <form>
                     <table>
@@ -23,7 +23,7 @@ pub fn RegistrationPage() -> impl IntoView {
                             <td style="padding-left:10px">
                                 <input
                                     placeholder="请输入用户名"
-                                    class="login_form"
+                                    class="login-form"
                                     style="width:100%"
                                     type="text"
                                     // value=username
@@ -36,7 +36,7 @@ pub fn RegistrationPage() -> impl IntoView {
                             <td style="padding-left:10px">
                                 <input
                                     placeholder="请输入密码"
-                                    class="login_form"
+                                    class="login-form"
                                     style="width:100%"
                                     type="password"
                                     // value=password
@@ -49,7 +49,7 @@ pub fn RegistrationPage() -> impl IntoView {
                             <td style="padding-left:10px">
                                 <input
                                     placeholder="请确认密码"
-                                    class="login_form"
+                                    class="login-form"
                                     style="width:100%"
                                     type="password"
                                     // value=cnfrm_password
@@ -62,7 +62,7 @@ pub fn RegistrationPage() -> impl IntoView {
                             <td style="padding-left:10px">
                                 <input
                                     placeholder="请输入邮件地址"
-                                    class="login_form"
+                                    class="login-form"
                                     style="width:100%"
                                     type="text"
                                     // value=email
@@ -75,7 +75,7 @@ pub fn RegistrationPage() -> impl IntoView {
                             <td style="padding-left:10px">
                                 <input
                                     placeholder="请输入手机号"
-                                    class="login_form"
+                                    class="login-form"
                                     style="width:100%"
                                     type="text"
                                     // value=mobile_no
@@ -88,18 +88,18 @@ pub fn RegistrationPage() -> impl IntoView {
                             <td style="padding-left:10px">
                                 <input
                                     placeholder="请输入验证码"
-                                    class="login_form"
+                                    class="login-form"
                                     type="text"
                                     // value=mobl_verify
                                     // node_ref=input_mobl_verify
                                 />
-                                <button style="margin-left:10px;padding:10px;font-size:22;background:#333333;font-weight:8;">"获取验证码"</button>
+                                <button class="registration" style="margin-left:15px">"获取验证码"</button>
                             </td>
                         </tr>
                         <tr>
-                            <td><button style="padding:10px;font-size:22;background:#333333;font-weight:8;">"注册"</button></td>
-                            <td style="padding-left:10px">
-                                <a href="/" class="header_menu">"返回主页"</a>
+                            <td><button class="registration">"注册"</button></td>
+                            <td style="padding-left:10px;">
+                                <a href="/" class="header" style="font-size:20">"返回主页"</a>
                             </td>
                         </tr>
                     </table>

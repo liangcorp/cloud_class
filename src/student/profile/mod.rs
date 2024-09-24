@@ -41,17 +41,17 @@ fn ProfilePageContent(username: String) -> impl IntoView {
         <div class="contents">
             <table>
                 <tr>
-                    <td class="header_image">
+                    <td class="header-image">
                         <a href="/" class="header">
                             <img class="header" src="images/logo.png" />
                         </a>
                     </td>
-                    <td class="header_menu">
+                    <td class="header-menu">
                         <a href="/" class="header">
                             "首页"
                         </a>
                     </td>
-                    <td class="header_menu">
+                    <td class="header-menu">
                         <a
                             href="/profile"
                             class="header"
@@ -62,7 +62,7 @@ fn ProfilePageContent(username: String) -> impl IntoView {
                             "我的课程"
                         </a>
                     </td>
-                    <td class="header_menu">
+                    <td class="header-menu">
                         <a
                             href="/profile"
                             class="header"
@@ -73,17 +73,17 @@ fn ProfilePageContent(username: String) -> impl IntoView {
                             "个人资料"
                         </a>
                     </td>
-                    <td class="header_menu"></td>
-                    <td class="header_menu"></td>
-                    <td class="header_menu"></td>
+                    <td class="header-menu"></td>
+                    <td class="header-menu"></td>
+                    <td class="header-menu"></td>
 
-                    <td class="header_login">
+                    <td class="header-login">
                         <a class="header" href="/profile">
                             {username.clone()}
                         </a>
                     </td>
-                    <td class="header_login">
-                        <a href="/logout" class="home_login">
+                    <td class="header-login">
+                        <a href="/logout" class="home-login">
                             "退出"
                         </a>
                     </td>
@@ -91,13 +91,13 @@ fn ProfilePageContent(username: String) -> impl IntoView {
             </table>
         </div>
         <div>
-            <hr class="page_divider" />
+            <hr class="page-divider" />
         </div>
         <Transition fallback=move || view! { <h1>"正在运行..."</h1> }>
             <div class="contents" class:display=move || !show_layer.get()>
                 <CourseContentPage user=username.clone() />
             </div>
-            <div class="profile_contents" class:display=move || show_layer.get()>
+            <div class="profile-contents" class:display=move || show_layer.get()>
                 <PersonalContentPage user=username.clone() />
             </div>
         </Transition>

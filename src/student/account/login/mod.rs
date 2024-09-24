@@ -18,7 +18,7 @@ pub fn LoginPage() -> impl IntoView {
         <Title text="学员登陆" />
 
         <div class="full-height">
-            <div class="login_div" align="center">
+            <div class="login-div" align="center">
                 <table>
                     <tr>
                         <td style="padding: 20px">
@@ -43,7 +43,7 @@ pub fn LoginPage() -> impl IntoView {
                                         <td>
                                             <a
                                                 href="#"
-                                                class="login_switch"
+                                                class="login-switch"
                                                 on:click=move |_| {
                                                     set_show_layer.update(|n| *n = true);
                                                 }
@@ -54,7 +54,7 @@ pub fn LoginPage() -> impl IntoView {
                                         <td>
                                             <a
                                                 href="#"
-                                                class="login_switch"
+                                                class="login-switch"
                                                 on:click=move |_| {
                                                     set_show_layer.update(|n| *n = false);
                                                 }

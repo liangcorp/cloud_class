@@ -43,15 +43,15 @@ impl Default for InputRegistrationInfo {
 cfg_if! {
     if #[cfg(feature = "ssr")] {
         use regex::Regex;
-        fn verify_username(input_username: String) -> bool {
+        fn is_valid_username(input_username: String) -> bool {
             // It's probably fine to just use unwrap() here
-            match Regex::new(r"^[a-zA-Z0-9]{5,20}$") {
+            match Regex::new(r"^[a-zA-Z].*[a-zA-Z0-9]{4,20}$") {
                 Ok(re) => re.is_match(input_username.as_str()),
                 Err(_) => false,
             }
         }
 
-        fn verify_mobile_number(input_mobile_num: String) -> bool {
+        fn is_valid_mobile_number(input_mobile_num: String) -> bool {
             let input_mobile_num = input_mobile_num.replace(&[' ', '-'][..], "");
 
             match Regex::new(r"^[0-9]{11,11}$") {
@@ -60,28 +60,41 @@ cfg_if! {
             }
         }
 
-        fn verify_mobile_code(input_mobile_num: String) -> bool {
+        fn is_valid_mobile_code(input_mobile_num: String) -> bool {
             match Regex::new(r"^[0-9]{6,6}$") {
                 Ok(re) => re.is_match(input_mobile_num.as_str()),
                 Err(_) => false,
             }
         }
 
-        fn verify_email(input_email: String) -> bool {
+        fn is_valid_email(input_email: String) -> bool {
             match Regex::new(r"^[^\s@]+@[^\s@]+\.[^\s@]+$") {
                 Ok(re) => re.is_match(input_email.as_str()),
                 Err(_) => false,
             }
         }
 
+        fn is_valid_password(input_password: String) -> bool {
+            match Regex::new(r"^{8,100}$") {
+                Ok(re) => re.is_match(input_password.as_str()),
+                Err(_) => false,
+            }
+        }
+
+        fn is_password_match(input_password: String, input_confirm: String) -> bool {
+            todo!()
+        }
+
         fn verify_input_content(input_reg: InputRegistrationInfo) -> Option<InputRegistrationErrorKind> {
-            if !verify_username(input_reg.username) {
+            if !is_valid_username(input_reg.username) {
                 return Some(InputRegistrationErrorKind::InvalidUsername);
-            } else if !verify_mobile_number(input_reg.mobile_num) {
-                return Some(InputRegistrationErrorKind::InvalidMobileNumber);
-            } else if !verify_email(input_reg.email) {
+            } else if !is_valid_password(input_reg.password) {
+                return Some(InputRegistrationErrorKind::InvalidPassword);
+            } else if !is_valid_email(input_reg.email) {
                 return Some(InputRegistrationErrorKind::InvalidEmailAddress);
-            } else if !verify_mobile_code(input_reg.mobile_verify_code) {
+            } else if !is_valid_mobile_number(input_reg.mobile_num) {
+                return Some(InputRegistrationErrorKind::InvalidMobileNumber);
+            } else if !is_valid_mobile_code(input_reg.mobile_verify_code) {
                 return Some(InputRegistrationErrorKind::InvalidMobileVerifyCode);
             }
             None
@@ -202,7 +215,7 @@ pub fn RegistrationPage() -> impl IntoView {
                     }
                     Some(InputRegistrationErrorKind::InvalidUsername) => {
                         set_is_show.set(true);
-                        set_reg_error_message.set("用户名无效 - 只支持5-20位英文大小写字母加数字".to_string());
+                        set_reg_error_message.set("用户名无效 - 只支持5-20位英文大小写字母加数字。必须英文字母开头".to_string());
                     }
                     Some(InputRegistrationErrorKind::InvalidMobileNumber) => {
                         set_is_show.set(true);

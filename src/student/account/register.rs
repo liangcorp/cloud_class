@@ -50,15 +50,23 @@ cfg_if! {
             if input_username.chars().any(|c| c.is_whitespace()) {
                 return false;
             }
-
             validation_regex.get_username_regex().is_match(input_username)
         }
 
         fn is_valid_fullname(input_full_name: &str) -> bool {
-            if input_full_name.chars().any(|c| !c.is_alphabetic()) {
+            if input_full_name.chars().any(|c| !c.is_alphanumeric()) {
                 return false
             }
             true
+        }
+
+        fn is_valid_email(validation_regex: &InputValidationRegex, input_email: &str) -> bool {
+            if input_email.chars().any(|c| c == '!' || c == '"' || c == '£' || c == '$' || c == '%' || c == '^' || c == '&' || c == '*' || c == '(' || c == ')' || c == ':' || c == ';' || c == '\'' || c == '~' || c =='#' || c == '<' || c == '>' || c == ',' || c == '?' || c == '/' || c == '|' || c == '\\' || c == '`' || c == '¬' || c == '¦' ) {
+                return false
+            } else if input_email.chars().last().unwrap() == '.' {
+                return false
+            }
+            validation_regex.get_email_regex().is_match(input_email)
         }
 
         fn is_valid_password(input_password: &str) -> bool {
@@ -87,7 +95,7 @@ cfg_if! {
                 return Some(RegistrationInputErrors::PasswordNotMatch);
             } else if !is_valid_fullname(&input_reg.fullname) {
                 return Some(RegistrationInputErrors::InvalidFullName);
-            } else if !validation_regex.get_email_regex().is_match(&input_reg.email) {
+            } else if !is_valid_email(&validation_regex, &input_reg.email)  {
                 return Some(RegistrationInputErrors::InvalidEmailAddress);
             } else if !validation_regex.get_mobile_num_regex().is_match(&input_reg.mobile_num) {
                 return Some(RegistrationInputErrors::InvalidMobileNumber);

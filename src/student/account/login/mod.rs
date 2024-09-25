@@ -1,13 +1,13 @@
-pub mod username;
 pub mod mobile;
 pub mod qr;
+pub mod username;
 
 use leptos::*;
 use leptos_meta::*;
 
-use username::UsernameLoginLayer;
 use mobile::MobileLoginLayer;
 use qr::QRLayer;
+use username::UsernameLoginLayer;
 
 /// 提供登陆页
 #[component]

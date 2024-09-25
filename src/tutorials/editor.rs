@@ -1,5 +1,5 @@
-use leptos::*;
 use leptos::ev::KeyboardEvent;
+use leptos::*;
 
 #[server]
 pub async fn execute_user_code(code: String, username: String) -> Result<(), ServerFnError> {
@@ -39,7 +39,6 @@ pub fn TutorialEditorArea(initial_code: ReadSignal<String>, username: String) ->
     let input_element: NodeRef<html::Textarea> = create_node_ref();
 
     let on_keydown = move |ev: KeyboardEvent| {
-
         if ev.code() == "Tab" {
             // stop the key action
             ev.prevent_default();
@@ -63,9 +62,8 @@ pub fn TutorialEditorArea(initial_code: ReadSignal<String>, username: String) ->
             // to get the current value of the input
             .value();
 
-        spawn_local (
-            async move {
-                let _ = execute_user_code(value, username_clone).await;
+        spawn_local(async move {
+            let _ = execute_user_code(value, username_clone).await;
         });
     };
 

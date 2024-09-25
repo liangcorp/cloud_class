@@ -1,17 +1,15 @@
 use leptos::*;
-use server_fn::ServerFnError;
 use leptos_router::Redirect;
+use server_fn::ServerFnError;
 
 #[server(Logout, "/api")]
 pub async fn user_logout() -> Result<Option<()>, ServerFnError> {
-    use leptos_axum::extract;
-    use axum::http::header::{HeaderMap, HeaderValue};
     use crate::session::{cache::Cache, cookie::Cookie};
+    use axum::http::header::{HeaderMap, HeaderValue};
+    use leptos_axum::extract;
 
     let header: HeaderMap<HeaderValue> = match extract().await {
-        Ok(ok_header) => {
-            ok_header
-        }
+        Ok(ok_header) => ok_header,
         Err(e) => {
             logging::log!("ERROR<session/mod.rs>: {}", e.to_string());
             HeaderMap::new()

@@ -1,7 +1,7 @@
-use leptos::*;
-use server_fn::ServerFnError;
-use serde::{Serialize, Deserialize};
 use cfg_if::cfg_if;
+use leptos::*;
+use serde::{Deserialize, Serialize};
+use server_fn::ServerFnError;
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct PersonalContent {
@@ -23,7 +23,7 @@ impl Default for PersonalContent {
             status: "".to_string(),
             address: "".to_string(),
             email: "".to_string(),
-            mobile: "".to_string()
+            mobile: "".to_string(),
         }
     }
 }
@@ -63,7 +63,8 @@ pub async fn get_personal_profile(user: String) -> Result<PersonalContent, Serve
     )
     .bind(&user)
     .fetch_one(&pool)
-    .await {
+    .await
+    {
         Ok(ok_personal_content) => PersonalContent {
             username: ok_personal_content.username.clone(),
             full_name: ok_personal_content.full_name.clone(),
@@ -73,9 +74,7 @@ pub async fn get_personal_profile(user: String) -> Result<PersonalContent, Serve
             email: ok_personal_content.email.clone(),
             mobile: ok_personal_content.mobile.clone(),
         },
-        Err(e) => {
-            return Err(ServerFnError::Args(e.to_string()))
-        },
+        Err(e) => return Err(ServerFnError::Args(e.to_string())),
     };
 
     Ok(personal_content)
@@ -84,19 +83,15 @@ pub async fn get_personal_profile(user: String) -> Result<PersonalContent, Serve
 pub fn PersonalContentPage(user: String) -> impl IntoView {
     let (personal_content, set_peronsal_content) = create_signal(PersonalContent::default());
 
-    spawn_local(
-        async move {
-            match get_personal_profile(user).await {
-                Ok(ok_personal_content) => {
-                    set_peronsal_content.set(ok_personal_content)
-                },
-                Err(e) => {
-                    set_peronsal_content.set(PersonalContent::default());
-                    logging::log!("ERROR<user/profile/info/mod.rs>: {}", e.to_string());
-                },
+    spawn_local(async move {
+        match get_personal_profile(user).await {
+            Ok(ok_personal_content) => set_peronsal_content.set(ok_personal_content),
+            Err(e) => {
+                set_peronsal_content.set(PersonalContent::default());
+                logging::log!("ERROR<user/profile/info/mod.rs>: {}", e.to_string());
             }
-       }
-    );
+        }
+    });
 
     view! {
         <p style="color:gray; font-weight:bold;">学生</p>

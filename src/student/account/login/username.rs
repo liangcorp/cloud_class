@@ -1,6 +1,6 @@
+use cfg_if::cfg_if;
 use leptos::*;
 use server_fn::ServerFnError;
-use cfg_if::cfg_if;
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
@@ -15,28 +15,34 @@ cfg_if! {
 }
 
 #[server(Login, "/api")]
-pub async fn user_auth(user: String, password: String, remember_user: String) -> Result<(), ServerFnError> {
-    use crate::state::AppState;
-    use crate::session::cookie::Cookie;
+pub async fn user_auth(
+    user: String,
+    password: String,
+    remember_user: String,
+) -> Result<(), ServerFnError> {
     use crate::session::cache::Cache;
-    use crate::utils::{ crypto::*, uuid::* };
+    use crate::session::cookie::Cookie;
+    use crate::state::AppState;
+    use crate::utils::{crypto::*, uuid::*};
 
     //  取得软件状态
     let state = match use_context::<AppState>() {
         Some(s) => s,
-        None => return Err(ServerFnError::Args("ERROR<user/account/login.rs>: during application state retrieval".to_string())),
+        None => {
+            return Err(ServerFnError::Args(
+                "ERROR<user/account/login.rs>: during application state retrieval".to_string(),
+            ))
+        }
     };
 
     //  取得数据库信息
     let pool = state.pool;
 
     /*---   提取用户数据    ---*/
-    let account = sqlx::query_as::<_, User>(
-        "SELECT * FROM students WHERE username==$1;",
-    )
-    .bind(&user)
-    .fetch_one(&pool)
-    .await?;
+    let account = sqlx::query_as::<_, User>("SELECT * FROM students WHERE username==$1;")
+        .bind(&user)
+        .fetch_one(&pool)
+        .await?;
 
     /*---   Salt Hash 用户输入密码    ---*/
     let parsed_hash = get_parsed_hash(&password, account.salt.as_str())?;
@@ -100,7 +106,13 @@ pub fn UsernameLoginLayer() -> impl IntoView {
             .value();
 
         spawn_local(async move {
-            match user_auth(username_value.clone(), password_value.clone(), checkbox_value.get_untracked().to_string()).await {
+            match user_auth(
+                username_value.clone(),
+                password_value.clone(),
+                checkbox_value.get_untracked().to_string(),
+            )
+            .await
+            {
                 Ok(()) => {
                     set_auth_success.set("none");
                     set_username.set(username_value);

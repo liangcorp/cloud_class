@@ -31,7 +31,7 @@ cfg_if! {
                     a = ((bytes_u32(&data[0..4]) as u64) << 32) | bytes_u32(&data[plast..]) as u64;
                     let delta = (data.len() & 24) >> (data.len() >> 3);
                     b = ((bytes_u32(&data[delta..]) as u64) << 32) | bytes_u32(&data[plast - delta..]) as u64;
-                } else if data.len() > 0 {
+                } else if !data.is_empty() {
                     // len is bounded between 1 and 3
                     let len = data.len();
                     a = ((data[0] as u64) << 56) | ((data[len >> 1] as u64) << 32) | data[len - 1] as u64;

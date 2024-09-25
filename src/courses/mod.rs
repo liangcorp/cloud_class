@@ -12,4 +12,3 @@ pub fn CoursesPage() -> impl IntoView {
 pub fn NoCoursePage() -> impl IntoView {
     view! { <Redirect path="/profile" /> }
 }
-

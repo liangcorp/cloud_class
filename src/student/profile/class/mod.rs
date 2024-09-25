@@ -1,7 +1,7 @@
-use leptos::*;
-use server_fn::ServerFnError;
-use serde::{Serialize, Deserialize};
 use cfg_if::cfg_if;
+use leptos::*;
+use serde::{Deserialize, Serialize};
+use server_fn::ServerFnError;
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct CourseContent {
@@ -16,7 +16,7 @@ pub struct CourseContent {
     about: String,
     description: String,
     tag_line: String,
-    update_date: String
+    update_date: String,
 }
 
 impl Default for CourseContent {
@@ -33,7 +33,7 @@ impl Default for CourseContent {
             about: "".to_string(),
             description: "".to_string(),
             tag_line: "".to_string(),
-            update_date: "".to_string()
+            update_date: "".to_string(),
         }
     }
 }
@@ -82,23 +82,25 @@ pub async fn get_user_courses(user: String) -> Result<Vec<CourseContent>, Server
     )
     .bind(&user)
     .fetch_all(&pool)
-    .await {
+    .await
+    {
         Ok(ok_user_courses) => ok_user_courses
-                .iter()
-                .map(|ok_user_courses| CourseContent {
-                        course_id: ok_user_courses.course_id.clone(),
-                        title: ok_user_courses.title.clone(),
-                        price: ok_user_courses.price,
-                        course_language: ok_user_courses.course_language.clone(),
-                        rating: ok_user_courses.rating,
-                        target_level: ok_user_courses.target_level.clone(),
-                        requirement: ok_user_courses.requirement.clone(),
-                        duration_minutes: ok_user_courses.duration_minutes,
-                        about: ok_user_courses.about.clone(),
-                        description: ok_user_courses.description.clone(),
-                        tag_line: ok_user_courses.tag_line.clone(),
-                        update_date: ok_user_courses.update_date.clone()})
-                .collect(),
+            .iter()
+            .map(|ok_user_courses| CourseContent {
+                course_id: ok_user_courses.course_id.clone(),
+                title: ok_user_courses.title.clone(),
+                price: ok_user_courses.price,
+                course_language: ok_user_courses.course_language.clone(),
+                rating: ok_user_courses.rating,
+                target_level: ok_user_courses.target_level.clone(),
+                requirement: ok_user_courses.requirement.clone(),
+                duration_minutes: ok_user_courses.duration_minutes,
+                about: ok_user_courses.about.clone(),
+                description: ok_user_courses.description.clone(),
+                tag_line: ok_user_courses.tag_line.clone(),
+                update_date: ok_user_courses.update_date.clone(),
+            })
+            .collect(),
         Err(e) => return Err(ServerFnError::Args(e.to_string())),
     };
 
@@ -107,18 +109,15 @@ pub async fn get_user_courses(user: String) -> Result<Vec<CourseContent>, Server
 
 #[component]
 pub fn CourseContentPage(user: String) -> impl IntoView {
-
     let (content, set_content) = create_signal(Vec::new());
 
     spawn_local(async move {
         match get_user_courses(user).await {
-            Ok(data) => {
-                set_content.set(data)
-            },
+            Ok(data) => set_content.set(data),
             Err(e) => {
                 set_content.set(Vec::new());
                 logging::log!("{}", e.to_string());
-            },
+            }
         }
     });
 

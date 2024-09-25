@@ -1,15 +1,15 @@
+use cfg_if::cfg_if;
 use leptos::*;
 use leptos_router::*;
+use serde::{Deserialize, Serialize};
 use server_fn::ServerFnError;
-use serde::{Serialize, Deserialize};
-use cfg_if::cfg_if;
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Chapter {
     chapter_id: String,
     title: String,
     chapter_number: u32,
-    course_id: String
+    course_id: String,
 }
 
 impl Default for Chapter {
@@ -18,7 +18,7 @@ impl Default for Chapter {
             chapter_id: "".to_string(),
             title: "".to_string(),
             chapter_number: 0,
-            course_id: "".to_string()
+            course_id: "".to_string(),
         }
     }
 }
@@ -72,12 +72,13 @@ pub async fn check_user_courses(user: String, course_id: String) -> Result<bool,
     match sqlx::query_as::<_, UserChapterQuery>(
         "SELECT DISTINCT username, course_id
         FROM student_course
-        WHERE username = $1 AND course_id = $2"
+        WHERE username = $1 AND course_id = $2",
     )
     .bind(&user)
     .bind(&course_id)
     .fetch_one(&pool)
-    .await {
+    .await
+    {
         Ok(_) => Ok(true),
         Err(_) => Ok(false), // Course not found
     }
@@ -101,20 +102,21 @@ pub async fn get_course_chapters(course_id: String) -> Result<Vec<Chapter>, Serv
         "SELECT *
         FROM chapters
         WHERE course_id = $1
-        ORDER BY chapter_number;"
+        ORDER BY chapter_number;",
     )
     .bind(&course_id)
     .fetch_all(&pool)
-    .await {
+    .await
+    {
         Ok(ok_chapters) => ok_chapters
-                .iter()
-                .map(|cc| Chapter {
-                        chapter_id: cc.chapter_id.clone(),
-                        title: cc.title.clone(),
-                        chapter_number: cc.chapter_number,
-                        course_id: cc.course_id.clone(),
-                })
-                .collect(),
+            .iter()
+            .map(|cc| Chapter {
+                chapter_id: cc.chapter_id.clone(),
+                title: cc.title.clone(),
+                chapter_number: cc.chapter_number,
+                course_id: cc.course_id.clone(),
+            })
+            .collect(),
         Err(e) => return Err(ServerFnError::Args(e.to_string())),
     };
 
@@ -140,9 +142,15 @@ pub async fn get_chapter_content(chapter_id: String) -> Result<String, ServerFnE
     )
     .bind(&chapter_id)
     .fetch_one(&pool)
-    .await {
+    .await
+    {
         Ok(ok_chapter_content) => ok_chapter_content,
-        Err(e) => return Err(ServerFnError::Args(format!("ERROR:<courses/content.rs:get_chapter_content>: {}", e))),
+        Err(e) => {
+            return Err(ServerFnError::Args(format!(
+                "ERROR:<courses/content.rs:get_chapter_content>: {}",
+                e
+            )))
+        }
     };
 
     // logging::log!("transform content to raw HTML");

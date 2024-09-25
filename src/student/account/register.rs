@@ -1,7 +1,7 @@
+use cfg_if::cfg_if;
 use leptos::*;
 use leptos_meta::*;
-use serde::{Serialize, Deserialize};
-use cfg_if::cfg_if;
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct InputRegistrationInfo {
@@ -40,7 +40,7 @@ cfg_if! {
     if #[cfg(feature = "ssr")] {
         use regex::Regex;
         fn verify_username(input_username: String) -> Result<(), InputRegistrationErrorKind> {
-            let re = Regex::new(r"(?m)^[a-zA-Z0-9]{5,}$").unwrap();
+            let re = Regex::new(r"/^[a-zA-Z0-9]{5,}$/").unwrap();
 
             logging::log!("DEBUG<student/account/register.rs:45>: {}", &input_username);
 
@@ -62,14 +62,19 @@ cfg_if! {
 #[server]
 pub async fn send_mobile_code(mobile_num: String) -> Result<(), ServerFnError> {
     use crate::utils::*;
-    let num: String = format!("{}", rapid::rapidhash(&uuid::get_random_token().into_bytes()));
+    let num: String = format!(
+        "{}",
+        rapid::rapidhash(&uuid::get_random_token().into_bytes())
+    );
     logging::log!("{}: {}", mobile_num, &num[..6]);
     // probably need redis caching
     Ok(())
 }
 
 #[server]
-pub async fn commit_user(input_reg: InputRegistrationInfo) -> Result<Option<InputRegistrationErrorKind>, ServerFnError> {
+pub async fn commit_user(
+    input_reg: InputRegistrationInfo,
+) -> Result<Option<InputRegistrationErrorKind>, ServerFnError> {
     let _ = verify_input_content(input_reg);
     Ok(None)
 }
@@ -94,84 +99,81 @@ pub fn RegistrationPage() -> impl IntoView {
             .expect("<input> should be mounted")
             .value();
 
-        spawn_local(
-            async move {
-                let _ = send_mobile_code(m_num_value).await;
-            });
-        };
+        spawn_local(async move {
+            let _ = send_mobile_code(m_num_value).await;
+        });
+    };
 
     let on_submit = move |ev: leptos::ev::SubmitEvent| {
         // stop the page from reloading!
         ev.prevent_default();
 
-        let mut input_reg_info = InputRegistrationInfo::default();
+        let input_reg_info = InputRegistrationInfo {
+            username: input_username
+                .get()
+                .expect("<input> should be mounted")
+                .value(),
 
-        input_reg_info.username = input_username
-            .get()
-            .expect("<input> should be mounted")
-            .value();
+            password: input_password
+                .get()
+                .expect("<input> should be mounted")
+                .value(),
 
-        input_reg_info.password = input_password
-            .get()
-            .expect("<input> should be mounted")
-            .value();
+            confirm_password: input_confirm_password
+                .get()
+                .expect("<input> should be mounted")
+                .value(),
 
-        input_reg_info.confirm_password = input_confirm_password
-            .get()
-            .expect("<input> should be mounted")
-            .value();
+            fullname: input_fullname
+                .get()
+                .expect("<input> should be mounted")
+                .value(),
 
-        input_reg_info.fullname = input_fullname
-            .get()
-            .expect("<input> should be mounted")
-            .value();
+            email: input_email
+                .get()
+                .expect("<input> should be mounted")
+                .value(),
 
-        input_reg_info.email = input_email
-            .get()
-            .expect("<input> should be mounted")
-            .value();
+            mobile_num: input_m_num
+                .get()
+                .expect("<input> should be mounted")
+                .value(),
 
-        input_reg_info.mobile_num = input_m_num
-            .get()
-            .expect("<input> should be mounted")
-            .value();
+            mobile_verify_code: input_m_verify_code
+                .get()
+                .expect("<input> should be mounted")
+                .value(),
 
-        input_reg_info.mobile_verify_code = input_m_verify_code
-            .get()
-            .expect("<input> should be mounted")
-            .value();
+            ..Default::default()
+        };
 
-        spawn_local(
-            async move {
-                match commit_user(input_reg_info).await {
-                    Ok(some_error) => {
-                        match some_error {
-                            None => set_is_show.set(false),
-                            Some(InputRegistrationErrorKind::PasswordNotMatch) => {
-                                set_is_show.set(true);
-                                set_reg_error_message.set("密码不符合".to_string());
-                            },
-                            Some(InputRegistrationErrorKind::InvalidMobileVerifyCode) => {
-                                set_is_show.set(true);
-                                set_reg_error_message.set("验证码不符合".to_string());
-                            }
-                            Some(InputRegistrationErrorKind::MobileVerifyFailed) => {
-                                set_is_show.set(true);
-                                set_reg_error_message.set("手机号无效".to_string());
-                            }
-                            Some(InputRegistrationErrorKind::InvalidUsername) => {
-                                set_is_show.set(true);
-                                set_reg_error_message.set("用户名无效".to_string());
-                            }
-                        }
-                    },
-                    Err(_) => {
-                        set_reg_error_message.set("未知问题".to_string());
-                        set_is_show.set(false)
-                    },
+        spawn_local(async move {
+            match commit_user(input_reg_info).await {
+                Ok(some_error) => match some_error {
+                    None => set_is_show.set(false),
+                    Some(InputRegistrationErrorKind::PasswordNotMatch) => {
+                        set_is_show.set(true);
+                        set_reg_error_message.set("密码不符合".to_string());
+                    }
+                    Some(InputRegistrationErrorKind::InvalidMobileVerifyCode) => {
+                        set_is_show.set(true);
+                        set_reg_error_message.set("验证码不符合".to_string());
+                    }
+                    Some(InputRegistrationErrorKind::MobileVerifyFailed) => {
+                        set_is_show.set(true);
+                        set_reg_error_message.set("手机号无效".to_string());
+                    }
+                    Some(InputRegistrationErrorKind::InvalidUsername) => {
+                        set_is_show.set(true);
+                        set_reg_error_message.set("用户名无效".to_string());
+                    }
+                },
+                Err(_) => {
+                    set_reg_error_message.set("未知问题".to_string());
+                    set_is_show.set(false)
                 }
             }
-        )
+        })
     };
 
     view! {
@@ -190,7 +192,7 @@ pub fn RegistrationPage() -> impl IntoView {
                             <tr class:display=move || is_show.get()>
                                 <td></td>
                                 <td>
-                                    <p style="color:red">{ reg_error_message }</p>
+                                    <p style="color:red">{reg_error_message}</p>
                                 </td>
                             </tr>
                             // actual form

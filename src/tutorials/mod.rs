@@ -2,18 +2,18 @@ pub mod editor;
 pub mod execution;
 // pub mod console;
 
+use cfg_if::cfg_if;
 use leptos::*;
 use leptos_router::*;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use server_fn::ServerFnError;
-use cfg_if::cfg_if;
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Chapter {
     chapter_id: String,
     title: String,
     chapter_number: u32,
-    course_id: String
+    course_id: String,
 }
 
 impl Default for Chapter {
@@ -22,7 +22,7 @@ impl Default for Chapter {
             chapter_id: "".to_string(),
             title: "".to_string(),
             chapter_number: 0,
-            course_id: "".to_string()
+            course_id: "".to_string(),
         }
     }
 }
@@ -60,7 +60,10 @@ cfg_if! {
 }
 
 #[server]
-pub async fn get_user_course_title(user: String, course_id: String) -> Result<Option<String>, ServerFnError> {
+pub async fn get_user_course_title(
+    user: String,
+    course_id: String,
+) -> Result<Option<String>, ServerFnError> {
     use crate::state::AppState;
 
     //  取得软件状态
@@ -76,12 +79,13 @@ pub async fn get_user_course_title(user: String, course_id: String) -> Result<Op
         "SELECT c.*
         FROM student_course sc
         INNER JOIN courses c ON sc.course_id = c.course_id
-        WHERE sc.username = $1 AND c.course_id = $2;"
+        WHERE sc.username = $1 AND c.course_id = $2;",
     )
     .bind(&user)
     .bind(&course_id)
     .fetch_one(&pool)
-    .await {
+    .await
+    {
         Ok(t) => Ok(Some(t.title)),
         Err(_) => Ok(None),
     }
@@ -105,20 +109,21 @@ pub async fn get_course_chapters(course_id: String) -> Result<Vec<Chapter>, Serv
         "SELECT *
         FROM chapters
         WHERE course_id = $1
-        ORDER BY chapter_number;"
+        ORDER BY chapter_number;",
     )
     .bind(&course_id)
     .fetch_all(&pool)
-    .await {
+    .await
+    {
         Ok(ok_chapters) => ok_chapters
-                .iter()
-                .map(|cc| Chapter {
-                        chapter_id: cc.chapter_id.clone(),
-                        title: cc.title.clone(),
-                        chapter_number: cc.chapter_number,
-                        course_id: cc.course_id.clone(),
-                })
-                .collect(),
+            .iter()
+            .map(|cc| Chapter {
+                chapter_id: cc.chapter_id.clone(),
+                title: cc.title.clone(),
+                chapter_number: cc.chapter_number,
+                course_id: cc.course_id.clone(),
+            })
+            .collect(),
         Err(e) => return Err(ServerFnError::Args(e.to_string())),
     };
 
@@ -126,7 +131,10 @@ pub async fn get_course_chapters(course_id: String) -> Result<Vec<Chapter>, Serv
 }
 
 #[server]
-pub async fn get_tutorial_chapter(course_id: String, chapter_number: u32) -> Result<Option<String>, ServerFnError> {
+pub async fn get_tutorial_chapter(
+    course_id: String,
+    chapter_number: u32,
+) -> Result<Option<String>, ServerFnError> {
     use crate::state::AppState;
 
     //  取得软件状态
@@ -141,12 +149,13 @@ pub async fn get_tutorial_chapter(course_id: String, chapter_number: u32) -> Res
     match sqlx::query_as::<_, TutorialQuery>(
         "SELECT *
         FROM tutorials
-        WHERE course_id = $1 AND chapter_number = $2;"
+        WHERE course_id = $1 AND chapter_number = $2;",
     )
     .bind(&course_id)
     .bind(chapter_number)
     .fetch_one(&pool)
-    .await {
+    .await
+    {
         Ok(code) => Ok(Some(code.code_content)),
         Err(_) => Ok(None),
     }
@@ -154,8 +163,8 @@ pub async fn get_tutorial_chapter(course_id: String, chapter_number: u32) -> Res
 
 #[component]
 pub fn TutorialPage() -> impl IntoView {
-    use leptos_router::Redirect;
     use crate::session::extract_session_user;
+    use leptos_router::Redirect;
 
     view! {
         <Await
@@ -235,7 +244,11 @@ fn TutorialContentGate(username: String) -> impl IntoView {
 }
 
 #[component]
-fn TutorialContent(username: String, course_id: String, course_title: ReadSignal<String>) -> impl IntoView {
+fn TutorialContent(
+    username: String,
+    course_id: String,
+    course_title: ReadSignal<String>,
+) -> impl IntoView {
     use editor::TutorialEditorArea;
     use execution::TutorialExecutionArea;
     // use console::TutorialConsoleArea;

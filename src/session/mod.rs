@@ -17,9 +17,16 @@ pub async fn extract_session_token() -> Result<Option<String>, ServerFnError> {
         Err(e) => return Err(ServerFnError::Args(e.to_string())),
     };
 
-    let cookie_header = match header.get("cookie") {
-        Some(c) => c.to_str().unwrap().to_string(),
+    let cookie_header_result = match header.get("cookie") {
+        // c -> HeaderValue
+        // https://docs.rs/ajars_axum/latest/ajars_axum/axum/http/header/struct.HeaderValue.html#method.to_str
+        Some(result) => (*result).to_str(),
         None => return Ok(None),
+    };
+
+    let cookie_header = match cookie_header_result {
+        Ok(c) => c,
+        Err(_) => return Ok(None),
     };
 
     match cookie_header.split('=').nth(1) {
@@ -41,9 +48,16 @@ pub async fn extract_session_user() -> Result<Option<String>, ServerFnError> {
         Err(e) => return Err(ServerFnError::Args(e.to_string())),
     };
 
-    let cookie_header = match header.get("cookie") {
-        Some(c) => c.to_str().unwrap().to_string(),
+    let cookie_header_result = match header.get("cookie") {
+        // c -> HeaderValue
+        // https://docs.rs/ajars_axum/latest/ajars_axum/axum/http/header/struct.HeaderValue.html#method.to_str
+        Some(result) => (*result).to_str(),
         None => return Ok(None),
+    };
+
+    let cookie_header = match cookie_header_result {
+        Ok(c) => c,
+        Err(_) => return Ok(None),
     };
 
     let session_token = match cookie_header.split('=').nth(1) {

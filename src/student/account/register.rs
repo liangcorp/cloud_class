@@ -20,6 +20,7 @@ pub enum InputRegistrationErrorKind {
     MobileVerifyFailed,
     InvalidMobileVerifyCode,
     InvalidUsername,
+    InvalidEmailAddress,
 }
 
 impl Default for InputRegistrationInfo {
@@ -39,22 +40,25 @@ impl Default for InputRegistrationInfo {
 cfg_if! {
     if #[cfg(feature = "ssr")] {
         use regex::Regex;
-        fn verify_username(input_username: String) -> Result<(), InputRegistrationErrorKind> {
-            let re = Regex::new(r"/^[a-zA-Z0-9]{5,}$/").unwrap();
+        fn verify_username(input_username: String) -> bool {
+            let re = Regex::new(r"^[a-zA-Z0-9]{5,20}$").unwrap();
 
-            logging::log!("DEBUG<student/account/register.rs:45>: {}", &input_username);
-
-            if re.is_match(input_username.as_str()) {
-                Ok(())
-            } else {
-                Err(InputRegistrationErrorKind::InvalidUsername)
-            }
+            re.is_match(input_username.as_str())
         }
 
-        fn verify_input_content(input_reg: InputRegistrationInfo) -> Result<(), InputRegistrationErrorKind> {
-            verify_username(input_reg.username)?;
+        fn verify_email(input_email: String) -> bool {
+            let re = Regex::new(r"^[^\s@]+@[^\s@]+\.[^\s@]+$").unwrap();
 
-            Ok(())
+            re.is_match(input_email.as_str())
+        }
+
+        fn verify_input_content(input_reg: InputRegistrationInfo) -> Option<InputRegistrationErrorKind> {
+            if !verify_username(input_reg.username) {
+                return Some(InputRegistrationErrorKind::InvalidUsername);
+            } else if !verify_email(input_reg.email) {
+                return Some(InputRegistrationErrorKind::InvalidEmailAddress);
+            }
+            None
         }
     }
 }
@@ -75,8 +79,10 @@ pub async fn send_mobile_code(mobile_num: String) -> Result<(), ServerFnError> {
 pub async fn commit_user(
     input_reg: InputRegistrationInfo,
 ) -> Result<Option<InputRegistrationErrorKind>, ServerFnError> {
-    let _ = verify_input_content(input_reg);
-    Ok(None)
+    match verify_input_content(input_reg) {
+        Some(error) => Ok(Some(error)),
+        None => Ok(None),
+    }
 }
 
 /// 提供注册页
@@ -143,14 +149,15 @@ pub fn RegistrationPage() -> impl IntoView {
                 .get()
                 .expect("<input> should be mounted")
                 .value(),
-
-            ..Default::default()
         };
 
         spawn_local(async move {
             match commit_user(input_reg_info).await {
                 Ok(some_error) => match some_error {
-                    None => set_is_show.set(false),
+                    None => {
+                        set_is_show.set(false);
+                        set_reg_error_message.set("".to_string());
+                    },
                     Some(InputRegistrationErrorKind::PasswordNotMatch) => {
                         set_is_show.set(true);
                         set_reg_error_message.set("密码不符合".to_string());
@@ -165,7 +172,11 @@ pub fn RegistrationPage() -> impl IntoView {
                     }
                     Some(InputRegistrationErrorKind::InvalidUsername) => {
                         set_is_show.set(true);
-                        set_reg_error_message.set("用户名无效".to_string());
+                        set_reg_error_message.set("用户名无效 - 只支持5-20位英文大小写字母加数字".to_string());
+                    }
+                    Some(InputRegistrationErrorKind::InvalidEmailAddress) => {
+                        set_is_show.set(true);
+                        set_reg_error_message.set("邮件地址无效".to_string());
                     }
                 },
                 Err(_) => {

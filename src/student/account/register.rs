@@ -88,9 +88,7 @@ cfg_if! {
         }
 
         fn is_valid_password(input_password: &str) -> bool {
-            if input_password.chars().any(|c| c.is_whitespace()) {
-                return false;
-            } else if input_password.len() < 8 || input_password.len() > 100 {
+            if input_password.chars().any(|c| c.is_whitespace()) || input_password.len() < 8 || input_password.len() > 100 {
                 return false;
             }
             true

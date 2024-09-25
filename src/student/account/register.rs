@@ -61,14 +61,26 @@ cfg_if! {
         }
 
         fn is_valid_email(validation_regex: &InputValidationRegex, input_email: &str) -> bool {
-            if input_email.chars().any(|c| c == '[' || c == ']' || c == '–' || c == '—' || c == '"' || c == '£' || c == '&' || c == '(' || c == ')' || c == ':' || c == ';' || c == '\'' || c == '<' || c == '>' || c == ',' || c == '\\' || c == '¬' || c == '¦' || c == '´') {
+            if input_email.chars().any(|c| c == '[' || c == ']' || c == '–' || c == '—' || c == '"' || c == '&' || c == '(' || c == ')' || c == ':' || c == ';' || c == '<' || c == '>' || c == ',' || c == '\\' || c == '¬' || c == '¦' || c == '´') {
                 return false
             }
+
             match input_email.chars().last() {
-                Some(c) => if c == '.' { return false },
+                Some(c) => if c == '.' || c == '-' || c == '_' { return false },
                 None => return false,
             }
-            validation_regex.get_email_regex().is_match(input_email)
+
+            if !validation_regex.get_email_regex().is_match(input_email) {
+                return false;
+            }
+
+            let domain = input_email.split('@').collect::<Vec<&str>>()[1];
+
+            if domain.chars().any(|c| c == '!' || c == '?' || c == '#' || c == '$' || c == '£' || c == '%' || c == '\'' || c == '`' || c == '+' || c == '*' || c == '/' || c == '=' || c == '~' || c == '^' || c == '{' || c == '}' || c == '|') {
+                return false
+            }
+
+            true
         }
 
         fn is_valid_password(input_password: &str) -> bool {

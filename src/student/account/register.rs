@@ -16,11 +16,14 @@ pub struct InputRegistrationInfo {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum InputRegistrationErrorKind {
-    PasswordNotMatch,
-    MobileVerifyFailed,
-    InvalidMobileVerifyCode,
     InvalidUsername,
+    InvalidPassword,
+    PasswordNotMatch,
+    InvalidFullName,
     InvalidEmailAddress,
+    InvalidMobileNumber,
+    InvalidMobileVerifyCode,
+    MobileVerifyFailed,
 }
 
 impl Default for InputRegistrationInfo {
@@ -41,22 +44,45 @@ cfg_if! {
     if #[cfg(feature = "ssr")] {
         use regex::Regex;
         fn verify_username(input_username: String) -> bool {
-            let re = Regex::new(r"^[a-zA-Z0-9]{5,20}$").unwrap();
+            // It's probably fine to just use unwrap() here
+            match Regex::new(r"^[a-zA-Z0-9]{5,20}$") {
+                Ok(re) => re.is_match(input_username.as_str()),
+                Err(_) => false,
+            }
+        }
 
-            re.is_match(input_username.as_str())
+        fn verify_mobile_number(input_mobile_num: String) -> bool {
+            let input_mobile_num = input_mobile_num.replace(&[' ', '-'][..], "");
+
+            match Regex::new(r"^[0-9]{11,11}$") {
+                Ok(re) => re.is_match(input_mobile_num.as_str()),
+                Err(_) => false,
+            }
+        }
+
+        fn verify_mobile_code(input_mobile_num: String) -> bool {
+            match Regex::new(r"^[0-9]{6,6}$") {
+                Ok(re) => re.is_match(input_mobile_num.as_str()),
+                Err(_) => false,
+            }
         }
 
         fn verify_email(input_email: String) -> bool {
-            let re = Regex::new(r"^[^\s@]+@[^\s@]+\.[^\s@]+$").unwrap();
-
-            re.is_match(input_email.as_str())
+            match Regex::new(r"^[^\s@]+@[^\s@]+\.[^\s@]+$") {
+                Ok(re) => re.is_match(input_email.as_str()),
+                Err(_) => false,
+            }
         }
 
         fn verify_input_content(input_reg: InputRegistrationInfo) -> Option<InputRegistrationErrorKind> {
             if !verify_username(input_reg.username) {
                 return Some(InputRegistrationErrorKind::InvalidUsername);
+            } else if !verify_mobile_number(input_reg.mobile_num) {
+                return Some(InputRegistrationErrorKind::InvalidMobileNumber);
             } else if !verify_email(input_reg.email) {
                 return Some(InputRegistrationErrorKind::InvalidEmailAddress);
+            } else if !verify_mobile_code(input_reg.mobile_verify_code) {
+                return Some(InputRegistrationErrorKind::InvalidMobileVerifyCode);
             }
             None
         }
@@ -158,25 +184,37 @@ pub fn RegistrationPage() -> impl IntoView {
                         set_is_show.set(false);
                         set_reg_error_message.set("".to_string());
                     },
+                    Some(InputRegistrationErrorKind::InvalidPassword) => {
+                        set_is_show.set(true);
+                        set_reg_error_message.set("密码必须在8位以上".to_string());
+                    }
                     Some(InputRegistrationErrorKind::PasswordNotMatch) => {
                         set_is_show.set(true);
-                        set_reg_error_message.set("密码不符合".to_string());
+                        set_reg_error_message.set("密码错误".to_string());
                     }
                     Some(InputRegistrationErrorKind::InvalidMobileVerifyCode) => {
                         set_is_show.set(true);
-                        set_reg_error_message.set("验证码不符合".to_string());
+                        set_reg_error_message.set("验证码无效".to_string());
                     }
                     Some(InputRegistrationErrorKind::MobileVerifyFailed) => {
                         set_is_show.set(true);
-                        set_reg_error_message.set("手机号无效".to_string());
+                        set_reg_error_message.set("验证码错误".to_string());
                     }
                     Some(InputRegistrationErrorKind::InvalidUsername) => {
                         set_is_show.set(true);
                         set_reg_error_message.set("用户名无效 - 只支持5-20位英文大小写字母加数字".to_string());
                     }
+                    Some(InputRegistrationErrorKind::InvalidMobileNumber) => {
+                        set_is_show.set(true);
+                        set_reg_error_message.set("手机号无效".to_string());
+                    }
                     Some(InputRegistrationErrorKind::InvalidEmailAddress) => {
                         set_is_show.set(true);
                         set_reg_error_message.set("邮件地址无效".to_string());
+                    }
+                    Some(InputRegistrationErrorKind::InvalidFullName) => {
+                        set_is_show.set(true);
+                        set_reg_error_message.set("姓名无效".to_string());
                     }
                 },
                 Err(_) => {

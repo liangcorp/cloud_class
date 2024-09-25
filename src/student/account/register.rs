@@ -62,8 +62,12 @@ cfg_if! {
 
         fn is_valid_email(validation_regex: &InputValidationRegex, input_email: &str) -> bool {
             if input_email.chars().any(|c| c == '[' || c == ']' || c == '–' || c == '—' || c == '"' || c == '&' || c == '(' || c == ')' || c == ':' || c == ';' || c == '<' || c == '>' || c == ',' || c == '\\' || c == '¬' || c == '¦' || c == '´') {
-                return false
+                return false;
             }
+
+            // if validation_regex.get_email_forbidden_regex().is_match(input_email) {
+            //     return false;
+            // }
 
             match input_email.chars().last() {
                 Some(c) => if c == '.' || c == '-' || c == '_' { return false },
@@ -77,7 +81,7 @@ cfg_if! {
             let domain = input_email.split('@').collect::<Vec<&str>>()[1];
 
             if domain.chars().any(|c| c == '!' || c == '?' || c == '#' || c == '$' || c == '£' || c == '%' || c == '\'' || c == '`' || c == '+' || c == '*' || c == '/' || c == '=' || c == '~' || c == '^' || c == '{' || c == '}' || c == '|') {
-                return false
+                return false;
             }
 
             true

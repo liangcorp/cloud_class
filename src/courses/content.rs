@@ -199,15 +199,20 @@ fn CourseContentGate(username: String) -> impl IntoView {
 
     view! {
         {
-            if course_id().unwrap() == "" {
-                return vec![view! { <Redirect path="/courses" /> }];
+            match course_id() {
+                Some(c_id) => {
+                    if c_id.is_empty() {
+                        return vec![view! { <Redirect path="/courses" /> }];
+                    }
+                    spawn_local(async move {
+                        match check_user_courses(username_clone, c_id).await {
+                            Ok(result_bool) => set_blur_effect.set(result_bool),
+                            Err(_) => set_blur_effect.set(true),
+                        }
+                    })
+                },
+                None => return vec![view! { <Redirect path="/courses" /> }],
             }
-            spawn_local(async move {
-                match check_user_courses(username_clone, course_id().unwrap().clone()).await {
-                    Ok(result_bool) => set_blur_effect.set(result_bool),
-                    Err(_) => set_blur_effect.set(true),
-                }
-            });
         }
 
         <div class:display=move || blur_effect.get()>
@@ -240,7 +245,7 @@ fn CourseContent(username: String, course_id: String, disable: ReadSignal<bool>)
     // let (show_navbar, set_show_navbar) = create_signal(true);
 
     // create_resource takes two arguments after its scope
-    let async_data = create_resource(
+    let async_chapter_content = create_resource(
         // the first is the "source signal"
         move || chapter_id.get(),
         // the second is the loader
@@ -329,7 +334,7 @@ fn CourseContent(username: String, course_id: String, disable: ReadSignal<bool>)
                 view! { <p>"正在下载课程章节..."</p> }
             }>
                 <div inner_html=move || {
-                    async_data.get().map(|value| value.unwrap().to_string())
+                    async_chapter_content.get().map(|value| value.unwrap().to_string())
                 } />
             </Transition>
         </div>

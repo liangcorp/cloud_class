@@ -4,18 +4,7 @@ use leptos_meta::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct InputRegistrationInfo {
-    username: String,
-    password: String,
-    confirm_password: String,
-    fullname: String,
-    email: String,
-    mobile_num: String,
-    mobile_verify_code: String,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub enum InputRegistrationErrorKind {
+pub enum RegistrationInputErrors {
     InvalidUsername,
     InvalidPassword,
     PasswordNotMatch,
@@ -25,6 +14,17 @@ pub enum InputRegistrationErrorKind {
     InvalidMobileVerifyCode,
     MobileVerifyFailed,
     UnknowError,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct InputRegistrationInfo {
+    username: String,
+    password: String,
+    confirm_password: String,
+    fullname: String,
+    email: String,
+    mobile_num: String,
+    mobile_verify_code: String,
 }
 
 impl Default for InputRegistrationInfo {
@@ -44,40 +44,55 @@ impl Default for InputRegistrationInfo {
 cfg_if! {
     if #[cfg(feature = "ssr")] {
         use crate::state::AppState;
+        use crate::utils::regex::InputValidationRegex;
 
-        fn is_valid_password(input_password: &str) -> bool {
-            if input_password.len() < 8 || input_password.len() > 100 {
+        fn is_valid_username(validation_regex: &InputValidationRegex, input_username: &str) -> bool {
+            if input_username.chars().any(|c| c.is_whitespace()) {
                 return false;
             }
 
+            validation_regex.get_username_regex().is_match(input_username)
+        }
+
+        fn is_valid_fullname(input_full_name: &str) -> bool {
+            if input_full_name.chars().any(|c| !c.is_alphabetic()) {
+                return false
+            }
             true
         }
 
-        fn is_password_match(input_password: &str, input_confirm: &str) -> bool {
-            input_password == input_confirm
+        fn is_valid_password(input_password: &str) -> bool {
+            if input_password.chars().any(|c| c.is_whitespace()) {
+                return false;
+            } else if input_password.len() < 8 || input_password.len() > 100 {
+                return false;
+            }
+            true
         }
 
-        fn verify_input_content(input_reg: InputRegistrationInfo) -> Option<InputRegistrationErrorKind> {
+        fn verify_input_content(input_reg: InputRegistrationInfo) -> Option<RegistrationInputErrors> {
             //  取得软件状态
             let state = match use_context::<AppState>() {
                 Some(s) => s,
-                None => return Some(InputRegistrationErrorKind::UnknowError),
+                None => return Some(RegistrationInputErrors::UnknowError),
             };
 
             let validation_regex = state.validation_regex;
 
-            if !validation_regex.get_username_regex().is_match(&input_reg.username) {
-                return Some(InputRegistrationErrorKind::InvalidUsername);
+            if !is_valid_username(&validation_regex, &input_reg.username) {
+                return Some(RegistrationInputErrors::InvalidUsername);
             } else if !is_valid_password(&input_reg.password) {
-                return Some(InputRegistrationErrorKind::InvalidPassword);
-            } else if !is_password_match(&input_reg.password, &input_reg.confirm_password) {
-                return Some(InputRegistrationErrorKind::PasswordNotMatch);
+                return Some(RegistrationInputErrors::InvalidPassword);
+            } else if input_reg.password != input_reg.confirm_password {
+                return Some(RegistrationInputErrors::PasswordNotMatch);
+            } else if !is_valid_fullname(&input_reg.fullname) {
+                return Some(RegistrationInputErrors::InvalidFullName);
             } else if !validation_regex.get_email_regex().is_match(&input_reg.email) {
-                return Some(InputRegistrationErrorKind::InvalidEmailAddress);
+                return Some(RegistrationInputErrors::InvalidEmailAddress);
             } else if !validation_regex.get_mobile_num_regex().is_match(&input_reg.mobile_num) {
-                return Some(InputRegistrationErrorKind::InvalidMobileNumber);
+                return Some(RegistrationInputErrors::InvalidMobileNumber);
             } else if !validation_regex.get_mobile_code_regex().is_match(&input_reg.mobile_verify_code) {
-                return Some(InputRegistrationErrorKind::InvalidMobileVerifyCode);
+                return Some(RegistrationInputErrors::InvalidMobileVerifyCode);
             }
             None
         }
@@ -99,7 +114,7 @@ pub async fn send_mobile_code(mobile_num: String) -> Result<(), ServerFnError> {
 #[server]
 pub async fn commit_user(
     input_reg: InputRegistrationInfo,
-) -> Result<Option<InputRegistrationErrorKind>, ServerFnError> {
+) -> Result<Option<RegistrationInputErrors>, ServerFnError> {
     match verify_input_content(input_reg) {
         Some(error) => Ok(Some(error)),
         None => Ok(None),
@@ -179,39 +194,39 @@ pub fn RegistrationPage() -> impl IntoView {
                         set_is_show.set(false);
                         set_reg_error_message.set("".to_string());
                     }
-                    Some(InputRegistrationErrorKind::InvalidPassword) => {
+                    Some(RegistrationInputErrors::InvalidPassword) => {
                         set_is_show.set(true);
                         set_reg_error_message.set("密码无效".to_string());
                     }
-                    Some(InputRegistrationErrorKind::PasswordNotMatch) => {
+                    Some(RegistrationInputErrors::PasswordNotMatch) => {
                         set_is_show.set(true);
                         set_reg_error_message.set("确认密码不符".to_string());
                     }
-                    Some(InputRegistrationErrorKind::InvalidMobileVerifyCode) => {
+                    Some(RegistrationInputErrors::InvalidMobileVerifyCode) => {
                         set_is_show.set(true);
                         set_reg_error_message.set("验证码无效".to_string());
                     }
-                    Some(InputRegistrationErrorKind::MobileVerifyFailed) => {
+                    Some(RegistrationInputErrors::MobileVerifyFailed) => {
                         set_is_show.set(true);
                         set_reg_error_message.set("验证码错误".to_string());
                     }
-                    Some(InputRegistrationErrorKind::InvalidUsername) => {
+                    Some(RegistrationInputErrors::InvalidUsername) => {
                         set_is_show.set(true);
                         set_reg_error_message.set("用户名无效".to_string());
                     }
-                    Some(InputRegistrationErrorKind::InvalidMobileNumber) => {
+                    Some(RegistrationInputErrors::InvalidMobileNumber) => {
                         set_is_show.set(true);
                         set_reg_error_message.set("手机号无效".to_string());
                     }
-                    Some(InputRegistrationErrorKind::InvalidEmailAddress) => {
+                    Some(RegistrationInputErrors::InvalidEmailAddress) => {
                         set_is_show.set(true);
                         set_reg_error_message.set("邮件地址无效".to_string());
                     }
-                    Some(InputRegistrationErrorKind::InvalidFullName) => {
+                    Some(RegistrationInputErrors::InvalidFullName) => {
                         set_is_show.set(true);
                         set_reg_error_message.set("姓名无效".to_string());
                     }
-                    Some(InputRegistrationErrorKind::UnknowError) => {
+                    Some(RegistrationInputErrors::UnknowError) => {
                         set_is_show.set(true);
                         set_reg_error_message.set("系统问题请稍后再试".to_string());
                     }

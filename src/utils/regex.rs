@@ -7,18 +7,18 @@ cfg_if! {
         #[derive(Debug, Clone)]
         pub struct InputValidationRegex {
             regex_username: Regex,
+            regex_email: Regex,
             regex_mobile_num: Regex,
             regex_mobile_code: Regex,
-            regex_email: Regex,
         }
 
         impl InputValidationRegex {
             pub fn get_regex() -> InputValidationRegex {
                 InputValidationRegex {
                     regex_username: Regex::new(r"^[a-zA-Z].*[a-zA-Z0-9]{4,20}$").unwrap(),
+                    regex_email: Regex::new(r"^[^\s@]+@[^\s@]+\.[^\s@]+$").unwrap(),
                     regex_mobile_num: Regex::new(r"^[0-9]{11,11}$").unwrap(),
                     regex_mobile_code: Regex::new(r"^[0-9]{6,6}$").unwrap(),
-                    regex_email: Regex::new(r"^[^\s@]+@[^\s@]+\.[^\s@]+$").unwrap()
                 }
             }
 

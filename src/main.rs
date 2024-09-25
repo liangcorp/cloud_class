@@ -13,6 +13,7 @@ async fn main() {
 
     use cloud_class::state::AppState;
     use cloud_class::utils::db::*;
+    use cloud_class::utils::regex::*;
 
     // Setting get_configuration(None) means we'll be using cargo-leptos's env values
     // For deployment these variables are:
@@ -24,6 +25,8 @@ async fn main() {
     let addr = leptos_options.site_addr;
     let routes = generate_route_list(App);
 
+    let regex = InputValidationRegex::get_regex();
+
     let db_pool = match create_pool().await {
         Ok(p) => p,
         Err(e) => panic!("{}", e.to_string()),
@@ -32,6 +35,7 @@ async fn main() {
     let app_state = AppState {
         leptos_options,
         pool: db_pool.clone(),
+        validation_regex: regex,
     };
 
     // files smaller than 1501 bytes are not compressed, since

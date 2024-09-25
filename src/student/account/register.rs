@@ -24,6 +24,7 @@ pub enum InputRegistrationErrorKind {
     InvalidMobileNumber,
     InvalidMobileVerifyCode,
     MobileVerifyFailed,
+    UnknowError,
 }
 
 impl Default for InputRegistrationInfo {
@@ -42,59 +43,40 @@ impl Default for InputRegistrationInfo {
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
-        use regex::Regex;
-        fn is_valid_username(input_username: String) -> bool {
-            // It's probably fine to just use unwrap() here
-            match Regex::new(r"^[a-zA-Z].*[a-zA-Z0-9]{4,20}$") {
-                Ok(re) => re.is_match(input_username.as_str()),
-                Err(_) => false,
+        use crate::state::AppState;
+
+        fn is_valid_password(input_password: &str) -> bool {
+            if input_password.len() < 8 || input_password.len() > 100 {
+                return false;
             }
+
+            true
         }
 
-        fn is_valid_mobile_number(input_mobile_num: String) -> bool {
-            let input_mobile_num = input_mobile_num.replace(&[' ', '-'][..], "");
-
-            match Regex::new(r"^[0-9]{11,11}$") {
-                Ok(re) => re.is_match(input_mobile_num.as_str()),
-                Err(_) => false,
-            }
-        }
-
-        fn is_valid_mobile_code(input_mobile_num: String) -> bool {
-            match Regex::new(r"^[0-9]{6,6}$") {
-                Ok(re) => re.is_match(input_mobile_num.as_str()),
-                Err(_) => false,
-            }
-        }
-
-        fn is_valid_email(input_email: String) -> bool {
-            match Regex::new(r"^[^\s@]+@[^\s@]+\.[^\s@]+$") {
-                Ok(re) => re.is_match(input_email.as_str()),
-                Err(_) => false,
-            }
-        }
-
-        fn is_valid_password(input_password: String) -> bool {
-            match Regex::new(r"^{8,100}$") {
-                Ok(re) => re.is_match(input_password.as_str()),
-                Err(_) => false,
-            }
-        }
-
-        fn is_password_match(input_password: String, input_confirm: String) -> bool {
-            todo!()
+        fn is_password_match(input_password: &str, input_confirm: &str) -> bool {
+            input_password == input_confirm
         }
 
         fn verify_input_content(input_reg: InputRegistrationInfo) -> Option<InputRegistrationErrorKind> {
-            if !is_valid_username(input_reg.username) {
+            //  取得软件状态
+            let state = match use_context::<AppState>() {
+                Some(s) => s,
+                None => return Some(InputRegistrationErrorKind::UnknowError),
+            };
+
+            let validation_regex = state.validation_regex;
+
+            if !validation_regex.get_username_regex().is_match(&input_reg.username) {
                 return Some(InputRegistrationErrorKind::InvalidUsername);
-            } else if !is_valid_password(input_reg.password) {
+            } else if !is_valid_password(&input_reg.password) {
                 return Some(InputRegistrationErrorKind::InvalidPassword);
-            } else if !is_valid_email(input_reg.email) {
+            } else if !is_password_match(&input_reg.password, &input_reg.confirm_password) {
+                return Some(InputRegistrationErrorKind::PasswordNotMatch);
+            } else if !validation_regex.get_email_regex().is_match(&input_reg.email) {
                 return Some(InputRegistrationErrorKind::InvalidEmailAddress);
-            } else if !is_valid_mobile_number(input_reg.mobile_num) {
+            } else if !validation_regex.get_mobile_num_regex().is_match(&input_reg.mobile_num) {
                 return Some(InputRegistrationErrorKind::InvalidMobileNumber);
-            } else if !is_valid_mobile_code(input_reg.mobile_verify_code) {
+            } else if !validation_regex.get_mobile_code_regex().is_match(&input_reg.mobile_verify_code) {
                 return Some(InputRegistrationErrorKind::InvalidMobileVerifyCode);
             }
             None
@@ -199,11 +181,11 @@ pub fn RegistrationPage() -> impl IntoView {
                     },
                     Some(InputRegistrationErrorKind::InvalidPassword) => {
                         set_is_show.set(true);
-                        set_reg_error_message.set("密码必须在8位以上".to_string());
+                        set_reg_error_message.set("密码无效".to_string());
                     }
                     Some(InputRegistrationErrorKind::PasswordNotMatch) => {
                         set_is_show.set(true);
-                        set_reg_error_message.set("密码错误".to_string());
+                        set_reg_error_message.set("确认密码不符".to_string());
                     }
                     Some(InputRegistrationErrorKind::InvalidMobileVerifyCode) => {
                         set_is_show.set(true);
@@ -215,7 +197,7 @@ pub fn RegistrationPage() -> impl IntoView {
                     }
                     Some(InputRegistrationErrorKind::InvalidUsername) => {
                         set_is_show.set(true);
-                        set_reg_error_message.set("用户名无效 - 只支持5-20位英文大小写字母加数字。必须英文字母开头".to_string());
+                        set_reg_error_message.set("用户名无效".to_string());
                     }
                     Some(InputRegistrationErrorKind::InvalidMobileNumber) => {
                         set_is_show.set(true);
@@ -229,9 +211,13 @@ pub fn RegistrationPage() -> impl IntoView {
                         set_is_show.set(true);
                         set_reg_error_message.set("姓名无效".to_string());
                     }
+                    Some(InputRegistrationErrorKind::UnknowError) => {
+                        set_is_show.set(true);
+                        set_reg_error_message.set("系统问题请稍后再试".to_string());
+                    }
                 },
                 Err(_) => {
-                    set_reg_error_message.set("未知问题".to_string());
+                    set_reg_error_message.set("系统问题请稍后再试".to_string());
                     set_is_show.set(false)
                 }
             }
@@ -262,7 +248,7 @@ pub fn RegistrationPage() -> impl IntoView {
                                 <td>"用户名"</td>
                                 <td style="padding-left:10px">
                                     <input
-                                        placeholder="请输入用户名"
+                                        placeholder="5-20位英文大小写字母加数字。必须英文字母开头"
                                         class="login-form"
                                         style="width:100%"
                                         type="text"
@@ -274,7 +260,7 @@ pub fn RegistrationPage() -> impl IntoView {
                                 <td>"密码"</td>
                                 <td style="padding-left:10px">
                                     <input
-                                        placeholder="请输入密码"
+                                        placeholder="密码必须在8位以上"
                                         class="login-form"
                                         style="width:100%"
                                         type="password"

@@ -198,22 +198,20 @@ fn CourseContentGate(username: String) -> impl IntoView {
     let username_clone = username.clone();
 
     view! {
-        {
-            match course_id() {
-                Some(c_id) => {
-                    if c_id.is_empty() {
-                        return vec![view! { <Redirect path="/courses" /> }];
+        {match course_id() {
+            Some(c_id) => {
+                if c_id.is_empty() {
+                    return vec![view! { <Redirect path="/courses" /> }];
+                }
+                spawn_local(async move {
+                    match check_user_courses(username_clone, c_id).await {
+                        Ok(result_bool) => set_blur_effect.set(result_bool),
+                        Err(_) => set_blur_effect.set(true),
                     }
-                    spawn_local(async move {
-                        match check_user_courses(username_clone, c_id).await {
-                            Ok(result_bool) => set_blur_effect.set(result_bool),
-                            Err(_) => set_blur_effect.set(true),
-                        }
-                    })
-                },
-                None => return vec![view! { <Redirect path="/courses" /> }],
+                })
             }
-        }
+            None => return vec![view! { <Redirect path="/courses" /> }],
+        }}
 
         <div class:display=move || blur_effect.get()>
             <div>

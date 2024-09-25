@@ -20,24 +20,24 @@ pub async fn user_logout() -> Result<Option<()>, ServerFnError> {
         Some(some_cookie) => some_cookie.to_str(),
         None => {
             //  logging::log!("cookie not found");
-            return Ok(None)
-        },
+            return Ok(None);
+        }
     };
 
     let cookie = match cookie_result {
         Ok(c) => c,
         Err(_e) => {
             // logging::log!("invalid cookie");
-            return Ok(None)
-        },
+            return Ok(None);
+        }
     };
 
     let exit_message = match cookie.split('=').nth(1) {
         Some(some_exit_message) => some_exit_message,
         None => {
             // logging::log!("malformed cookie");
-            return Ok(None)
-        },
+            return Ok(None);
+        }
     };
 
     Cache::delete_cache(exit_message)?;

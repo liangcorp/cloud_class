@@ -178,7 +178,7 @@ pub fn RegistrationPage() -> impl IntoView {
                     None => {
                         set_is_show.set(false);
                         set_reg_error_message.set("".to_string());
-                    },
+                    }
                     Some(InputRegistrationErrorKind::InvalidPassword) => {
                         set_is_show.set(true);
                         set_reg_error_message.set("密码无效".to_string());

@@ -61,10 +61,12 @@ cfg_if! {
         }
 
         fn is_valid_email(validation_regex: &InputValidationRegex, input_email: &str) -> bool {
-            if input_email.chars().any(|c| c == '!' || c == '"' || c == '£' || c == '$' || c == '%' || c == '^' || c == '&' || c == '*' || c == '(' || c == ')' || c == ':' || c == ';' || c == '\'' || c == '~' || c =='#' || c == '<' || c == '>' || c == ',' || c == '?' || c == '/' || c == '|' || c == '\\' || c == '`' || c == '¬' || c == '¦' ) {
+            if input_email.chars().any(|c| c == '[' || c == ']' || c == '–' || c == '—' || c == '"' || c == '£' || c == '&' || c == '(' || c == ')' || c == ':' || c == ';' || c == '\'' || c == '<' || c == '>' || c == ',' || c == '\\' || c == '¬' || c == '¦' || c == '´') {
                 return false
-            } else if input_email.chars().last().unwrap() == '.' {
-                return false
+            }
+            match input_email.chars().last() {
+                Some(c) => if c == '.' { return false },
+                None => return false,
             }
             validation_regex.get_email_regex().is_match(input_email)
         }

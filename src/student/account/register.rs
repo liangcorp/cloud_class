@@ -271,130 +271,126 @@ pub fn RegistrationForm() -> impl IntoView {
                     None => {
                         set_not_valid.set(false);
                         set_reg_error_message.set("".to_string())
-                    },
+                    }
                     Some(error_message) => {
                         set_not_valid.set(true);
                         set_reg_error_message.set(error_message)
-                    },
+                    }
                 },
                 Err(_) => {
                     set_not_valid.set(false);
                     set_reg_error_message.set("系统问题请稍后再试".to_string())
-                },
+                }
             }
         })
     };
 
     view! {
-            <table>
-                // error message
-                <tr class:display=move || is_not_valid.get()>
-                    <td></td>
-                    <td>
-                        <p style="color:red">{reg_error_message}</p>
-                    </td>
-                </tr>
-                // actual form
-                <tr>
-                    <td>"用户名"</td>
-                    <td style="padding-left:10px">
-                        <input
-                            placeholder="5-20位英文大小写字母加数字。必须英文字母开头"
-                            class="login-form"
-                            style="width:100%"
-                            type="text"
-                            node_ref=input_username
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <td>"密码"</td>
-                    <td style="padding-left:10px">
-                        <input
-                            placeholder="密码必须在8位以上"
-                            class="login-form"
-                            style="width:100%"
-                            type="password"
-                            node_ref=input_password
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <td>"确认密码"</td>
-                    <td style="padding-left:10px">
-                        <input
-                            placeholder="请确认密码"
-                            class="login-form"
-                            style="width:100%"
-                            type="password"
-                            node_ref=input_confirm_password
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <td>"姓名"</td>
-                    <td style="padding-left:10px">
-                        <input
-                            placeholder="请输入姓名"
-                            class="login-form"
-                            style="width:100%"
-                            type="text"
-                            node_ref=input_fullname
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <td>"邮件地址"</td>
-                    <td style="padding-left:10px">
-                        <input
-                            placeholder="请输入邮件地址"
-                            class="login-form"
-                            style="width:100%"
-                            type="text"
-                            node_ref=input_email
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <td>"手机号"</td>
-                    <td style="padding-left:10px">
-                        <input
-                            placeholder="请输入手机号"
-                            class="login-form"
-                            style="width:100%"
-                            type="text"
-                            node_ref=input_m_num
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td style="padding-left:10px">
-                        <input
-                            placeholder="请输入验证码"
-                            class="login-form"
-                            type="text"
-                            node_ref=input_m_verify_code
-                        />
-                        <button
-                            on:click=on_click
-                            class="registration"
-                            style="margin-left:15px"
-                        >
-                            "获取验证码"
-                        </button>
-                    </td>
-                </tr>
-            </table>
+        <table>
+            // error message
+            <tr class:display=move || is_not_valid.get()>
+                <td></td>
+                <td>
+                    <p style="color:red">{reg_error_message}</p>
+                </td>
+            </tr>
+            // actual data form
+            <tr>
+                <td>"用户名"</td>
+                <td style="padding-left:10px">
+                    <input
+                        placeholder="5-20位英文大小写字母加数字。必须英文字母开头"
+                        class="login-form"
+                        style="width:100%"
+                        type="text"
+                        node_ref=input_username
+                    />
+                </td>
+            </tr>
+            <tr>
+                <td>"密码"</td>
+                <td style="padding-left:10px">
+                    <input
+                        placeholder="密码必须在8位以上"
+                        class="login-form"
+                        style="width:100%"
+                        type="password"
+                        node_ref=input_password
+                    />
+                </td>
+            </tr>
+            <tr>
+                <td>"确认密码"</td>
+                <td style="padding-left:10px">
+                    <input
+                        placeholder="请确认密码"
+                        class="login-form"
+                        style="width:100%"
+                        type="password"
+                        node_ref=input_confirm_password
+                    />
+                </td>
+            </tr>
+            <tr>
+                <td>"姓名"</td>
+                <td style="padding-left:10px">
+                    <input
+                        placeholder="请输入姓名"
+                        class="login-form"
+                        style="width:100%"
+                        type="text"
+                        node_ref=input_fullname
+                    />
+                </td>
+            </tr>
+            <tr>
+                <td>"邮件地址"</td>
+                <td style="padding-left:10px">
+                    <input
+                        placeholder="请输入邮件地址"
+                        class="login-form"
+                        style="width:100%"
+                        type="text"
+                        node_ref=input_email
+                    />
+                </td>
+            </tr>
+            <tr>
+                <td>"手机号"</td>
+                <td style="padding-left:10px">
+                    <input
+                        placeholder="请输入手机号"
+                        class="login-form"
+                        style="width:100%"
+                        type="text"
+                        node_ref=input_m_num
+                    />
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="padding-left:10px">
+                    <input
+                        placeholder="请输入验证码"
+                        class="login-form"
+                        type="text"
+                        node_ref=input_m_verify_code
+                    />
+                    <button on:click=on_click class="registration" style="margin-left:15px">
+                        "获取验证码"
+                    </button>
+                </td>
+            </tr>
+        </table>
         <form on:submit=on_submit on:keydown=ignore_enter style="margin-top:40px">
             <div style="display:inline-block;margin-left:auto;margin-right:10px;">
                 <input class="submit-button" type="submit" value="注册" />
             </div>
-            <div style="display:inline-block;margin-left:10px;margin-right:auto;">
-                <a href="/login" class="login-switch">
-                    "返回登陆"
-                </a>
-            </div>
         </form>
+        <div style="display:inline-block;margin-left:10px;margin-right:auto;">
+            <a href="/login" class="login-switch">
+                "返回登陆"
+            </a>
+        </div>
     }
 }

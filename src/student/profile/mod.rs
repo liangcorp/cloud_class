@@ -37,6 +37,26 @@ fn ProfilePageContent(username: String) -> impl IntoView {
 
     let (show_layer, set_show_layer) = create_signal(true);
 
+    provide_context(set_show_layer);
+
+    view! {
+        <ProfilePageHeader user=username.clone() />
+
+        <Transition fallback=move || view! { <h1>"正在运行..."</h1> }>
+            <div class="contents" class:display=move || !show_layer.get()>
+                <CourseContentPage user=username.clone() />
+            </div>
+            <div class="profile-contents" class:display=move || show_layer.get()>
+                <PersonalContentPage user=username.clone() />
+            </div>
+        </Transition>
+    }
+}
+
+#[component]
+fn ProfilePageHeader(user: String) -> impl IntoView {
+    let set_show_layer = expect_context::<WriteSignal<bool>>();
+
     view! {
         <div class="contents">
             <table>
@@ -79,7 +99,7 @@ fn ProfilePageContent(username: String) -> impl IntoView {
 
                     <td class="header-login">
                         <a class="header" href="/profile">
-                            {username.clone()}
+                            {user}
                         </a>
                     </td>
                     <td class="header-login">
@@ -93,13 +113,5 @@ fn ProfilePageContent(username: String) -> impl IntoView {
         <div>
             <hr class="page-divider" />
         </div>
-        <Transition fallback=move || view! { <h1>"正在运行..."</h1> }>
-            <div class="contents" class:display=move || !show_layer.get()>
-                <CourseContentPage user=username.clone() />
-            </div>
-            <div class="profile-contents" class:display=move || show_layer.get()>
-                <PersonalContentPage user=username.clone() />
-            </div>
-        </Transition>
     }
 }

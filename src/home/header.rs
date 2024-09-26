@@ -3,8 +3,6 @@ use leptos::*;
 /// Renders the header menu of your home page.
 #[component]
 pub fn HeaderSection() -> impl IntoView {
-    use crate::session::*;
-
     view! {
         <div class="contents">
             <table>
@@ -40,71 +38,78 @@ pub fn HeaderSection() -> impl IntoView {
                         </a>
                     </td>
                     <td class="header-menu"></td>
-
-                    <Await
-                        // `future` provides the `Future` to be resolved
-                        future=extract_session_user
-
-                        // the data is bound to whatever variable name you provide
-                        let:session_user
-                    >
-                        {match session_user {
-                            Ok(ok_username) => {
-                                match ok_username {
-                                    Some(some_username) => {
-                                        view! {
-                                            <td class="header-login">
-                                                <a class="header" href="/profile">
-                                                    {some_username}
-                                                </a>
-                                            </td>
-                                            <td class="header-login">
-                                                <a href="/logout" class="home-login">
-                                                    "退出"
-                                                </a>
-                                            </td>
-                                        }
-                                            .into_view()
-                                    }
-                                    None => {
-                                        view! {
-                                            <td class="header-login">
-                                                <a href="/login" class="home-login">
-                                                    "登陆"
-                                                </a>
-                                            </td>
-                                            <td class="header-login">
-                                                <a href="/register" class="header">
-                                                    "注册"
-                                                </a>
-                                            </td>
-                                        }
-                                            .into_view()
-                                    }
-                                }
-                            }
-                            Err(_) => {
-                                view! {
-                                    <td class="header-login">
-                                        <a href="/login" class="home-login">
-                                            "登陆"
-                                        </a>
-                                    </td>
-                                    <td class="header-login">
-                                        <a href="/register" class="header">
-                                            "注册"
-                                        </a>
-                                    </td>
-                                }
-                                    .into_view()
-                            }
-                        }}
-                    </Await>
+                    <LoginLogoutSection />
                 </tr>
             </table>
         </div>
         <div>
             <hr class="page-divider" />
         </div>
+    }
+}
+
+#[component]
+fn LoginLogoutSection() -> impl IntoView {
+    use crate::session::*;
+    view! {
+        <Await
+            // `future` provides the `Future` to be resolved
+            future=extract_session_user
+
+            // the data is bound to whatever variable name you provide
+            let:session_user
+        >
+            {match session_user {
+                Ok(ok_username) => {
+                    match ok_username {
+                        Some(some_username) => {
+                            view! {
+                                <td class="header-login">
+                                    <a class="header" href="/profile">
+                                        {some_username}
+                                    </a>
+                                </td>
+                                <td class="header-login">
+                                    <a href="/logout" class="home-login">
+                                        "退出"
+                                    </a>
+                                </td>
+                            }
+                                .into_view()
+                        }
+                        None => {
+                            view! {
+                                <td class="header-login">
+                                    <a href="/login" class="home-login">
+                                        "登陆"
+                                    </a>
+                                </td>
+                                <td class="header-login">
+                                    <a href="/register" class="header">
+                                        "注册"
+                                    </a>
+                                </td>
+                            }
+                                .into_view()
+                        }
+                    }
+                }
+                Err(_) => {
+                    view! {
+                        <td class="header-login">
+                            <a href="/login" class="home-login">
+                                "登陆"
+                            </a>
+                        </td>
+                        <td class="header-login">
+                            <a href="/register" class="header">
+                                "注册"
+                            </a>
+                        </td>
+                    }
+                        .into_view()
+                }
+            }}
+        </Await>
     }
 }

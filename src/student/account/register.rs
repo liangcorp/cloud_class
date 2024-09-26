@@ -175,6 +175,7 @@ pub fn RegistrationPage() -> impl IntoView {
     }
 }
 
+/// @TODO ISLAND
 #[component]
 pub fn RegistrationForm() -> impl IntoView {
     let (reg_error_message, set_reg_error_message) = create_signal("".to_string());
@@ -382,11 +383,11 @@ pub fn RegistrationForm() -> impl IntoView {
                 </td>
             </tr>
         </table>
-        <form on:submit=on_submit on:keydown=ignore_enter style="margin-top:40px">
-            <div style="display:inline-block;margin-left:auto;margin-right:10px;">
+        <div style="display:inline-block;margin-left:auto;margin-right:10px;">
+            <form on:submit=on_submit on:keydown=ignore_enter style="margin-top:40px">
                 <input class="submit-button" type="submit" value="注册" />
-            </div>
-        </form>
+            </form>
+        </div>
         <div style="display:inline-block;margin-left:10px;margin-right:auto;">
             <a href="/login" class="login-switch">
                 "返回登陆"

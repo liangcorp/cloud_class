@@ -234,16 +234,16 @@ pub fn RegistrationPage() -> impl IntoView {
                     None => {
                         set_not_valid.set(false);
                         set_reg_error_message.set("".to_string())
-                    }
+                    },
                     Some(error_message) => {
                         set_not_valid.set(true);
                         set_reg_error_message.set(error_message)
-                    }
+                    },
                 },
                 Err(_) => {
-                    set_not_valid.set(false)
-                    set_reg_error_message.set("系统问题请稍后再试".to_string());
-                }
+                    set_not_valid.set(false);
+                    set_reg_error_message.set("系统问题请稍后再试".to_string())
+                },
             }
         })
     };

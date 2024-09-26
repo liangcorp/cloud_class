@@ -61,16 +61,8 @@ cfg_if! {
         }
 
         fn is_valid_email(validation_regex: &InputValidationRegex, input_email: &str) -> bool {
-            if input_email.chars().any(|c| c == '[' || c == ']' || c == '–' || c == '—' || c == '"' || c == '&' || c == '(' || c == ')' || c == ':' || c == ';' || c == '<' || c == '>' || c == ',' || c == '\\' || c == '¬' || c == '¦' || c == '´') {
-                return false;
-            }
-
-            // if validation_regex.get_email_forbidden_regex().is_match(input_email) {
-            //     return false;
-            // }
-
             match input_email.chars().last() {
-                Some(c) => if c == '.' || c == '-' || c == '_' { return false },
+                Some(c) => if c == '.' || c == '-' { return false },
                 None => return false,
             }
 
@@ -78,9 +70,17 @@ cfg_if! {
                 return false;
             }
 
-            let domain = input_email.split('@').collect::<Vec<&str>>()[1];
+            let (mail_name, domain) = input_email.split_once('@').unwrap();
 
-            if domain.chars().any(|c| c == '!' || c == '?' || c == '#' || c == '$' || c == '£' || c == '%' || c == '\'' || c == '`' || c == '+' || c == '*' || c == '/' || c == '=' || c == '~' || c == '^' || c == '{' || c == '}' || c == '|') {
+            if mail_name.contains('"') {
+                return false;
+            }
+
+            if validation_regex.get_email_forbidden_regex().is_match(mail_name) {
+                return false;
+            }
+
+            if domain.chars().any(|c| !c.is_ascii_alphanumeric() && c != '.' && c != '-') {
                 return false;
             }
 

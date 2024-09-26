@@ -18,7 +18,7 @@ cfg_if! {
                 InputValidationRegex {
                     regex_username: Regex::new(r"^[a-zA-Z].*[a-zA-Z0-9]{4,20}$").unwrap(),
                     regex_email: Regex::new(r"^[^\s@]+@[^\s@]+\.[^\s@]+$").unwrap(),
-                    regex_email_forbidden: Regex::new(r"[@´&\:;m–—><\[\]\(\)]").unwrap(),
+                    regex_email_forbidden: Regex::new(r"[´&:;m–—><\[\]\(\)'\\]").unwrap(),
                     regex_mobile_num: Regex::new(r"^[0-9]{11,11}$").unwrap(),
                     regex_mobile_code: Regex::new(r"^[0-9]{6,6}$").unwrap(),
                 }

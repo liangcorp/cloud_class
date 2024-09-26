@@ -47,6 +47,9 @@ cfg_if! {
         use crate::utils::regex::InputValidationRegex;
 
         fn is_valid_username(validation_regex: &InputValidationRegex, input_username: &str) -> bool {
+            //  between 5 - 30 charactors long without whitespace
+            //  only allow alphabets and numbers
+            //  can not start with number
             if input_username.chars().any(|c| c.is_whitespace())
                 || !validation_regex.get_username_regex().is_match(input_username) {
                 return false;
@@ -55,8 +58,8 @@ cfg_if! {
         }
 
         fn is_valid_fullname(input_full_name: &str) -> bool {
-            // whitespace is allowed in full name
-            // user input must be sanitized before inserting into database
+            //  whitespace and '.' are allowed in full name
+            //  user input must be sanitized before inserting into database
             if input_full_name.is_empty()
                 || input_full_name.len() > 60
                 || input_full_name.chars().any(|c| !c.is_alphabetic() && c != '.' && c != ' ') {
@@ -66,12 +69,16 @@ cfg_if! {
         }
 
         fn is_valid_email(validation_regex: &InputValidationRegex, input_email: &str) -> bool {
+            //  disallowed email address characters based on RFC 5322 standard
+            //  domain names only allow big and small alphabets, numbers and '-'
+            //  less than 256 characters long
             match input_email.chars().last() {
                 Some(c) => if c == '.' || c == '-' { return false },
-                None => return false,
+                None => return false,   // empty string
             }
 
-            if !validation_regex.get_email_regex().is_match(input_email) {
+            if !validation_regex.get_email_regex().is_match(input_email)
+                || input_email.len() > 256 {
                 return false;
             }
 
@@ -87,6 +94,7 @@ cfg_if! {
         }
 
         fn is_valid_password(input_password: &str) -> bool {
+            //  no whitespace and between 8 and 100 characters long
             if input_password.chars().any(|c| c.is_whitespace())
                 || input_password.len() < 8
                 || input_password.len() > 100 {

@@ -188,15 +188,30 @@ pub fn RegistrationForm() -> impl IntoView {
     let input_m_num: NodeRef<html::Input> = create_node_ref();
     let input_m_verify_code: NodeRef<html::Input> = create_node_ref();
 
+    let ignore_enter = move |ev: leptos::ev::KeyboardEvent| {
+        if ev.code() == "Enter" {
+            // stop the key action
+            ev.prevent_default();
+        }
+    };
+
     let on_click = move |_| {
         let m_num_value = input_m_num
             .get()
             .expect("<input> should be mounted")
             .value();
 
-        spawn_local(async move {
-            let _ = send_mobile_code(m_num_value).await;
-        });
+        if m_num_value.len() != 11 || m_num_value.chars().any(|c| !c.is_numeric()) {
+            set_not_valid.set(true);
+            set_reg_error_message.set("手机号无效".to_string());
+        } else {
+            set_not_valid.set(false);
+            set_reg_error_message.set("".to_string());
+
+            spawn_local(async move {
+                let _ = send_mobile_code(m_num_value).await;
+            });
+        }
     };
 
     let on_submit = move |ev: leptos::ev::SubmitEvent| {
@@ -271,7 +286,6 @@ pub fn RegistrationForm() -> impl IntoView {
     };
 
     view! {
-        <form on:submit=on_submit style="margin-top:40px">
             <table>
                 // error message
                 <tr class:display=move || is_not_valid.get()>
@@ -372,6 +386,7 @@ pub fn RegistrationForm() -> impl IntoView {
                     </td>
                 </tr>
             </table>
+        <form on:submit=on_submit on:keydown=ignore_enter style="margin-top:40px">
             <div style="display:inline-block;margin-left:auto;margin-right:10px;">
                 <input class="submit-button" type="submit" value="注册" />
             </div>

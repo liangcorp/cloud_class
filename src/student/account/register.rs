@@ -47,17 +47,20 @@ cfg_if! {
         use crate::utils::regex::InputValidationRegex;
 
         fn is_valid_username(validation_regex: &InputValidationRegex, input_username: &str) -> bool {
-            if input_username.chars().any(|c| c.is_whitespace()) {
+            if input_username.chars().any(|c| c.is_whitespace())
+                || !validation_regex.get_username_regex().is_match(input_username) {
                 return false;
             }
-            validation_regex.get_username_regex().is_match(input_username)
+            true
         }
 
         fn is_valid_fullname(input_full_name: &str) -> bool {
             // whitespace is allowed in full name
             // user input must be sanitized before inserting into database
-            if input_full_name.chars().any(|c| !c.is_alphabetic() && c != '.' && c != ' ') {
-                return false
+            if input_full_name.is_empty()
+                || input_full_name.len() > 60
+                || input_full_name.chars().any(|c| !c.is_alphabetic() && c != '.' && c != ' ') {
+                return false;
             }
             true
         }
@@ -74,15 +77,9 @@ cfg_if! {
 
             let (mail_name, domain) = input_email.split_once('@').unwrap();
 
-            if mail_name.contains('"') {
-                return false;
-            }
-
-            if validation_regex.get_email_forbidden_regex().is_match(mail_name) {
-                return false;
-            }
-
-            if domain.chars().any(|c| !c.is_ascii_alphanumeric() && c != '.' && c != '-') {
+            if mail_name.contains('"')
+                || validation_regex.get_email_forbidden_regex().is_match(mail_name)
+                || domain.chars().any(|c| !c.is_ascii_alphanumeric() && c != '.' && c != '-') {
                 return false;
             }
 
@@ -90,7 +87,9 @@ cfg_if! {
         }
 
         fn is_valid_password(input_password: &str) -> bool {
-            if input_password.chars().any(|c| c.is_whitespace()) || input_password.len() < 8 || input_password.len() > 100 {
+            if input_password.chars().any(|c| c.is_whitespace())
+                || input_password.len() < 8
+                || input_password.len() > 100 {
                 return false;
             }
             true

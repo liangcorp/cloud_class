@@ -19,26 +19,12 @@ pub enum RegistrationInputErrors {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct InputRegistrationInfo {
     username: String,
-    password: String,
-    confirm_password: String,
     fullname: String,
+    not_valid_password: bool,
+    not_match_password:bool,
     email: String,
     mobile_num: String,
     mobile_verify_code: String,
-}
-
-impl Default for InputRegistrationInfo {
-    fn default() -> InputRegistrationInfo {
-        InputRegistrationInfo {
-            username: "".to_string(),
-            password: "".to_string(),
-            confirm_password: "".to_string(),
-            fullname: "".to_string(),
-            email: "".to_string(),
-            mobile_num: "".to_string(),
-            mobile_verify_code: "".to_string(),
-        }
-    }
 }
 
 cfg_if! {
@@ -93,16 +79,6 @@ cfg_if! {
             true
         }
 
-        fn is_valid_password(input_password: &str) -> bool {
-            //  no whitespace and between 8 and 100 characters long
-            if input_password.chars().any(|c| c.is_whitespace())
-                || input_password.len() < 8
-                || input_password.len() > 100 {
-                return false;
-            }
-            true
-        }
-
         fn verify_input_content(input_reg: InputRegistrationInfo) -> Option<RegistrationInputErrors> {
             //  取得软件状态
             let state = match use_context::<AppState>() {
@@ -114,9 +90,9 @@ cfg_if! {
 
             if !is_valid_username(&validation_regex, &input_reg.username) {
                 return Some(RegistrationInputErrors::InvalidUsername);
-            } else if !is_valid_password(&input_reg.password) {
+            } else if input_reg.not_valid_password {
                 return Some(RegistrationInputErrors::InvalidPassword);
-            } else if input_reg.password != input_reg.confirm_password {
+            } else if input_reg.not_match_password {
                 return Some(RegistrationInputErrors::PasswordNotMatch);
             } else if !is_valid_fullname(&input_reg.fullname) {
                 return Some(RegistrationInputErrors::InvalidFullName);
@@ -128,6 +104,10 @@ cfg_if! {
                 return Some(RegistrationInputErrors::InvalidMobileVerifyCode);
             }
             None
+        }
+
+        fn create_user(input_reg: InputRegistrationInfo) -> bool {
+            true
         }
     }
 }
@@ -183,18 +163,18 @@ pub fn RegistrationPage() -> impl IntoView {
         // stop the page from reloading!
         ev.prevent_default();
 
+        let password = input_password
+            .get()
+            .expect("<input> should be mounted")
+            .value();
+
+        let confirm_password = input_confirm_password
+            .get()
+            .expect("<input> should be mounted")
+            .value();
+
         let input_reg_info = InputRegistrationInfo {
             username: input_username
-                .get()
-                .expect("<input> should be mounted")
-                .value(),
-
-            password: input_password
-                .get()
-                .expect("<input> should be mounted")
-                .value(),
-
-            confirm_password: input_confirm_password
                 .get()
                 .expect("<input> should be mounted")
                 .value(),
@@ -203,6 +183,13 @@ pub fn RegistrationPage() -> impl IntoView {
                 .get()
                 .expect("<input> should be mounted")
                 .value(),
+
+            not_valid_password: password.is_empty()
+                || password.chars().any(|c| c.is_whitespace())
+                || password.len() < 8
+                || password.len() > 100,
+
+            not_match_password: password != confirm_password,
 
             email: input_email
                 .get()

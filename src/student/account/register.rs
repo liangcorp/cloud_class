@@ -54,7 +54,9 @@ cfg_if! {
         }
 
         fn is_valid_fullname(input_full_name: &str) -> bool {
-            if input_full_name.chars().any(|c| !c.is_alphanumeric()) {
+            // whitespace is allowed in full name
+            // user input must be sanitized before inserting into database
+            if input_full_name.chars().any(|c| !c.is_alphabetic() && c != '.' && c != ' ') {
                 return false
             }
             true

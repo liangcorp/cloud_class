@@ -4,24 +4,11 @@ use leptos_meta::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub enum RegistrationInputErrors {
-    InvalidUsername,
-    InvalidPassword,
-    PasswordNotMatch,
-    InvalidFullName,
-    InvalidEmailAddress,
-    InvalidMobileNumber,
-    InvalidMobileVerifyCode,
-    MobileVerifyFailed,
-    UnknowError,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct InputRegistrationInfo {
     username: String,
     fullname: String,
     not_valid_password: bool,
-    not_match_password:bool,
+    not_match_password: bool,
     email: String,
     mobile_num: String,
     mobile_verify_code: String,
@@ -29,8 +16,38 @@ pub struct InputRegistrationInfo {
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
+        use std::fmt;
         use crate::state::AppState;
         use crate::utils::regex::InputValidationRegex;
+
+        #[derive(Clone, Debug)]
+        pub enum RegistrationInputErrors {
+            InvalidUsername,
+            InvalidPassword,
+            PasswordNotMatch,
+            InvalidFullName,
+            InvalidEmailAddress,
+            InvalidMobileNumber,
+            InvalidMobileVerifyCode,
+            MobileVerifyFailed,
+            UnknowError,
+        }
+
+        impl fmt::Display for RegistrationInputErrors {
+            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                match self {
+                    RegistrationInputErrors::InvalidUsername => write!(f, "用户名无效"),
+                    RegistrationInputErrors::InvalidPassword => write!(f, "密码无效"),
+                    RegistrationInputErrors::PasswordNotMatch => write!(f, "确认密码不符"),
+                    RegistrationInputErrors::InvalidFullName => write!(f, "姓名无效"),
+                    RegistrationInputErrors::InvalidEmailAddress => write!(f, "电子邮件无效"),
+                    RegistrationInputErrors::InvalidMobileNumber => write!(f, "手机号无效"),
+                    RegistrationInputErrors::InvalidMobileVerifyCode => write!(f, "验证码无效"),
+                    RegistrationInputErrors::MobileVerifyFailed => write!(f, "验证码错误"),
+                    RegistrationInputErrors::UnknowError => write!(f, "系统问题请稍后再试"),
+                }
+            }
+        }
 
         fn is_valid_username(validation_regex: &InputValidationRegex, input_username: &str) -> bool {
             //  between 5 - 30 charactors long without whitespace
@@ -79,35 +96,36 @@ cfg_if! {
             true
         }
 
-        fn verify_input_content(input_reg: InputRegistrationInfo) -> Option<RegistrationInputErrors> {
+        fn verify_input_content(input_reg: InputRegistrationInfo) -> Option<String> {
             //  取得软件状态
             let state = match use_context::<AppState>() {
                 Some(s) => s,
-                None => return Some(RegistrationInputErrors::UnknowError),
+                None => return Some(RegistrationInputErrors::UnknowError.to_string()),
             };
 
             let validation_regex = state.validation_regex;
 
             if !is_valid_username(&validation_regex, &input_reg.username) {
-                return Some(RegistrationInputErrors::InvalidUsername);
+                return Some(RegistrationInputErrors::InvalidUsername.to_string());
             } else if input_reg.not_valid_password {
-                return Some(RegistrationInputErrors::InvalidPassword);
+                return Some(RegistrationInputErrors::InvalidPassword.to_string());
             } else if input_reg.not_match_password {
-                return Some(RegistrationInputErrors::PasswordNotMatch);
+                return Some(RegistrationInputErrors::PasswordNotMatch.to_string());
             } else if !is_valid_fullname(&input_reg.fullname) {
-                return Some(RegistrationInputErrors::InvalidFullName);
+                return Some(RegistrationInputErrors::InvalidFullName.to_string());
             } else if !is_valid_email(&validation_regex, &input_reg.email)  {
-                return Some(RegistrationInputErrors::InvalidEmailAddress);
+                return Some(RegistrationInputErrors::InvalidEmailAddress.to_string());
             } else if !validation_regex.get_mobile_num_regex().is_match(&input_reg.mobile_num) {
-                return Some(RegistrationInputErrors::InvalidMobileNumber);
+                return Some(RegistrationInputErrors::InvalidMobileNumber.to_string());
             } else if !validation_regex.get_mobile_code_regex().is_match(&input_reg.mobile_verify_code) {
-                return Some(RegistrationInputErrors::InvalidMobileVerifyCode);
+                return Some(RegistrationInputErrors::InvalidMobileVerifyCode.to_string());
             }
+
             None
         }
 
-        fn create_user(input_reg: InputRegistrationInfo) -> bool {
-            true
+        fn create_user(input_reg: InputRegistrationInfo) -> Result<(), ServerFnError> {
+            Ok(())
         }
     }
 }
@@ -127,7 +145,7 @@ pub async fn send_mobile_code(mobile_num: String) -> Result<(), ServerFnError> {
 #[server]
 pub async fn commit_user(
     input_reg: InputRegistrationInfo,
-) -> Result<Option<RegistrationInputErrors>, ServerFnError> {
+) -> Result<Option<String>, ServerFnError> {
     match verify_input_content(input_reg) {
         Some(error) => Ok(Some(error)),
         None => Ok(None),
@@ -138,7 +156,7 @@ pub async fn commit_user(
 #[component]
 pub fn RegistrationPage() -> impl IntoView {
     let (reg_error_message, set_reg_error_message) = create_signal("".to_string());
-    let (is_show, set_is_show) = create_signal(false);
+    let (is_not_valid, set_not_valid) = create_signal(false);
 
     let input_username: NodeRef<html::Input> = create_node_ref();
     let input_password: NodeRef<html::Input> = create_node_ref();
@@ -184,6 +202,9 @@ pub fn RegistrationPage() -> impl IntoView {
                 .expect("<input> should be mounted")
                 .value(),
 
+            //  not a valid password if it's empty,
+            //  contains whitespace, less than 8 characters
+            //  long and more than 100 characters
             not_valid_password: password.is_empty()
                 || password.chars().any(|c| c.is_whitespace())
                 || password.len() < 8
@@ -211,49 +232,17 @@ pub fn RegistrationPage() -> impl IntoView {
             match commit_user(input_reg_info).await {
                 Ok(some_error) => match some_error {
                     None => {
-                        set_is_show.set(false);
-                        set_reg_error_message.set("".to_string());
+                        set_not_valid.set(false);
+                        set_reg_error_message.set("".to_string())
                     }
-                    Some(RegistrationInputErrors::InvalidPassword) => {
-                        set_is_show.set(true);
-                        set_reg_error_message.set("密码无效".to_string());
-                    }
-                    Some(RegistrationInputErrors::PasswordNotMatch) => {
-                        set_is_show.set(true);
-                        set_reg_error_message.set("确认密码不符".to_string());
-                    }
-                    Some(RegistrationInputErrors::InvalidMobileVerifyCode) => {
-                        set_is_show.set(true);
-                        set_reg_error_message.set("验证码无效".to_string());
-                    }
-                    Some(RegistrationInputErrors::MobileVerifyFailed) => {
-                        set_is_show.set(true);
-                        set_reg_error_message.set("验证码错误".to_string());
-                    }
-                    Some(RegistrationInputErrors::InvalidUsername) => {
-                        set_is_show.set(true);
-                        set_reg_error_message.set("用户名无效".to_string());
-                    }
-                    Some(RegistrationInputErrors::InvalidMobileNumber) => {
-                        set_is_show.set(true);
-                        set_reg_error_message.set("手机号无效".to_string());
-                    }
-                    Some(RegistrationInputErrors::InvalidEmailAddress) => {
-                        set_is_show.set(true);
-                        set_reg_error_message.set("邮件地址无效".to_string());
-                    }
-                    Some(RegistrationInputErrors::InvalidFullName) => {
-                        set_is_show.set(true);
-                        set_reg_error_message.set("姓名无效".to_string());
-                    }
-                    Some(RegistrationInputErrors::UnknowError) => {
-                        set_is_show.set(true);
-                        set_reg_error_message.set("系统问题请稍后再试".to_string());
+                    Some(error_message) => {
+                        set_not_valid.set(true);
+                        set_reg_error_message.set(error_message)
                     }
                 },
                 Err(_) => {
+                    set_not_valid.set(false)
                     set_reg_error_message.set("系统问题请稍后再试".to_string());
-                    set_is_show.set(false)
                 }
             }
         })
@@ -272,7 +261,7 @@ pub fn RegistrationPage() -> impl IntoView {
                     <form on:submit=on_submit style="margin-top:40px">
                         <table>
                             // error message
-                            <tr class:display=move || is_show.get()>
+                            <tr class:display=move || is_not_valid.get()>
                                 <td></td>
                                 <td>
                                     <p style="color:red">{reg_error_message}</p>

@@ -162,7 +162,7 @@ pub async fn get_tutorial_chapter(
 }
 
 #[component]
-pub fn TutorialPage() -> impl IntoView {
+pub fn TutorialPageGate() -> impl IntoView {
     use crate::session::extract_session_user;
     use leptos_router::Redirect;
 

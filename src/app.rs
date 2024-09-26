@@ -1,10 +1,10 @@
 use crate::admin::AdminPage;
-use crate::courses::{content::ContentPage, CoursesPage, NoCoursePage};
+use crate::courses::{content::ContentPageGate, CoursesPage, NoCoursePage};
 use crate::error_template::{AppError, ErrorTemplate};
 use crate::home::{about::AboutPage, HomePage};
 use crate::student::account::{login::LoginPage, logout::LogoutPage, register::RegistrationPage};
-use crate::student::profile::ProfilePage;
-use crate::tutorials::TutorialPage;
+use crate::student::profile::ProfilePageGate;
+use crate::tutorials::TutorialPageGate;
 
 use leptos::*;
 use leptos_meta::*;
@@ -36,10 +36,10 @@ pub fn App() -> impl IntoView {
                     <Route path="/logout" view=LogoutPage />
                     <Route path="/register" view=RegistrationPage />
                     <Route path="/admin" view=AdminPage />
-                    <Route path="/profile" view=ProfilePage />
-                    <Route path="/tutorials/:course_id" view=TutorialPage />
+                    <Route path="/profile" view=ProfilePageGate />
+                    <Route path="/tutorials/:course_id" view=TutorialPageGate />
                     <Route path="/courses" view=CoursesPage>
-                        <Route path=":course_id" view=ContentPage />
+                        <Route path=":course_id" view=ContentPageGate />
                         <Route path="" view=NoCoursePage />
                     </Route>
                 </Routes>

@@ -160,7 +160,7 @@ pub async fn get_chapter_content(chapter_id: String) -> Result<String, ServerFnE
 }
 
 #[component]
-pub fn ContentPage() -> impl IntoView {
+pub fn ContentPageGate() -> impl IntoView {
     use crate::session::*;
 
     view! {

@@ -249,15 +249,92 @@ fn TutorialContent(
     course_id: String,
     course_title: ReadSignal<String>,
 ) -> impl IntoView {
-    use editor::TutorialEditorArea;
     use execution::TutorialExecutionArea;
     // use console::TutorialConsoleArea;
 
-    let (initial_code, set_initial_code) = create_signal("".to_string());
-    let (chapter_list, set_chapter_list) = create_signal(vec![Chapter::default()]);
+    // let course_id_clone = course_id.clone();
+
     let (chapter_number, set_chapter_number) = create_signal(1_u32);
 
-    let course_id_clone = course_id.clone();
+    provide_context(chapter_number);
+    provide_context(set_chapter_number);
+
+    view! {
+        <div style="float:left; font-weight:bold; padding-top:10px">
+            <table>
+                <tr>
+                    <td style="padding-right: 50px">"用户: "{username.to_string()}</td>
+                    <td style="padding-right: 50px">"课程: "{move || course_title.get()}</td>
+                    <td style="padding-right: 50px">
+                        "章节: "
+                        <ChapterSelectionBox course_id=course_id.clone()/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div>
+            <TutorialEditor course_id=course_id.clone() username=username.to_string()/>
+            <TutorialExecutionArea />
+        </div>
+    }
+}
+
+#[component]
+fn ChapterSelectionBox(course_id: String) -> impl IntoView {
+    let (chapter_list, set_chapter_list) = create_signal(vec![Chapter::default()]);
+
+    let chapter_number = use_context::<ReadSignal<u32>>()
+        .expect("to have found the getter provided");
+
+    let set_chapter_number = use_context::<WriteSignal<u32>>()
+        .expect("to have found the setter provided");
+
+    view! {
+        {
+            spawn_local(async move {
+                match get_course_chapters(course_id).await {
+                    Ok(chapters) => set_chapter_list.set(chapters),
+                    Err(_) => set_chapter_list.set(Vec::new()),
+                }
+            });
+        }
+
+        <select
+            on:change=move |ev| {
+                let new_value = event_target_value(&ev);
+                set_chapter_number
+                    .set(
+                        new_value
+                            .split(".")
+                            .collect::<Vec<&str>>()[0]
+                            .parse()
+                            .unwrap(),
+                    );
+            }
+            prop:chapter_number=move || chapter_number.get().to_string()
+        >
+            <For
+                each=move || chapter_list.get()
+                key=|state| (state.chapter_id.clone())
+                let:chapter
+            >
+                <option chapter_number=chapter
+                    .chapter_number>
+                    {chapter.chapter_number}". "{chapter.title}
+                </option>
+            </For>
+        </select>
+    }
+}
+
+#[component]
+fn TutorialEditor(course_id: String, username: String) -> impl IntoView {
+    use editor::TutorialEditorArea;
+
+    let (initial_code, set_initial_code) = create_signal("".to_string());
+
+    let chapter_number = use_context::<ReadSignal<u32>>()
+        .expect("to have found the getter provided");
 
     // our resource
     let code_content = create_resource(
@@ -273,52 +350,6 @@ fn TutorialContent(
     );
 
     view! {
-        {
-            spawn_local(async move {
-                match get_course_chapters(course_id_clone).await {
-                    Ok(chapters) => set_chapter_list.set(chapters),
-                    Err(_) => set_chapter_list.set(Vec::new()),
-                }
-            });
-        }
-
-        <div style="float:left; font-weight:bold; padding-top:10px">
-            <table>
-                <tr>
-                    <td style="padding-right: 50px">"用户: "{username.to_string()}</td>
-                    <td style="padding-right: 50px">"课程: "{move || course_title.get()}</td>
-                    <td style="padding-right: 50px">
-                        "章节: "
-                        <select
-                            on:change=move |ev| {
-                                let new_value = event_target_value(&ev);
-                                set_chapter_number
-                                    .set(
-                                        new_value
-                                            .split(".")
-                                            .collect::<Vec<&str>>()[0]
-                                            .parse()
-                                            .unwrap(),
-                                    );
-                            }
-                            prop:chapter_number=move || chapter_number.get().to_string()
-                        >
-                            <For
-                                each=move || chapter_list.get()
-                                key=|state| (state.chapter_id.clone())
-                                let:chapter
-                            >
-                                <option chapter_number=chapter
-                                    .chapter_number>
-                                    {chapter.chapter_number}". "{chapter.title}
-                                </option>
-                            </For>
-                        </select>
-                    </td>
-                </tr>
-            </table>
-        </div>
-        <div>
             <Transition fallback=move || {
                 view! { <p>"下载课程代码..."</p> }
             }>
@@ -335,9 +366,8 @@ fn TutorialContent(
                         }
                     }
                     None => set_initial_code.set("".to_string()),
-                }} <TutorialEditorArea initial_code=initial_code username=username.to_string() />
+                }} <TutorialEditorArea initial_code=initial_code username=username.clone() />
             </Transition>
-            <TutorialExecutionArea />
-        </div>
-    }
+
+        }
 }

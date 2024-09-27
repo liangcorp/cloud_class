@@ -193,11 +193,11 @@ fn CourseContentGate(username: String) -> impl IntoView {
     // id: || -> Option<String>
     let course_id = move || params.with_untracked(|params| params.get("course_id").cloned());
 
-    let (blur_effect, set_blur_effect) = create_signal(true);
+    let (disable, set_disable) = create_signal(true);
 
     let username_clone = username.clone();
 
-    provide_context(blur_effect);
+    provide_context(disable);
 
     view! {
         {match course_id() {
@@ -207,15 +207,15 @@ fn CourseContentGate(username: String) -> impl IntoView {
                 }
                 spawn_local(async move {
                     match check_user_courses(username_clone, c_id).await {
-                        Ok(result_bool) => set_blur_effect.set(result_bool),
-                        Err(_) => set_blur_effect.set(true),
+                        Ok(result_bool) => set_disable.set(result_bool),
+                        Err(_) => set_disable.set(true),
                     }
                 })
             }
             None => return vec![view! { <Redirect path="/courses" /> }],
         }}
 
-        <div class:display=move || blur_effect.get()>
+        <div class:display=move || disable.get()>
             <div>
                 <a class="header" href="/courses">
                     "回到个人主页"
@@ -228,8 +228,8 @@ fn CourseContentGate(username: String) -> impl IntoView {
             </div>
         </div>
         <div
-            class:cover-up-chapter=move || !blur_effect.get()
-            class:isDisabled=move || !blur_effect.get()
+            class:cover-up-chapter=move || !disable.get()
+            class:isDisabled=move || !disable.get()
         >
             <CourseContent username=username course_id=course_id().unwrap() />
         </div>

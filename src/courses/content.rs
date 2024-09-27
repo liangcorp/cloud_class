@@ -197,6 +197,8 @@ fn CourseContentGate(username: String) -> impl IntoView {
 
     let username_clone = username.clone();
 
+    provide_context(blur_effect);
+
     view! {
         {match course_id() {
             Some(c_id) => {
@@ -229,40 +231,23 @@ fn CourseContentGate(username: String) -> impl IntoView {
             class:cover-up-chapter=move || !blur_effect.get()
             class:isDisabled=move || !blur_effect.get()
         >
-            <CourseContent username=username course_id=course_id().unwrap() disable=blur_effect />
+            <CourseContent username=username course_id=course_id().unwrap() />
         </div>
     }
 }
 
 #[component]
-fn CourseContent(username: String, course_id: String, disable: ReadSignal<bool>) -> impl IntoView {
-    let (chapter_id, set_chapter_id) = create_signal("welcome-0000".to_string());
-    let (show_chapters, set_show_chapters) = create_signal(Vec::new());
+fn CourseContent(username: String, course_id: String) -> impl IntoView {
+    view! {
+        <CourseContentHeader username=username course_id=course_id.clone() />
+        <CourseContentBody course_id=course_id/>
+    }
+}
 
-    // @TODO: collapsible side navigation panel
-    // let (show_navbar, set_show_navbar) = create_signal(true);
-
-    // create_resource takes two arguments after its scope
-    let async_chapter_content = create_resource(
-        // the first is the "source signal"
-        move || chapter_id.get(),
-        // the second is the loader
-        // it takes the source signal's value as its argument
-        // and does some async work
-        |value| async move { get_chapter_content(value).await },
-    );
-
-    let course_id_clone = course_id.clone();
+#[component]
+fn CourseContentHeader(username: String, course_id: String) -> impl IntoView {
 
     view! {
-        {
-            spawn_local(async move {
-                match get_course_chapters(course_id_clone).await {
-                    Ok(ok_course_chapters) => set_show_chapters.set(ok_course_chapters),
-                    Err(_) => set_show_chapters.set(Vec::new()),
-                }
-            });
-        }
         <div align="right" style="height:30px">
             <table>
                 <tr>
@@ -289,6 +274,20 @@ fn CourseContent(username: String, course_id: String, disable: ReadSignal<bool>)
                 </tr>
             </table>
         </div>
+    }
+}
+
+#[component]
+fn CourseContentBody(course_id: String) -> impl IntoView {
+    // @TODO: collapsible side navigation panel
+    // let (show_navbar, set_show_navbar) = create_signal(true);
+
+    let (chapter_id, set_chapter_id) = create_signal("welcome-0000".to_string());
+
+    provide_context(chapter_id);
+    provide_context(set_chapter_id);
+
+    view! {
         <div class="sidenav">
             <div style="padding-left:10px;padding-bottom:20px;">
                 <a class="header" href="/courses">
@@ -297,44 +296,88 @@ fn CourseContent(username: String, course_id: String, disable: ReadSignal<bool>)
             </div>
             <div>
                 <ul style="list-style-type:none">
-                    <For
-                        each=move || show_chapters.get()
-                        key=|state| (state.chapter_id.clone())
-                        let:chapter
-                    >
-                        <li>
-                            <p>
-                                <a
-                                    on:click=move |_| {
-                                        set_chapter_id.set(chapter.chapter_id.clone());
-                                    }
-                                    class:isDisabled=move || !disable.get()
-                                    href="#"
-                                >
-                                    <div
-                                        style="float: left;"
-                                        class:display=move || chapter.chapter_number == 0
-                                    >
-                                        <b style="padding-right:5px;">
-                                            {chapter.chapter_number}"."
-                                        </b>
-                                    </div>
-                                    {chapter.title}
-                                </a>
-                            </p>
-                        </li>
-                    </For>
+                    <ChapterList course_id=course_id/>
                 </ul>
             </div>
         </div>
         <div class="chapter-content">
-            <Transition fallback=move || {
-                view! { <p>"正在下载课程章节..."</p> }
-            }>
-                <div inner_html=move || {
-                    async_chapter_content.get().map(|value| value.unwrap().to_string())
-                } />
-            </Transition>
+            <ChapterContent />
         </div>
+    }
+}
+
+#[component]
+fn ChapterList(course_id: String) -> impl IntoView {
+    let (show_chapters, set_show_chapters) = create_signal(Vec::new());
+
+     let set_chapter_id = use_context::<WriteSignal<String>>()
+        .expect("to have found the setter provided");
+
+    let disable = use_context::<ReadSignal<bool>>()
+        .expect("to have found the getter provided");
+
+    view! {
+        {
+            spawn_local(async move {
+                match get_course_chapters(course_id).await {
+                    Ok(ok_course_chapters) => set_show_chapters.set(ok_course_chapters),
+                    Err(_) => set_show_chapters.set(Vec::new()),
+                }
+            });
+        }
+
+        <For
+            each=move || show_chapters.get()
+            key=|state| (state.chapter_id.clone())
+            let:chapter
+        >
+            <li>
+                <p>
+                    <a
+                        on:click=move |_| {
+                            set_chapter_id.set(chapter.chapter_id.clone());
+                        }
+                        class:isDisabled=move || !disable.get()
+                        href="#"
+                    >
+                        <div
+                            style="float: left;"
+                            class:display=move || chapter.chapter_number == 0
+                        >
+                            <b style="padding-right:5px;">
+                                {chapter.chapter_number}"."
+                            </b>
+                        </div>
+                        {chapter.title}
+                    </a>
+                </p>
+            </li>
+        </For>
+    }
+}
+
+#[component]
+fn ChapterContent() -> impl IntoView {
+     let chapter_id = use_context::<ReadSignal<String>>()
+        .expect("to have found the getter provided");
+
+    // create_resource takes two arguments after its scope
+    let async_chapter_content = create_resource(
+        // the first is the "source signal"
+        move || chapter_id.get(),
+        // the second is the loader
+        // it takes the source signal's value as its argument
+        // and does some async work
+        |value| async move { get_chapter_content(value).await },
+    );
+
+    view! {
+        <Transition fallback=move || {
+            view! { <p>"正在下载课程章节..."</p> }
+        }>
+            <div inner_html=move || {
+                async_chapter_content.get().map(|value| value.unwrap().to_string())
+            } />
+        </Transition>
     }
 }

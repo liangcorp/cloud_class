@@ -207,6 +207,8 @@ fn TutorialContentGate(username: String) -> impl IntoView {
     let username_clone = username.clone();
     let course_id_clone = course_id().unwrap().clone();
 
+    provide_context(course_title);
+
     view! {
         {
             spawn_local(async move {
@@ -237,7 +239,6 @@ fn TutorialContentGate(username: String) -> impl IntoView {
             <TutorialContent
                 username=username
                 course_id=course_id().unwrap()
-                course_title=course_title
             />
         </div>
     }
@@ -247,12 +248,12 @@ fn TutorialContentGate(username: String) -> impl IntoView {
 fn TutorialContent(
     username: String,
     course_id: String,
-    course_title: ReadSignal<String>,
 ) -> impl IntoView {
     use execution::TutorialExecutionArea;
     // use console::TutorialConsoleArea;
 
-    // let course_id_clone = course_id.clone();
+    let course_title = use_context::<ReadSignal<String>>()
+        .expect("to have found the getter provided");
 
     let (chapter_number, set_chapter_number) = create_signal(1_u32);
 

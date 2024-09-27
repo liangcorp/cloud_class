@@ -32,31 +32,36 @@ pub fn ProfilePageGate() -> impl IntoView {
 
 #[component]
 fn ProfilePage(username: String) -> impl IntoView {
-    use class::CourseContentPage;
-    use info::PersonalContentPage;
-
     let (show_layer, set_show_layer) = create_signal(true);
 
+    provide_context(show_layer);
     provide_context(set_show_layer);
 
     view! {
-        <ProfilePageHeader user=username.clone() />
-
-        <Transition fallback=move || view! { <h1>"正在运行..."</h1> }>
-            <div class="contents" class:display=move || !show_layer.get()>
-                <CourseContentPage user=username.clone() />
-            </div>
-            <div class="profile-contents" class:display=move || show_layer.get()>
-                <PersonalContentPage user=username.clone() />
-            </div>
-        </Transition>
+        <ProfilePageHeader username=username.clone() />
+        <ProfilePageBody username=username.clone()/>
     }
 }
 
 #[component]
-fn ProfilePageHeader(user: String) -> impl IntoView {
-    let set_show_layer = expect_context::<WriteSignal<bool>>();
+fn ProfilePageBody(username: String) -> impl IntoView {
+    use class::CourseContentPage;
+    use info::PersonalContentPage;
 
+    let show_layer = expect_context::<ReadSignal<bool>>();
+
+    view! {
+        <div class="contents" class:display=move || !show_layer.get()>
+            <CourseContentPage user=username.clone() />
+        </div>
+        <div class="profile-contents" class:display=move || show_layer.get()>
+            <PersonalContentPage user=username.clone() />
+        </div>
+    }
+}
+
+#[component]
+fn ProfilePageHeader(username: String) -> impl IntoView {
     view! {
         <div class="contents">
             <table>
@@ -71,35 +76,15 @@ fn ProfilePageHeader(user: String) -> impl IntoView {
                             "首页"
                         </a>
                     </td>
-                    <td class="header-menu">
-                        <a
-                            href="/profile"
-                            class="header"
-                            on:click=move |_| {
-                                set_show_layer.set(true);
-                            }
-                        >
-                            "我的课程"
-                        </a>
-                    </td>
-                    <td class="header-menu">
-                        <a
-                            href="/profile"
-                            class="header"
-                            on:click=move |_| {
-                                set_show_layer.set(false);
-                            }
-                        >
-                            "个人资料"
-                        </a>
-                    </td>
+                    <ProfilePageHeaderSelectContent />
+
                     <td class="header-menu"></td>
                     <td class="header-menu"></td>
                     <td class="header-menu"></td>
 
                     <td class="header-login">
                         <a class="header" href="/profile">
-                            {user}
+                            {username}
                         </a>
                     </td>
                     <td class="header-login">
@@ -115,3 +100,34 @@ fn ProfilePageHeader(user: String) -> impl IntoView {
         </div>
     }
 }
+
+#[component]
+fn ProfilePageHeaderSelectContent() -> impl IntoView {
+    let set_show_layer = expect_context::<WriteSignal<bool>>();
+
+    view! {
+        <td class="header-menu">
+            <a
+                href="/profile"
+                class="header"
+                on:click=move |_| {
+                    set_show_layer.set(true);
+                }
+            >
+                "我的课程"
+            </a>
+        </td>
+        <td class="header-menu">
+            <a
+                href="/profile"
+                class="header"
+                on:click=move |_| {
+                    set_show_layer.set(false);
+                }
+            >
+                "个人资料"
+            </a>
+        </td>
+    }
+}
+

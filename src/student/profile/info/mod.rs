@@ -79,6 +79,7 @@ pub async fn get_personal_profile(user: String) -> Result<PersonalContent, Serve
 
     Ok(personal_content)
 }
+
 #[component]
 pub fn PersonalContentPage(user: String) -> impl IntoView {
     let (personal_content, set_peronsal_content) = create_signal(PersonalContent::default());

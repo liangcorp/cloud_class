@@ -39,7 +39,7 @@ fn ProfilePage(username: String) -> impl IntoView {
 
     view! {
         <ProfilePageHeader username=username.clone() />
-        <ProfilePageBody username=username.clone()/>
+        <ProfilePageBody username=username.clone() />
     }
 }
 
@@ -130,4 +130,3 @@ fn ProfilePageHeaderSelectContent() -> impl IntoView {
         </td>
     }
 }
-

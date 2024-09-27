@@ -236,24 +236,17 @@ fn TutorialContentGate(username: String) -> impl IntoView {
             </div>
         </div>
         <div class:display=move || !display_tutorial.get()>
-            <TutorialContent
-                username=username
-                course_id=course_id().unwrap()
-            />
+            <TutorialContent username=username course_id=course_id().unwrap() />
         </div>
     }
 }
 
 #[component]
-fn TutorialContent(
-    username: String,
-    course_id: String,
-) -> impl IntoView {
+fn TutorialContent(username: String, course_id: String) -> impl IntoView {
     use execution::TutorialExecutionArea;
     // use console::TutorialConsoleArea;
 
-    let course_title = use_context::<ReadSignal<String>>()
-        .expect("to have found the getter provided");
+    let course_title = expect_context::<ReadSignal<String>>();
 
     let (chapter_number, set_chapter_number) = create_signal(1_u32);
 
@@ -267,14 +260,13 @@ fn TutorialContent(
                     <td style="padding-right: 50px">"用户: "{username.to_string()}</td>
                     <td style="padding-right: 50px">"课程: "{move || course_title.get()}</td>
                     <td style="padding-right: 50px">
-                        "章节: "
-                        <ChapterSelectionBox course_id=course_id.clone()/>
+                        "章节: " <ChapterSelectionBox course_id=course_id.clone() />
                     </td>
                 </tr>
             </table>
         </div>
         <div>
-            <TutorialEditor course_id=course_id.clone() username=username.to_string()/>
+            <TutorialEditor course_id=course_id.clone() username=username.to_string() />
             <TutorialExecutionArea />
         </div>
     }
@@ -284,11 +276,9 @@ fn TutorialContent(
 fn ChapterSelectionBox(course_id: String) -> impl IntoView {
     let (chapter_list, set_chapter_list) = create_signal(vec![Chapter::default()]);
 
-    let chapter_number = use_context::<ReadSignal<u32>>()
-        .expect("to have found the getter provided");
+    let chapter_number = expect_context::<ReadSignal<u32>>();
 
-    let set_chapter_number = use_context::<WriteSignal<u32>>()
-        .expect("to have found the setter provided");
+    let set_chapter_number = expect_context::<WriteSignal<u32>>();
 
     view! {
         {
@@ -304,25 +294,13 @@ fn ChapterSelectionBox(course_id: String) -> impl IntoView {
             on:change=move |ev| {
                 let new_value = event_target_value(&ev);
                 set_chapter_number
-                    .set(
-                        new_value
-                            .split(".")
-                            .collect::<Vec<&str>>()[0]
-                            .parse()
-                            .unwrap(),
-                    );
+                    .set(new_value.split(".").collect::<Vec<&str>>()[0].parse().unwrap());
             }
             prop:chapter_number=move || chapter_number.get().to_string()
         >
-            <For
-                each=move || chapter_list.get()
-                key=|state| (state.chapter_id.clone())
-                let:chapter
-            >
+            <For each=move || chapter_list.get() key=|state| (state.chapter_id.clone()) let:chapter>
                 <option chapter_number=chapter
-                    .chapter_number>
-                    {chapter.chapter_number}". "{chapter.title}
-                </option>
+                    .chapter_number>{chapter.chapter_number}". "{chapter.title}</option>
             </For>
         </select>
     }
@@ -334,8 +312,7 @@ fn TutorialEditor(course_id: String, username: String) -> impl IntoView {
 
     let (initial_code, set_initial_code) = create_signal("".to_string());
 
-    let chapter_number = use_context::<ReadSignal<u32>>()
-        .expect("to have found the getter provided");
+    let chapter_number = expect_context::<ReadSignal<u32>>();
 
     // our resource
     let code_content = create_resource(
@@ -351,24 +328,23 @@ fn TutorialEditor(course_id: String, username: String) -> impl IntoView {
     );
 
     view! {
-            <Transition fallback=move || {
-                view! { <p>"下载课程代码..."</p> }
-            }>
-                {move || match code_content.get() {
-                    Some(some_code_data) => {
-                        match some_code_data {
-                            Ok(ok_code_data) => {
-                                match ok_code_data {
-                                    Some(code_data) => set_initial_code.set(code_data),
-                                    None => set_initial_code.set("".to_string()),
-                                }
+        <Transition fallback=move || {
+            view! { <p>"下载课程代码..."</p> }
+        }>
+            {move || match code_content.get() {
+                Some(some_code_data) => {
+                    match some_code_data {
+                        Ok(ok_code_data) => {
+                            match ok_code_data {
+                                Some(code_data) => set_initial_code.set(code_data),
+                                None => set_initial_code.set("".to_string()),
                             }
-                            Err(_) => set_initial_code.set("".to_string()),
                         }
+                        Err(_) => set_initial_code.set("".to_string()),
                     }
-                    None => set_initial_code.set("".to_string()),
-                }} <TutorialEditorArea initial_code=initial_code username=username.clone() />
-            </Transition>
-
-        }
+                }
+                None => set_initial_code.set("".to_string()),
+            }} <TutorialEditorArea initial_code=initial_code username=username.clone() />
+        </Transition>
+    }
 }

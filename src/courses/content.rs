@@ -227,10 +227,7 @@ fn CourseContentGate(username: String) -> impl IntoView {
                 </h2>
             </div>
         </div>
-        <div
-            class:cover-up-chapter=move || !disable.get()
-            class:isDisabled=move || !disable.get()
-        >
+        <div class:cover-up-chapter=move || !disable.get() class:isDisabled=move || !disable.get()>
             <CourseContent username=username course_id=course_id().unwrap() />
         </div>
     }
@@ -240,13 +237,12 @@ fn CourseContentGate(username: String) -> impl IntoView {
 fn CourseContent(username: String, course_id: String) -> impl IntoView {
     view! {
         <CourseContentHeader username=username course_id=course_id.clone() />
-        <CourseContentBody course_id=course_id/>
+        <CourseContentBody course_id=course_id />
     }
 }
 
 #[component]
 fn CourseContentHeader(username: String, course_id: String) -> impl IntoView {
-
     view! {
         <div align="right" style="height:30px">
             <table>
@@ -296,7 +292,7 @@ fn CourseContentBody(course_id: String) -> impl IntoView {
             </div>
             <div>
                 <ul style="list-style-type:none">
-                    <ChapterList course_id=course_id/>
+                    <ChapterList course_id=course_id />
                 </ul>
             </div>
         </div>
@@ -310,11 +306,9 @@ fn CourseContentBody(course_id: String) -> impl IntoView {
 fn ChapterList(course_id: String) -> impl IntoView {
     let (show_chapters, set_show_chapters) = create_signal(Vec::new());
 
-     let set_chapter_id = use_context::<WriteSignal<String>>()
-        .expect("to have found the setter provided");
+    let set_chapter_id = expect_context::<WriteSignal<String>>();
 
-    let disable = use_context::<ReadSignal<bool>>()
-        .expect("to have found the getter provided");
+    let disable = expect_context::<ReadSignal<bool>>();
 
     view! {
         {
@@ -326,11 +320,7 @@ fn ChapterList(course_id: String) -> impl IntoView {
             });
         }
 
-        <For
-            each=move || show_chapters.get()
-            key=|state| (state.chapter_id.clone())
-            let:chapter
-        >
+        <For each=move || show_chapters.get() key=|state| (state.chapter_id.clone()) let:chapter>
             <li>
                 <p>
                     <a
@@ -340,13 +330,8 @@ fn ChapterList(course_id: String) -> impl IntoView {
                         class:isDisabled=move || !disable.get()
                         href="#"
                     >
-                        <div
-                            style="float: left;"
-                            class:display=move || chapter.chapter_number == 0
-                        >
-                            <b style="padding-right:5px;">
-                                {chapter.chapter_number}"."
-                            </b>
+                        <div style="float: left;" class:display=move || chapter.chapter_number == 0>
+                            <b style="padding-right:5px;">{chapter.chapter_number}"."</b>
                         </div>
                         {chapter.title}
                     </a>
@@ -358,8 +343,7 @@ fn ChapterList(course_id: String) -> impl IntoView {
 
 #[component]
 fn ChapterContent() -> impl IntoView {
-     let chapter_id = use_context::<ReadSignal<String>>()
-        .expect("to have found the getter provided");
+    let chapter_id = expect_context::<ReadSignal<String>>();
 
     // create_resource takes two arguments after its scope
     let async_chapter_content = create_resource(

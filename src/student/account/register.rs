@@ -138,7 +138,8 @@ pub async fn send_mobile_code(mobile_num: String) -> Result<(), ServerFnError> {
         rapid::rapidhash(&uuid::get_random_token().into_bytes())
     );
     logging::log!("{}: {}", mobile_num, &num[..6]);
-    // probably need redis caching
+    // @TODO use an actual mobile service
+    // @TODO redis caching
     Ok(())
 }
 

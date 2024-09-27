@@ -1,6 +1,7 @@
 use cfg_if::cfg_if;
 use leptos::*;
 use server_fn::ServerFnError;
+use rsa::{Pkcs1v15Encrypt, RsaPrivateKey, RsaPublicKey};
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
@@ -23,7 +24,7 @@ pub async fn user_auth(
     use crate::session::cache::Cache;
     use crate::session::cookie::Cookie;
     use crate::state::AppState;
-    use crate::utils::{crypto::*, uuid::*};
+    use crate::utils::{crypto, uuid};
 
     //  取得软件状态
     let state = match use_context::<AppState>() {
@@ -44,12 +45,12 @@ pub async fn user_auth(
         .fetch_one(&pool)
         .await?;
 
-    /*---   Salt Hash 用户输入密码    ---*/
-    let parsed_hash = get_parsed_hash(&password, account.salt.as_str())?;
-    /*---   认证密码一致    ---*/
+    /*---  Salt Hash 用户输入密码  ---*/
+    let parsed_hash = crypto::get_parsed_hash(&password, account.salt.as_str())?;
+    /*---  认证密码一致  ---*/
     // if Argon2::default().verify_password(&b_password, &parsed_hash).is_ok() {
     if parsed_hash == account.pw_hash {
-        let session_token = get_session_token();
+        let session_token = uuid::get_session_token();
 
         if remember_user == "true" {
             Cookie::set_cookie(&session_token, true)?;
@@ -68,7 +69,7 @@ pub async fn user_auth(
 }
 
 #[component]
-pub fn UsernameLoginLayer() -> impl IntoView {
+pub fn UsernameLoginLayer(pub_key: RsaPublicKey) -> impl IntoView {
     // 制作一个reactive值去更新提交按钮
     let (username, set_username) = create_signal("".to_string());
     let (password, set_password) = create_signal("".to_string());

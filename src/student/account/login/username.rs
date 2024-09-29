@@ -39,16 +39,15 @@ pub async fn user_auth(
     //  取得数据库信息
     let pool = state.pool;
 
-    /*---   提取用户数据    ---*/
+    //  提取用户数据
     let account = sqlx::query_as::<_, User>("SELECT * FROM students WHERE username==$1;")
         .bind(&user)
         .fetch_one(&pool)
         .await?;
 
-    /*---  Salt Hash 用户输入密码  ---*/
+    //  Salt Hash 用户输入密码
     let parsed_hash = crypto::get_parsed_hash(&password, account.salt.as_str())?;
-    /*---  认证密码一致  ---*/
-    // if Argon2::default().verify_password(&b_password, &parsed_hash).is_ok() {
+    //  认证密码一致
     if parsed_hash == account.pw_hash {
         let session_token = uuid::get_session_token();
 

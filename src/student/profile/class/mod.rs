@@ -72,7 +72,7 @@ pub async fn get_user_courses(user: String) -> Result<Vec<CourseContent>, Server
     //  取得数据库信息
     let pool = state.pool;
 
-    /*---   提取用户数据    ---*/
+    //  提取用户数据
     let user_courses = match sqlx::query_as::<_, CourseContentQuery>(
         "SELECT c.*
         FROM student_course sc

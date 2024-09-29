@@ -57,7 +57,7 @@ pub async fn get_personal_profile(user: String) -> Result<PersonalContent, Serve
     //  取得数据库信息
     let pool = state.pool;
 
-    /*---   提取用户数据    ---*/
+    //  提取用户数据
     let personal_content = match sqlx::query_as::<_, PersonalContentQuery>(
         "SELECT * FROM students WHERE username = $1;",
     )

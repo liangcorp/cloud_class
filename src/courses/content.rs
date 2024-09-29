@@ -97,7 +97,7 @@ pub async fn get_course_chapters(course_id: String) -> Result<Vec<Chapter>, Serv
     //  取得数据库信息
     let pool = state.pool;
 
-    /*---   提取用户数据    ---*/
+    //  提取用户数据
     let chapters = match sqlx::query_as::<_, CourseChapterQuery>(
         "SELECT *
         FROM chapters
@@ -136,7 +136,7 @@ pub async fn get_chapter_content(chapter_id: String) -> Result<String, ServerFnE
     //  取得数据库信息
     let pool = state.pool;
 
-    /*---   提取用户数据    ---*/
+    //  提取用户数据
     let chapter_content = match sqlx::query_as::<_, ChapterContentQuery>(
         "SELECT * FROM chapters WHERE chapter_id = $1;",
     )

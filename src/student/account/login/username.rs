@@ -1,6 +1,6 @@
 use cfg_if::cfg_if;
 use leptos::*;
-use rsa::{Pkcs1v15Encrypt, RsaPrivateKey, RsaPublicKey};
+// use rsa::{Pkcs1v15Encrypt, RsaPrivateKey, RsaPublicKey};
 use server_fn::ServerFnError;
 
 cfg_if! {
@@ -69,7 +69,7 @@ pub async fn user_auth(
 }
 
 #[component]
-pub fn UsernameLoginLayer(pub_key: RsaPublicKey) -> impl IntoView {
+pub fn UsernameLoginLayer() -> impl IntoView {
     // 制作一个reactive值去更新提交按钮
     let (username, set_username) = create_signal("".to_string());
     let (password, set_password) = create_signal("".to_string());

@@ -20,10 +20,7 @@ pub fn MobileLoginLayer() -> impl IntoView {
             .value();
         set_mobile_no.set(mobile_no_value);
 
-        let sms_value = input_sms
-            .get()
-            .expect("<input> should be mounted")
-            .value();
+        let sms_value = input_sms.get().expect("<input> should be mounted").value();
         set_sms.set(sms_value);
     };
 
@@ -64,11 +61,7 @@ pub fn MobileLoginLayer() -> impl IntoView {
                 </tr>
                 <tr>
                     <td colspan="2" style="padding-left:10px">
-                        <input
-                            class="submit-button"
-                            type="submit"
-                            value="登陆"
-                        />
+                        <input class="submit-button" type="submit" value="登陆" />
                     </td>
                 </tr>
                 <tr>

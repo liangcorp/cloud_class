@@ -155,7 +155,7 @@ cfg_if! {
 
 #[server]
 pub async fn send_mobile_code(mobile_num: String) -> Result<(), ServerFnError> {
-    use crate::utils::*;
+    use crate::utils::uuid;
     let num: String = format!(
         "{}",
         rapid::rapidhash(&uuid::get_random_token().into_bytes())

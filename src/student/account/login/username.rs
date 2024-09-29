@@ -86,24 +86,12 @@ pub fn UsernameLoginLayer(pub_key: RsaPublicKey) -> impl IntoView {
         // here, we'll extract the value from the input
         let username_value = input_username
             .get()
-            // event handlers can only fire after the view
-            // is mounted to the DOM, so the `NodeRef` will be `Some`
             .expect("<input> should be mounted")
-            // `leptos::HtmlElement<html::Input>` implements `Deref`
-            // to a `web_sys::HtmlInputElement`.
-            // this means we can call`HtmlInputElement::value()`
-            // to get the current value of the input
             .value();
 
         let password_value = input_password
             .get()
-            // event handlers can only fire after the view
-            // is mounted to the DOM, so the `NodeRef` will be `Some`
             .expect("<input> should be mounted")
-            // `leptos::HtmlElement<html::Input>` implements `Deref`
-            // to a `web_sys::HtmlInputElement`.
-            // this means we can call`HtmlInputElement::value()`
-            // to get the current value of the input
             .value();
 
         spawn_local(async move {
@@ -128,7 +116,7 @@ pub fn UsernameLoginLayer(pub_key: RsaPublicKey) -> impl IntoView {
 
     view! {
         <form on:submit=on_submit>
-            <table>
+            <table class="login-form">
                 <tr style:display=move || auth_success.get() style="color:red">
                     <td>
                         <h4>"用户名或者密码不正确"</h4>

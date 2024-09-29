@@ -208,8 +208,13 @@ div.sidebar-resize-handle {
   display: inline-block;
 }
 
+table.login-form {
+  width: 300px;
+}
+
 input.login-form {
   padding: 10px;
+  width: 270px;
   /* border:0px; */
   font-size: 18px;
 }
@@ -420,6 +425,28 @@ iframe.code-execution {
   border: none;
 }
 
+button.mobile_verify {
+  border-radius: 4px;
+  border: none;
+  color: white;
+  background-color: #333333;
+  width: 80px;
+  padding: 10px 5px;
+  text-align: center;
+  text-decoration: none;
+}
+
+button.mobile_verify:active {
+  border-radius: 4px;
+  border: none;
+  color: white;
+  background-color: gray;
+  width: 80px;
+  padding: 10px 5px;
+  text-align: center;
+  text-decoration: none;
+}
+
 button.registration {
   background-color: #333333; /* Light Black */
   border: none;
@@ -428,7 +455,6 @@ button.registration {
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 18px;
   border-radius: 4px;
 }
 
@@ -440,7 +466,6 @@ button.registration:active {
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 18px;
   border-radius: 4px;
 }
 /* On smaller screens, where height is less than 450px, change the style of the sidebar (less padding and a smaller font size) */

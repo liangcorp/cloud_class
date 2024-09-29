@@ -135,9 +135,6 @@ pub fn UsernameLoginLayer(pub_key: RsaPublicKey) -> impl IntoView {
                     </td>
                 </tr>
                 <tr>
-                    <td></td>
-                </tr>
-                <tr>
                     <td style="padding-left:10px">
                         <input
                             placeholder="请输入密码"

@@ -47,7 +47,6 @@ pub fn MobileLoginLayer() -> impl IntoView {
                         />
                     </td>
                 </tr>
-
                 <tr>
                     <td style="padding-left:10px;padding-right:10px">
                         <input
@@ -73,7 +72,7 @@ pub fn MobileLoginLayer() -> impl IntoView {
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="2" style="padding-bottom:70px"></td>
+                    <td colspan="2" style="padding-bottom:65px"></td>
                 </tr>
             </table>
         </form>

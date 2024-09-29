@@ -16,25 +16,13 @@ pub fn MobileLoginLayer() -> impl IntoView {
         // here, we'll extract the value from the input
         let mobile_no_value = input_mobile_no
             .get()
-            // event handlers can only fire after the view
-            // is mounted to the DOM, so the `NodeRef` will be `Some`
             .expect("<input> should be mounted")
-            // `leptos::HtmlElement<html::Input>` implements `Deref`
-            // to a `web_sys::HtmlInputElement`.
-            // this means we can call`HtmlInputElement::value()`
-            // to get the current value of the input
             .value();
         set_mobile_no.set(mobile_no_value);
 
         let sms_value = input_sms
             .get()
-            // event handlers can only fire after the view
-            // is mounted to the DOM, so the `NodeRef` will be `Some`
             .expect("<input> should be mounted")
-            // `leptos::HtmlElement<html::Input>` implements `Deref`
-            // to a `web_sys::HtmlInputElement`.
-            // this means we can call`HtmlInputElement::value()`
-            // to get the current value of the input
             .value();
         set_sms.set(sms_value);
     };
@@ -42,12 +30,6 @@ pub fn MobileLoginLayer() -> impl IntoView {
     view! {
         <form on:submit=on_submit>
             <table style="padding-left:10px">
-                // <tr><td><p>"用户名是: " {username}</p></td></tr>
-                // padding 用来装饰
-                <tr>
-                    <td style="padding-top:60px"></td>
-                    <td></td>
-                </tr>
                 <tr style="display:none;color:red">
                     <td>
                         <h4>手机号或验证码不正确</h4>
@@ -57,7 +39,7 @@ pub fn MobileLoginLayer() -> impl IntoView {
                     <td colspan="2">
                         <input
                             placeholder="请输入手机号"
-                            style="width:94%"
+                            style="width:90%"
                             class="login-form"
                             type="text"
                             value=mobile_no
@@ -89,6 +71,10 @@ pub fn MobileLoginLayer() -> impl IntoView {
                             value="登陆"
                         />
                     </td>
+                </tr>
+                <tr>
+                    <td style="padding-bottom:60px"></td>
+                    <td></td>
                 </tr>
             </table>
         </form>

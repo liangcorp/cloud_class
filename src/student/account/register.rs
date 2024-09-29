@@ -21,7 +21,7 @@ cfg_if! {
         use crate::utils::regex::InputValidationRegex;
 
         #[derive(Clone, Debug)]
-        pub enum RegistrationInputErrors {
+        pub enum RegistrationError {
             InvalidUsername,
             InvalidPassword,
             PasswordNotMatch,
@@ -34,19 +34,19 @@ cfg_if! {
             UnknowError,
         }
 
-        impl fmt::Display for RegistrationInputErrors {
+        impl fmt::Display for RegistrationError {
             fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
                 match self {
-                    RegistrationInputErrors::InvalidUsername => write!(f, "用户名无效"),
-                    RegistrationInputErrors::InvalidPassword => write!(f, "密码无效"),
-                    RegistrationInputErrors::PasswordNotMatch => write!(f, "确认密码不符"),
-                    RegistrationInputErrors::InvalidFullName => write!(f, "姓名无效"),
-                    RegistrationInputErrors::InvalidEmailAddress => write!(f, "电子邮件无效"),
-                    RegistrationInputErrors::InvalidMobileNumber => write!(f, "手机号无效"),
-                    RegistrationInputErrors::InvalidMobileVerifyCode => write!(f, "验证码无效"),
-                    RegistrationInputErrors::MobileVerifyFailed => write!(f, "验证码错误"),
-                    RegistrationInputErrors::ErrorDuringUserCreation => write!(f, "用户注册失败"),
-                    RegistrationInputErrors::UnknowError => write!(f, "系统问题请稍后再试"),
+                    RegistrationError::InvalidUsername => write!(f, "用户名无效"),
+                    RegistrationError::InvalidPassword => write!(f, "密码无效"),
+                    RegistrationError::PasswordNotMatch => write!(f, "确认密码不符"),
+                    RegistrationError::InvalidFullName => write!(f, "姓名无效"),
+                    RegistrationError::InvalidEmailAddress => write!(f, "电子邮件无效"),
+                    RegistrationError::InvalidMobileNumber => write!(f, "手机号无效"),
+                    RegistrationError::InvalidMobileVerifyCode => write!(f, "验证码无效"),
+                    RegistrationError::MobileVerifyFailed => write!(f, "验证码错误"),
+                    RegistrationError::ErrorDuringUserCreation => write!(f, "用户注册失败"),
+                    RegistrationError::UnknowError => write!(f, "系统问题请稍后再试"),
                 }
             }
         }
@@ -115,25 +115,25 @@ cfg_if! {
             //  取得软件状态
             let state = match use_context::<AppState>() {
                 Some(s) => s,
-                None => return Some(RegistrationInputErrors::UnknowError.to_string()),
+                None => return Some(RegistrationError::UnknowError.to_string()),
             };
 
             let validation_regex = state.validation_regex;
 
             if !is_valid_username(&validation_regex, &input_reg.username) {
-                return Some(RegistrationInputErrors::InvalidUsername.to_string());
+                return Some(RegistrationError::InvalidUsername.to_string());
             } else if !is_valid_password(&input_reg.password) {
-                return Some(RegistrationInputErrors::InvalidPassword.to_string());
+                return Some(RegistrationError::InvalidPassword.to_string());
             } else if input_reg.password != input_reg.confirm_password {
-                return Some(RegistrationInputErrors::PasswordNotMatch.to_string());
+                return Some(RegistrationError::PasswordNotMatch.to_string());
             } else if !is_valid_fullname(&input_reg.fullname) {
-                return Some(RegistrationInputErrors::InvalidFullName.to_string());
+                return Some(RegistrationError::InvalidFullName.to_string());
             } else if !is_valid_email(&validation_regex, &input_reg.email)  {
-                return Some(RegistrationInputErrors::InvalidEmailAddress.to_string());
+                return Some(RegistrationError::InvalidEmailAddress.to_string());
             } else if !validation_regex.get_mobile_num_regex().is_match(&input_reg.mobile_num) {
-                return Some(RegistrationInputErrors::InvalidMobileNumber.to_string());
+                return Some(RegistrationError::InvalidMobileNumber.to_string());
             } else if !validation_regex.get_mobile_code_regex().is_match(&input_reg.mobile_verify_code) {
-                return Some(RegistrationInputErrors::InvalidMobileVerifyCode.to_string());
+                return Some(RegistrationError::InvalidMobileVerifyCode.to_string());
             }
 
             None
@@ -145,7 +145,7 @@ cfg_if! {
             let salt = crypto::get_salt();
             let password_hash = match crypto::get_parsed_hash(&input_reg.password, &salt) {
                 Ok(ok_ph) => ok_ph,
-                Err(_) => return Some(RegistrationInputErrors::ErrorDuringUserCreation.to_string()),
+                Err(_) => return Some(RegistrationError::ErrorDuringUserCreation.to_string()),
             };
 
             None

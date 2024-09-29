@@ -7,8 +7,8 @@ use serde::{Deserialize, Serialize};
 pub struct InputRegistrationInfo {
     username: String,
     fullname: String,
-    not_valid_password: bool,
-    not_match_password: bool,
+    password: String,
+    confirm_password: String,
     email: String,
     mobile_num: String,
     mobile_verify_code: String,
@@ -30,6 +30,7 @@ cfg_if! {
             InvalidMobileNumber,
             InvalidMobileVerifyCode,
             MobileVerifyFailed,
+            ErrorDuringUserCreation,
             UnknowError,
         }
 
@@ -44,6 +45,7 @@ cfg_if! {
                     RegistrationInputErrors::InvalidMobileNumber => write!(f, "手机号无效"),
                     RegistrationInputErrors::InvalidMobileVerifyCode => write!(f, "验证码无效"),
                     RegistrationInputErrors::MobileVerifyFailed => write!(f, "验证码错误"),
+                    RegistrationInputErrors::ErrorDuringUserCreation => write!(f, "用户注册失败"),
                     RegistrationInputErrors::UnknowError => write!(f, "系统问题请稍后再试"),
                 }
             }
@@ -56,6 +58,19 @@ cfg_if! {
             if input_username.chars().any(|c| c.is_whitespace())
                 || !validation_regex.get_username_regex().is_match(input_username) {
                 return false;
+            }
+            true
+        }
+
+        fn is_valid_password(input_password: &str) -> bool {
+            //  not a valid password if it's empty,
+            //  contains whitespace, less than 8 characters
+            //  long and more than 100 characters
+            if input_password.is_empty()
+                || input_password.chars().any(|c| c.is_whitespace())
+                || input_password.len() < 8
+                || input_password.len() > 100 {
+                    return false;
             }
             true
         }
@@ -107,9 +122,9 @@ cfg_if! {
 
             if !is_valid_username(&validation_regex, &input_reg.username) {
                 return Some(RegistrationInputErrors::InvalidUsername.to_string());
-            } else if input_reg.not_valid_password {
+            } else if !is_valid_password(&input_reg.password) {
                 return Some(RegistrationInputErrors::InvalidPassword.to_string());
-            } else if input_reg.not_match_password {
+            } else if input_reg.password != input_reg.confirm_password {
                 return Some(RegistrationInputErrors::PasswordNotMatch.to_string());
             } else if !is_valid_fullname(&input_reg.fullname) {
                 return Some(RegistrationInputErrors::InvalidFullName.to_string());
@@ -124,8 +139,16 @@ cfg_if! {
             None
         }
 
-        fn create_user(input_reg: InputRegistrationInfo) -> Result<(), ServerFnError> {
-            Ok(())
+        fn create_user(input_reg: InputRegistrationInfo) -> Option<String> {
+            use crate::utils::crypto;
+
+            let salt = crypto::get_salt();
+            let password_hash = match crypto::get_parsed_hash(&input_reg.password, &salt) {
+                Ok(ok_ph) => ok_ph,
+                Err(_) => return Some(RegistrationInputErrors::ErrorDuringUserCreation.to_string()),
+            };
+
+            None
         }
     }
 }
@@ -147,9 +170,15 @@ pub async fn send_mobile_code(mobile_num: String) -> Result<(), ServerFnError> {
 pub async fn commit_user(
     input_reg: InputRegistrationInfo,
 ) -> Result<Option<String>, ServerFnError> {
-    match verify_input_content(input_reg) {
-        Some(error) => Ok(Some(error)),
-        None => Ok(None),
+    let verified_result = match verify_input_content(input_reg.clone()) {
+        Some(error) => Some(error),
+        None => None,
+    };
+
+    if verified_result == None {
+        Ok(create_user(input_reg))
+    } else {
+        Ok(verified_result)
     }
 }
 
@@ -220,18 +249,18 @@ pub fn RegistrationForm() -> impl IntoView {
         // stop the page from reloading!
         ev.prevent_default();
 
-        let password = input_password
-            .get()
-            .expect("<input> should be mounted")
-            .value();
-
-        let confirm_password = input_confirm_password
-            .get()
-            .expect("<input> should be mounted")
-            .value();
-
         let input_reg_info = InputRegistrationInfo {
             username: input_username
+                .get()
+                .expect("<input> should be mounted")
+                .value(),
+
+            password: input_password
+                .get()
+                .expect("<input> should be mounted")
+                .value(),
+
+            confirm_password: input_confirm_password
                 .get()
                 .expect("<input> should be mounted")
                 .value(),
@@ -240,16 +269,6 @@ pub fn RegistrationForm() -> impl IntoView {
                 .get()
                 .expect("<input> should be mounted")
                 .value(),
-
-            //  not a valid password if it's empty,
-            //  contains whitespace, less than 8 characters
-            //  long and more than 100 characters
-            not_valid_password: password.is_empty()
-                || password.chars().any(|c| c.is_whitespace())
-                || password.len() < 8
-                || password.len() > 100,
-
-            not_match_password: password != confirm_password,
 
             email: input_email
                 .get()

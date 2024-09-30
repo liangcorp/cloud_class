@@ -87,9 +87,9 @@ pub fn PersonalContentPage(user: String) -> impl IntoView {
     spawn_local(async move {
         match get_personal_profile(user).await {
             Ok(ok_personal_content) => set_peronsal_content.set(ok_personal_content),
-            Err(e) => {
+            Err(_) => {
                 set_peronsal_content.set(PersonalContent::default());
-                logging::log!("ERROR<user/profile/info/mod.rs>: {}", e.to_string());
+                // logging::log!("ERROR<user/profile/info/mod.rs>: {}", e.to_string());
             }
         }
     });

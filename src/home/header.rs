@@ -28,7 +28,7 @@ pub fn HeaderSection() -> impl IntoView {
                         </a>
                     </td>
                     <td class="header-menu">
-                        <a href="instructors" class="header">
+                        <a href="instructor" class="header">
                             "教师中心"
                         </a>
                     </td>

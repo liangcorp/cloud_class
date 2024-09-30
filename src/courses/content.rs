@@ -160,7 +160,7 @@ pub async fn get_chapter_content(chapter_id: String) -> Result<String, ServerFnE
 }
 
 #[component]
-pub fn ContentPageGate() -> impl IntoView {
+pub fn ContentPagePortal() -> impl IntoView {
     use crate::session::*;
 
     view! {
@@ -175,7 +175,7 @@ pub fn ContentPageGate() -> impl IntoView {
                 Ok(ok_username) => {
                     match ok_username {
                         Some(some_username) => {
-                            view! { <CourseContentGate username=some_username.to_string() /> }
+                            view! { <CourseContentPortal username=some_username.to_string() /> }
                         }
                         None => view! { <Redirect path="/courses" /> },
                     }
@@ -187,7 +187,7 @@ pub fn ContentPageGate() -> impl IntoView {
 }
 
 #[component]
-fn CourseContentGate(username: String) -> impl IntoView {
+fn CourseContentPortal(username: String) -> impl IntoView {
     let params = use_params_map();
 
     // id: || -> Option<String>

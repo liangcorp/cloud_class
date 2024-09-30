@@ -162,7 +162,7 @@ pub async fn get_tutorial_chapter(
 }
 
 #[component]
-pub fn TutorialPageGate() -> impl IntoView {
+pub fn TutorialPagePortal() -> impl IntoView {
     use crate::session::extract_session_user;
     use leptos_router::Redirect;
 
@@ -180,7 +180,7 @@ pub fn TutorialPageGate() -> impl IntoView {
                         Some(some_username) => {
                             view! {
                                 <div class="tutorial">
-                                    <TutorialContentGate username=some_username.to_string() />
+                                    <TutorialContentPortal username=some_username.to_string() />
                                 </div>
                             }
                                 .into_view()
@@ -195,7 +195,7 @@ pub fn TutorialPageGate() -> impl IntoView {
 }
 
 #[component]
-fn TutorialContentGate(username: String) -> impl IntoView {
+fn TutorialContentPortal(username: String) -> impl IntoView {
     let params = use_params_map();
 
     // id: || -> Option<String>

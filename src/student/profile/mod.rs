@@ -6,7 +6,7 @@ use leptos_router::Redirect;
 
 /// Renders the profile page of your application.
 #[component]
-pub fn ProfilePageGate() -> impl IntoView {
+pub fn ProfilePagePortal() -> impl IntoView {
     use crate::session::*;
 
     view! {

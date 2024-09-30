@@ -86,7 +86,7 @@ cfg_if! {
             //  user input must be sanitized before inserting into database
             if input_full_name.is_empty()
                 || input_full_name.len() > 60
-                || input_full_name.chars().any(|c| !c.is_alphabetic() && c != '.' && c != ' ') {
+                || input_full_name.chars().any(|c| !c.is_alphanumeric() && c != '.' && c != ' ') {
                 return false;
             }
             true
@@ -215,6 +215,8 @@ pub async fn commit_user(
         //  取得数据库信息
         let pool = state.pool;
 
+        let sanitized_fullname = input_reg.fullname.chars().map(|c| if c == ' ' { '_' } else { c }).collect::<String>();
+
         //  提取用户数据
         let sql_error = match sqlx::query("INSERT INTO students (username, salt, pw_hash, start_date, full_name, status, email, mobile)
             VALUES ($1, $2, $3, $4, $5, 'active', $6, $7);")
@@ -222,7 +224,7 @@ pub async fn commit_user(
             .bind(&salt)
             .bind(&password_hash)
             .bind(date::get_current_date())
-            .bind(&input_reg.fullname)
+            .bind(&sanitized_fullname)
             .bind(&input_reg.email)
             .bind(&input_reg.mobile_num)
             .execute(&pool)

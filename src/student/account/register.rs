@@ -30,6 +30,9 @@ cfg_if! {
             InvalidMobileNumber,
             InvalidMobileVerifyCode,
             MobileVerifyFailed,
+            ExistingUsername,
+            ExistingMobileNumber,
+            ExistingEmailAddress,
             ErrorDuringUserCreation,
             UnknowError,
         }
@@ -45,6 +48,9 @@ cfg_if! {
                     RegistrationError::InvalidMobileNumber => write!(f, "手机号无效"),
                     RegistrationError::InvalidMobileVerifyCode => write!(f, "验证码无效"),
                     RegistrationError::MobileVerifyFailed => write!(f, "验证码错误"),
+                    RegistrationError::ExistingUsername => write!(f, "用户名以注册"),
+                    RegistrationError::ExistingMobileNumber => write!(f, "手机号以注册"),
+                    RegistrationError::ExistingEmailAddress => write!(f, "油箱以注册"),
                     RegistrationError::ErrorDuringUserCreation => write!(f, "用户注册失败"),
                     RegistrationError::UnknowError => write!(f, "系统问题请稍后再试"),
                 }
@@ -139,16 +145,30 @@ cfg_if! {
             None
         }
 
-        fn create_user(input_reg: InputRegistrationInfo) -> Option<String> {
+        fn create_salt_hash(password: &str) -> Result<(String, String), RegistrationError> {
             use crate::utils::crypto;
 
             let salt = crypto::get_salt();
-            let password_hash = match crypto::get_parsed_hash(&input_reg.password, &salt) {
+            let password_hash = match crypto::get_parsed_hash(&password, &salt) {
                 Ok(ok_ph) => ok_ph,
-                Err(_) => return Some(RegistrationError::ErrorDuringUserCreation.to_string()),
+                Err(_) => return Err(RegistrationError::ErrorDuringUserCreation),
             };
 
-            None
+            Ok((salt, password_hash))
+        }
+
+        fn login_user(username: &str) -> Result<(), ServerFnError>{
+            use crate::utils::uuid;
+            use crate::session::{cookie::Cookie, cache::Cache};
+
+            let session_token = uuid::get_session_token();
+
+            Cookie::set_cookie(&session_token, false)?;
+            Cache::set_cache(&session_token, &username)?;
+
+            //  改变网址到学生资料
+            leptos_axum::redirect("/profile");
+            Ok(())
         }
     }
 }
@@ -170,16 +190,64 @@ pub async fn send_mobile_code(mobile_num: String) -> Result<(), ServerFnError> {
 pub async fn commit_user(
     input_reg: InputRegistrationInfo,
 ) -> Result<Option<String>, ServerFnError> {
-    let verified_result = match verify_input_content(input_reg.clone()) {
-        Some(error) => Some(error),
-        None => None,
-    };
+    use crate::state::AppState;
+    use crate::utils::date;
+    use sqlx::Error::Database;
 
-    if verified_result == None {
-        Ok(create_user(input_reg))
-    } else {
-        Ok(verified_result)
+    let registration_input_err = verify_input_content(input_reg.clone()).map(|x| x);
+
+    if registration_input_err.is_none() {
+        let (salt, password_hash) = match create_salt_hash(&input_reg.password) {
+            Ok((ok_salt, ok_ph)) => (ok_salt, ok_ph),
+            Err(_) => return Ok(None)
+        };
+
+        //  取得软件状态
+        let state = match use_context::<AppState>() {
+            Some(s) => s,
+            None => {
+                return Err(ServerFnError::Args(
+                    "ERROR<user/account/register.rs>: during application state retrieval".to_string(),
+                ))
+            }
+        };
+
+        //  取得数据库信息
+        let pool = state.pool;
+
+        //  提取用户数据
+        let sql_error = match sqlx::query("INSERT INTO students (username, salt, pw_hash, start_date, full_name, status, email, mobile)
+            VALUES ($1, $2, $3, $4, $5, 'active', $6, $7);")
+            .bind(&input_reg.username)
+            .bind(&salt)
+            .bind(&password_hash)
+            .bind(&date::get_current_date())
+            .bind(&input_reg.fullname)
+            .bind(&input_reg.email)
+            .bind(&input_reg.mobile_num)
+            .execute(&pool)
+            .await {
+                Ok(_) => {
+                    match login_user(&input_reg.username) {
+                        Ok(()) => return Ok(None),
+                        Err(_) => return Ok(Some(RegistrationError::UnknowError.to_string())),
+                    }
+                },
+                Err(e) => e,
+            };
+
+        match sql_error {
+            Database(d_err) => match d_err.message() {
+                "UNIQUE constraint failed: students.mobile" => return Ok(Some(RegistrationError::ExistingMobileNumber.to_string())),
+                "UNIQUE constraint failed: students.username" => return Ok(Some(RegistrationError::ExistingUsername.to_string())),
+                "UNIQUE constraint failed: students.email" => return Ok(Some(RegistrationError::ExistingEmailAddress.to_string())),
+                &_ => return Ok(Some(RegistrationError::UnknowError.to_string())),
+            },
+            _ => return Ok(Some(RegistrationError::UnknowError.to_string())),
+        }
     }
+
+    Ok(registration_input_err)
 }
 
 /// 提供注册页

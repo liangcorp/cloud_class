@@ -73,6 +73,9 @@ panic = "abort"
 [profile.dev.package.num-bigint-dig]
 opt-level = 3
 
+[profile.dev.package.sqlx-macros]
+opt-level = 3
+
 [package.metadata.cargo-all-features]
 denylist = ["axum", "tower", "tower-http", "tokio", "sqlx", "rand_core", "argon2", "leptos_axum"]
 skip_feature_sets = [["csr", "ssr"], ["csr", "hydrate"], ["ssr", "hydrate"]]

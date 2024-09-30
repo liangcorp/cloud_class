@@ -1,4 +1,5 @@
 pub mod crypto;
+pub mod date;
 pub mod db;
 pub mod rapid;
 pub mod redis;

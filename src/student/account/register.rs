@@ -34,7 +34,7 @@ cfg_if! {
             ExistingMobileNumber,
             ExistingEmailAddress,
             ErrorDuringUserCreation,
-            UnknowError,
+            UnknownError,
         }
 
         impl fmt::Display for RegistrationError {
@@ -52,7 +52,7 @@ cfg_if! {
                     RegistrationError::ExistingMobileNumber => write!(f, "手机号以注册"),
                     RegistrationError::ExistingEmailAddress => write!(f, "油箱以注册"),
                     RegistrationError::ErrorDuringUserCreation => write!(f, "用户注册失败"),
-                    RegistrationError::UnknowError => write!(f, "系统问题请稍后再试"),
+                    RegistrationError::UnknownError => write!(f, "系统问题请稍后再试"),
                 }
             }
         }
@@ -117,11 +117,11 @@ cfg_if! {
             true
         }
 
-        fn verify_input_content(input_reg: InputRegistrationInfo) -> Option<String> {
+        fn verify_input_content(input_reg: &InputRegistrationInfo) -> Option<String> {
             //  取得软件状态
             let state = match use_context::<AppState>() {
                 Some(s) => s,
-                None => return Some(RegistrationError::UnknowError.to_string()),
+                None => return Some(RegistrationError::UnknownError.to_string()),
             };
 
             let validation_regex = state.validation_regex;
@@ -194,7 +194,7 @@ pub async fn commit_user(
     use crate::utils::date;
     use sqlx::Error::Database;
 
-    let registration_input_err = verify_input_content(input_reg.clone()).map(|x| x);
+    let registration_input_err = verify_input_content(&input_reg).map(|x| x);
 
     if registration_input_err.is_none() {
         let (salt, password_hash) = match create_salt_hash(&input_reg.password) {
@@ -230,10 +230,10 @@ pub async fn commit_user(
                 Ok(_) => {
                     match login_user(&input_reg.username) {
                         Ok(()) => return Ok(None),
-                        Err(_) => return Ok(Some(RegistrationError::UnknowError.to_string())),
+                        Err(_) => return Ok(Some(RegistrationError::UnknownError.to_string())),
                     }
                 },
-                Err(e) => e,
+                Err(sql_e) => sql_e,
             };
 
         match sql_error {
@@ -241,9 +241,9 @@ pub async fn commit_user(
                 "UNIQUE constraint failed: students.mobile" => return Ok(Some(RegistrationError::ExistingMobileNumber.to_string())),
                 "UNIQUE constraint failed: students.username" => return Ok(Some(RegistrationError::ExistingUsername.to_string())),
                 "UNIQUE constraint failed: students.email" => return Ok(Some(RegistrationError::ExistingEmailAddress.to_string())),
-                &_ => return Ok(Some(RegistrationError::UnknowError.to_string())),
+                &_ => return Ok(Some(RegistrationError::UnknownError.to_string())),
             },
-            _ => return Ok(Some(RegistrationError::UnknowError.to_string())),
+            _ => return Ok(Some(RegistrationError::UnknownError.to_string())),
         }
     }
 

@@ -149,7 +149,7 @@ cfg_if! {
             use crate::utils::crypto;
 
             let salt = crypto::get_salt();
-            let password_hash = match crypto::get_parsed_hash(&password, &salt) {
+            let password_hash = match crypto::get_parsed_hash(password, &salt) {
                 Ok(ok_ph) => ok_ph,
                 Err(_) => return Err(RegistrationError::ErrorDuringUserCreation),
             };
@@ -164,7 +164,7 @@ cfg_if! {
             let session_token = uuid::get_session_token();
 
             Cookie::set_cookie(&session_token, false)?;
-            Cache::set_cache(&session_token, &username)?;
+            Cache::set_cache(&session_token, username)?;
 
             //  改变网址到学生资料
             leptos_axum::redirect("/profile");
@@ -194,7 +194,7 @@ pub async fn commit_user(
     use crate::utils::date;
     use sqlx::Error::Database;
 
-    let registration_input_err = verify_input_content(&input_reg).map(|x| x);
+    let registration_input_err = verify_input_content(&input_reg);
 
     if registration_input_err.is_none() {
         let (salt, password_hash) = match create_salt_hash(&input_reg.password) {
@@ -221,7 +221,7 @@ pub async fn commit_user(
             .bind(&input_reg.username)
             .bind(&salt)
             .bind(&password_hash)
-            .bind(&date::get_current_date())
+            .bind(date::get_current_date())
             .bind(&input_reg.fullname)
             .bind(&input_reg.email)
             .bind(&input_reg.mobile_num)

@@ -1,6 +1,6 @@
 # app/Dockerfile
 
-FROM python:3.9-slim
+FROM dockerproxy.cn/python:3.9-slim
 
 WORKDIR /app
 

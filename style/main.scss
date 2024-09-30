@@ -273,11 +273,9 @@ input.run-code:active {
 img.banner {
   width: 100%;
 }
-img.about {
-  float: left;
-  width: 50%;
-  height: 50%;
-  padding: 20px;
+
+img.content {
+  width: 450px;
 }
 
 img.header {
@@ -390,6 +388,13 @@ div.text-area {
   margin-right: 20px;
 }
 
+td.content {
+  width: 450px;
+  padding: 20px;
+  vertical-align: top;
+  height: auto;
+}
+
 textarea.editor {
   font-family: "JetBrains Mono";
   font-size: 20;
@@ -468,6 +473,31 @@ button.registration:active {
   display: inline-block;
   border-radius: 4px;
 }
+
+button.contact {
+  font-size:20;
+  background-color: #333333; /* Light Black */
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+button.contact:active {
+  font-size:20;
+  background-color: gray;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
 /* On smaller screens, where height is less than 450px, change the style of the sidebar (less padding and a smaller font size) */
 @media screen and (max-height: 450px) {
   .sidenav {

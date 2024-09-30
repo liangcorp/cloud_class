@@ -1,6 +1,7 @@
 mod header;
 
 pub mod about;
+pub mod collaboration;
 
 use leptos::*;
 

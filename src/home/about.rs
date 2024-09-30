@@ -9,8 +9,18 @@ pub fn AboutPage() -> impl IntoView {
         <HeaderSection />
 
         <div class="contents">
-            <img class="about" src="images/banners/marvin-meyer-SYTO3xs06fU.jpg" />
-            <h1>"学校简介"</h1>
+            <table>
+                <tr>
+                    <td class="content">
+                        <img class="content" src="images/banners/marvin-meyer-SYTO3xs06fU.jpg" />
+                    </td>
+                    <td class="content">
+                        <h1>"学校简介"</h1>
+                        <br />
+                        <button class="contact">"联系我们"</button>
+                    </td>
+                </tr>
+            </table>
         </div>
     }
 }

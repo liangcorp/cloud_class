@@ -1,7 +1,7 @@
 use crate::admin::AdminPage;
 use crate::courses::{content::ContentPagePortal, CoursesPage, NoCoursePage};
 use crate::error_template::{AppError, ErrorTemplate};
-use crate::home::{about::AboutPage, HomePage};
+use crate::home::{about::AboutPage, collaboration::CollaborationPage, HomePage};
 use crate::student::{account::{login::LoginPage, logout::LogoutPage, register::RegistrationPage}, profile::ProfilePagePortal};
 use crate::instructor::InstructorPage;
 use crate::tutorials::TutorialPagePortal;
@@ -32,6 +32,7 @@ pub fn App() -> impl IntoView {
                 <Routes>
                     <Route path="/" view=HomePage />
                     <Route path="/about" view=AboutPage />
+                    <Route path="/collaboration" view=CollaborationPage />
                     <Route path="/login" view=LoginPage />
                     <Route path="/logout" view=LogoutPage />
                     <Route path="/register" view=RegistrationPage />

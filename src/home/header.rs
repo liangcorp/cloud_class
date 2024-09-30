@@ -23,17 +23,17 @@ pub fn HeaderSection() -> impl IntoView {
                         </a>
                     </td>
                     <td class="header-menu">
-                        <a href="#" class="header">
+                        <a href="/collaboration" class="header">
                             "合作中心"
                         </a>
                     </td>
                     <td class="header-menu">
-                        <a href="instructor" class="header">
+                        <a href="/instructor" class="header">
                             "教师中心"
                         </a>
                     </td>
                     <td class="header-menu">
-                        <a href="about" class="header">
+                        <a href="/about" class="header">
                             "关于我们"
                         </a>
                     </td>
@@ -42,7 +42,7 @@ pub fn HeaderSection() -> impl IntoView {
                 </tr>
             </table>
         </div>
-        <div>
+        <div style="padding-bottom:30px">
             <hr class="page-divider" />
         </div>
     }

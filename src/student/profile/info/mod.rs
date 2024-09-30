@@ -6,7 +6,7 @@ use server_fn::ServerFnError;
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct PersonalContent {
     username: String,
-    full_name: String,
+    fullname: String,
     start_date: String,
     status: String,
     address: String,
@@ -18,7 +18,7 @@ impl Default for PersonalContent {
     fn default() -> PersonalContent {
         PersonalContent {
             username: "".to_string(),
-            full_name: "".to_string(),
+            fullname: "".to_string(),
             start_date: "".to_string(),
             status: "".to_string(),
             address: "".to_string(),
@@ -34,7 +34,7 @@ cfg_if! {
         #[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
         pub struct PersonalContentQuery {
             username: String,
-            full_name: String,
+            fullname: String,
             start_date: String,
             status: String,
             address: String,
@@ -67,7 +67,7 @@ pub async fn get_personal_profile(user: String) -> Result<PersonalContent, Serve
     {
         Ok(ok_personal_content) => PersonalContent {
             username: ok_personal_content.username.clone(),
-            full_name: ok_personal_content.full_name.clone(),
+            fullname: ok_personal_content.fullname.chars().map(|c| if c == '_' { ' ' } else { c }).collect::<String>(),
             start_date: ok_personal_content.start_date.clone(),
             status: ok_personal_content.status.clone(),
             address: ok_personal_content.address.clone(),
@@ -99,7 +99,7 @@ pub fn PersonalContentPage(user: String) -> impl IntoView {
         <table style="width:100%">
             <tr>
                 <td>
-                    <h1>{move || personal_content.get().full_name}</h1>
+                    <h1>{move || personal_content.get().fullname}</h1>
                     <table>
                         <tr>
                             <td>

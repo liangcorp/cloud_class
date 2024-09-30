@@ -2,7 +2,7 @@ CREATE TABLE students (
     username varchar(100) NOT NULL PRIMARY KEY,
     salt varchar(100),
     pw_hash varchar(200),
-    full_name varchar(200),
+    fullname varchar(200),
     start_date varchar(30),
     status varchar(20),
     address varchar(400),
@@ -14,7 +14,7 @@ CREATE TABLE instructors (
     username varchar(100) NOT NULL PRIMARY KEY,
     salt varchar(100),
     pw_hash varchar(200),
-    full_name varchar(200),
+    fullname varchar(200),
     about varchar(4000),
     total_students INT,
     tags varchar(400),
@@ -53,7 +53,7 @@ CREATE TABLE student_course (
 CREATE TABLE course_instructor (
     course_id char(36) NOT NULL,
     username varchar(100) NOT NULL,
-    full_name varchar(200),
+    fullname varchar(200),
     PRIMARY KEY(course_id, username)
 );
 
@@ -95,16 +95,16 @@ CREATE TABLE student_series (
     PRIMARY KEY(username, series_id)
 );
 
-INSERT INTO students (username, salt, pw_hash, start_date, full_name, status, email, mobile)
+INSERT INTO students (username, salt, pw_hash, start_date, fullname, status, email, mobile)
 VALUES ('student1', 'x1z2S4jDbLrigzigZp9CdA', 'zhZt3RLLVZV9watjOg/gIvAhjuOvSox9JOf2nxdZ2S8', '2024-08-21', '学生 1', 'active', 'student1@example.com', '18602341234');
 
-INSERT INTO students (username, salt, pw_hash, start_date, full_name, status, email, mobile)
+INSERT INTO students (username, salt, pw_hash, start_date, fullname, status, email, mobile)
 VALUES ('student2', 'x1z2S4jDbLrigzigZp9CdA', 'zhZt3RLLVZV9watjOg/gIvAhjuOvSox9JOf2nxdZ2S8', '2024-08-21', '学生 2', 'active', 'student2@example.com', '18602341235');
 
-INSERT INTO students (username, salt, pw_hash, start_date, full_name, status, email, mobile)
+INSERT INTO students (username, salt, pw_hash, start_date, fullname, status, email, mobile)
 VALUES ('student3', 'x1z2S4jDbLrigzigZp9CdA', 'zhZt3RLLVZV9watjOg/gIvAhjuOvSox9JOf2nxdZ2S8', '2024-08-21', '学生 3', 'active', 'student3@example.com', '18602341236');
 
-INSERT INTO instructors (username, salt, pw_hash, start_date, full_name, about, status, email, mobile)
+INSERT INTO instructors (username, salt, pw_hash, start_date, fullname, about, status, email, mobile)
 VALUES ('teacher1', 'x1z2S4jDbLrigzigZp9CdA', 'zhZt3RLLVZV9watjOg/gIvAhjuOvSox9JOf2nxdZ2S8', '2024-08-21', '教师 1', '10 年教学经验', 'active',  'teacher1@example.com', '18602341237');
 
 INSERT INTO courses (course_id, title, price, course_language, rating, target_level, requirement, duration_minutes, about, description, tag_line, update_date, status, series_id)

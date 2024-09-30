@@ -81,12 +81,12 @@ cfg_if! {
             true
         }
 
-        fn is_valid_fullname(input_full_name: &str) -> bool {
+        fn is_valid_fullname(input_fullname: &str) -> bool {
             //  whitespace and '.' are allowed in full name
             //  user input must be sanitized before inserting into database
-            if input_full_name.is_empty()
-                || input_full_name.len() > 60
-                || input_full_name.chars().any(|c| !c.is_alphanumeric() && c != '.' && c != ' ') {
+            if input_fullname.is_empty()
+                || input_fullname.len() > 60
+                || input_fullname.chars().any(|c| !c.is_alphanumeric() && c != '.' && c != ' ') {
                 return false;
             }
             true
@@ -218,7 +218,7 @@ pub async fn commit_user(
         let sanitized_fullname = input_reg.fullname.chars().map(|c| if c == ' ' { '_' } else { c }).collect::<String>();
 
         //  提取用户数据
-        let sql_error = match sqlx::query("INSERT INTO students (username, salt, pw_hash, start_date, full_name, status, email, mobile)
+        let sql_error = match sqlx::query("INSERT INTO students (username, salt, pw_hash, start_date, fullname, status, email, mobile)
             VALUES ($1, $2, $3, $4, $5, 'active', $6, $7);")
             .bind(&input_reg.username)
             .bind(&salt)

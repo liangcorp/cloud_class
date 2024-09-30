@@ -18,11 +18,6 @@ pub fn HeaderSection() -> impl IntoView {
                         </a>
                     </td>
                     <td class="header-menu">
-                        <a href="/profile" class="header">
-                            "个人中心"
-                        </a>
-                    </td>
-                    <td class="header-menu">
                         <a href="/collaboration" class="header">
                             "合作中心"
                         </a>
@@ -37,6 +32,7 @@ pub fn HeaderSection() -> impl IntoView {
                             "关于我们"
                         </a>
                     </td>
+                    <td class="header-menu"></td>
                     <td class="header-menu"></td>
                     <LoginLogoutSection />
                 </tr>

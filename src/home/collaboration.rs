@@ -20,7 +20,7 @@ pub fn CollaborationPage() -> impl IntoView {
                             <li>"高效定制可扩展的学习解决方案"</li>
                         </ul>
                         <br />
-                        <button class="contact">"联系我们"</button>
+                        <a href="/contact"  class="contact">"联系我们"</a>
                     </td>
                     <td class="content">
                         <img class="content" src="images/banners/asian-school-photo.jpeg" />

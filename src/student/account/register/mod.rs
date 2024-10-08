@@ -1,3 +1,6 @@
+mod errors;
+mod validation;
+
 use cfg_if::cfg_if;
 use leptos::*;
 use leptos_meta::*;
@@ -16,134 +19,8 @@ pub struct InputRegistrationInfo {
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
-        use std::fmt;
-        use crate::state::AppState;
-        use crate::utils::regex::InputValidationRegex;
-
-        #[derive(Clone, Debug)]
-        pub enum RegistrationError {
-            InvalidUsername,
-            InvalidPassword,
-            PasswordNotMatch,
-            InvalidFullName,
-            InvalidEmailAddress,
-            InvalidMobileNumber,
-            InvalidMobileVerifyCode,
-            MobileVerifyFailed,
-            ExistingUsername,
-            ExistingMobileNumber,
-            ExistingEmailAddress,
-            ErrorDuringUserCreation,
-            UnknownError,
-        }
-
-        impl fmt::Display for RegistrationError {
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                match self {
-                    RegistrationError::InvalidUsername => write!(f, "用户名无效"),
-                    RegistrationError::InvalidPassword => write!(f, "密码无效"),
-                    RegistrationError::PasswordNotMatch => write!(f, "确认密码不符"),
-                    RegistrationError::InvalidFullName => write!(f, "姓名无效"),
-                    RegistrationError::InvalidEmailAddress => write!(f, "电子邮件无效"),
-                    RegistrationError::InvalidMobileNumber => write!(f, "手机号无效"),
-                    RegistrationError::InvalidMobileVerifyCode => write!(f, "验证码无效"),
-                    RegistrationError::MobileVerifyFailed => write!(f, "验证码错误"),
-                    RegistrationError::ExistingUsername => write!(f, "用户名以注册"),
-                    RegistrationError::ExistingMobileNumber => write!(f, "手机号以注册"),
-                    RegistrationError::ExistingEmailAddress => write!(f, "油箱以注册"),
-                    RegistrationError::ErrorDuringUserCreation => write!(f, "用户注册失败"),
-                    RegistrationError::UnknownError => write!(f, "系统问题请稍后再试"),
-                }
-            }
-        }
-
-        fn is_valid_username(validation_regex: &InputValidationRegex, input_username: &str) -> bool {
-            //  between 5 - 30 charactors long without whitespace
-            //  only allow alphabets and numbers
-            //  can not start with number
-            if input_username.chars().any(|c| c.is_whitespace())
-                || !validation_regex.get_username_regex().is_match(input_username) {
-                return false;
-            }
-            true
-        }
-
-        fn is_valid_password(input_password: &str) -> bool {
-            //  not a valid password if it's empty,
-            //  contains whitespace, less than 8 characters
-            //  long and more than 100 characters
-            if input_password.is_empty()
-                || input_password.chars().any(|c| c.is_whitespace())
-                || input_password.len() < 8
-                || input_password.len() > 100 {
-                    return false;
-            }
-            true
-        }
-
-        fn is_valid_fullname(input_fullname: &str) -> bool {
-            //  whitespace and '.' are allowed in full name
-            //  user input must be sanitized before inserting into database
-            if input_fullname.is_empty()
-                || input_fullname.len() > 60
-                || input_fullname.chars().any(|c| !c.is_alphanumeric() && c != '.' && c != ' ') {
-                return false;
-            }
-            true
-        }
-
-        fn is_valid_email(validation_regex: &InputValidationRegex, input_email: &str) -> bool {
-            //  disallowed email address characters based on RFC 5322 standard
-            //  domain names only allow big and small alphabets, numbers and '-'
-            //  less than 256 characters long
-            match input_email.chars().last() {
-                Some(c) => if c == '.' || c == '-' { return false },
-                None => return false,   // empty string
-            }
-
-            if !validation_regex.get_email_regex().is_match(input_email)
-                || input_email.len() > 256 {
-                return false;
-            }
-
-            let (mail_name, domain) = input_email.split_once('@').unwrap();
-
-            if mail_name.contains('"')
-                || validation_regex.get_email_forbidden_regex().is_match(mail_name)
-                || domain.chars().any(|c| !c.is_ascii_alphanumeric() && c != '.' && c != '-') {
-                return false;
-            }
-
-            true
-        }
-
-        fn verify_input_content(input_reg: &InputRegistrationInfo) -> Option<String> {
-            //  取得软件状态
-            let state = match use_context::<AppState>() {
-                Some(s) => s,
-                None => return Some(RegistrationError::UnknownError.to_string()),
-            };
-
-            let validation_regex = state.validation_regex;
-
-            if !is_valid_username(&validation_regex, &input_reg.username) {
-                return Some(RegistrationError::InvalidUsername.to_string());
-            } else if !is_valid_password(&input_reg.password) {
-                return Some(RegistrationError::InvalidPassword.to_string());
-            } else if input_reg.password != input_reg.confirm_password {
-                return Some(RegistrationError::PasswordNotMatch.to_string());
-            } else if !is_valid_fullname(&input_reg.fullname) {
-                return Some(RegistrationError::InvalidFullName.to_string());
-            } else if !is_valid_email(&validation_regex, &input_reg.email)  {
-                return Some(RegistrationError::InvalidEmailAddress.to_string());
-            } else if !validation_regex.get_mobile_num_regex().is_match(&input_reg.mobile_num) {
-                return Some(RegistrationError::InvalidMobileNumber.to_string());
-            } else if !validation_regex.get_mobile_code_regex().is_match(&input_reg.mobile_verify_code) {
-                return Some(RegistrationError::InvalidMobileVerifyCode.to_string());
-            }
-
-            None
-        }
+        use errors::RegistrationError;
+        use validation::*;
 
         fn create_salt_hash(password: &str) -> Result<(String, String), RegistrationError> {
             use crate::utils::crypto;
@@ -158,8 +35,7 @@ cfg_if! {
         }
 
         fn login_user(username: &str) -> Result<(), ServerFnError>{
-            use crate::utils::uuid;
-            use crate::session::{cookie::Cookie, cache::Cache};
+            use crate::{utils::uuid, session::{cookie::Cookie, cache::Cache}};
 
             let session_token = uuid::get_session_token();
 
@@ -190,8 +66,7 @@ pub async fn send_mobile_code(mobile_num: String) -> Result<(), ServerFnError> {
 pub async fn commit_user(
     input_reg: InputRegistrationInfo,
 ) -> Result<Option<String>, ServerFnError> {
-    use crate::state::AppState;
-    use crate::utils::date;
+    use crate::{state::AppState, utils::date};
     use sqlx::Error::Database;
 
     let registration_input_err = verify_input_content(&input_reg);
@@ -257,12 +132,12 @@ pub async fn commit_user(
                 }
                 &_ => {
                     // logging::log!("ERROR<student/account/register.rs:261>: {}", e.to_string());
-                    return Ok(Some(RegistrationError::UnknownError.to_string()))
+                    return Ok(Some(RegistrationError::UnknownError.to_string()));
                 }
             },
             _ => {
                 // logging::log!("ERROR<student/account/register.rs:261>: {}", e.to_string());
-                return Ok(Some(RegistrationError::UnknownError.to_string()))
+                return Ok(Some(RegistrationError::UnknownError.to_string()));
             }
         }
     }

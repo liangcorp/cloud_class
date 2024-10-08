@@ -8,7 +8,7 @@ CREATE TABLE students (
     address varchar(400),
     email varchar(100) NOT NULL UNIQUE,
     mobile varchar(30) NOT NULL UNIQUE,
-    container_port INT CHECK (container_port >= 3000 AND container_port <= 65500)
+    container_port INT CHECK (container_port >= 8500 AND container_port <= 65500)
 );
 
 CREATE TABLE instructors (
@@ -97,13 +97,13 @@ CREATE TABLE student_series (
 );
 
 INSERT INTO students (username, salt, pw_hash, start_date, fullname, status, email, mobile, container_port)
-VALUES ('student1', 'x1z2S4jDbLrigzigZp9CdA', 'zhZt3RLLVZV9watjOg/gIvAhjuOvSox9JOf2nxdZ2S8', '2024-08-21', '学生 1', 'active', 'student1@example.com', '18602341234', 3000);
+VALUES ('student1', 'x1z2S4jDbLrigzigZp9CdA', 'zhZt3RLLVZV9watjOg/gIvAhjuOvSox9JOf2nxdZ2S8', '2024-08-21', '学生 1', 'active', 'student1@example.com', '18602341234', 8501);
 
 INSERT INTO students (username, salt, pw_hash, start_date, fullname, status, email, mobile, container_port)
-VALUES ('student2', 'x1z2S4jDbLrigzigZp9CdA', 'zhZt3RLLVZV9watjOg/gIvAhjuOvSox9JOf2nxdZ2S8', '2024-08-21', '学生 2', 'active', 'student2@example.com', '18602341235', 3001);
+VALUES ('student2', 'x1z2S4jDbLrigzigZp9CdA', 'zhZt3RLLVZV9watjOg/gIvAhjuOvSox9JOf2nxdZ2S8', '2024-08-21', '学生 2', 'active', 'student2@example.com', '18602341235', 8502);
 
 INSERT INTO students (username, salt, pw_hash, start_date, fullname, status, email, mobile, container_port)
-VALUES ('student3', 'x1z2S4jDbLrigzigZp9CdA', 'zhZt3RLLVZV9watjOg/gIvAhjuOvSox9JOf2nxdZ2S8', '2024-08-21', '学生 3', 'active', 'student3@example.com', '18602341236', 3002);
+VALUES ('student3', 'x1z2S4jDbLrigzigZp9CdA', 'zhZt3RLLVZV9watjOg/gIvAhjuOvSox9JOf2nxdZ2S8', '2024-08-21', '学生 3', 'active', 'student3@example.com', '18602341236', 8503);
 
 INSERT INTO students (username, salt, pw_hash, start_date, fullname, status, email, mobile, container_port)
 VALUES ('student4', 'x1z2S4jDbLrigzigZp9CdA', 'zhZt3RLLVZV9watjOg/gIvAhjuOvSox9JOf2nxdZ2S8', '2024-08-21', '学生 4', 'active', 'student4@example.com', '18602341237', (SELECT container_port FROM students ORDER BY container_port DESC LIMIT 1) + 1);

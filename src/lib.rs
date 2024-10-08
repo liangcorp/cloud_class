@@ -3,10 +3,10 @@ pub mod app;
 pub mod courses;
 pub mod error_template;
 pub mod home; // 主页
+pub mod instructor;
 pub mod session;
 pub mod state;
 pub mod student; // 用户登陆页
-pub mod instructor;
 pub mod tutorials;
 pub mod utils;
 

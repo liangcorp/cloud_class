@@ -1,8 +1,8 @@
 mod header;
 
 pub mod about;
-pub mod contact;
 pub mod collaboration;
+pub mod contact;
 
 use leptos::*;
 

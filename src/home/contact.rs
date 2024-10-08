@@ -1,4 +1,3 @@
-
 use leptos::*;
 
 /// Render the collaboration page
@@ -28,24 +27,36 @@ pub fn ContactPage() -> impl IntoView {
                                 <tr>
                                     <td>"全名:"</td>
                                     <td>
-                                        <input class="login-form" type="text" placeholder="请输入全名" />
+                                        <input
+                                            class="login-form"
+                                            type="text"
+                                            placeholder="请输入全名"
+                                        />
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>"邮件:"</td>
                                     <td>
-                                        <input class="login-form" type="text" placeholder="请输入邮件" />
+                                        <input
+                                            class="login-form"
+                                            type="text"
+                                            placeholder="请输入邮件"
+                                        />
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>"电话号码:"</td>
                                     <td>
-                                        <input class="login-form" type="text" placeholder="请输入电话号码" />
+                                        <input
+                                            class="login-form"
+                                            type="text"
+                                            placeholder="请输入电话号码"
+                                        />
                                     </td>
                                 </tr>
                                 <tr>
                                     <td colspan="2" style="padding-top:10px">
-                                        <input class="submit-button" type="button" value="提交"/>
+                                        <input class="submit-button" type="button" value="提交" />
                                     </td>
                                 </tr>
                             </table>

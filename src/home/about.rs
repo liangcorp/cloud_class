@@ -17,7 +17,9 @@ pub fn AboutPage() -> impl IntoView {
                     <td class="content">
                         <h1>"学校简介"</h1>
                         <br />
-                        <a href="/contact" class="contact">"联系我们"</a>
+                        <a href="/contact" class="contact">
+                            "联系我们"
+                        </a>
                     </td>
                 </tr>
             </table>

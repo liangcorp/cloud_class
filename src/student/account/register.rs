@@ -175,7 +175,7 @@ cfg_if! {
 
 #[server]
 pub async fn send_mobile_code(mobile_num: String) -> Result<(), ServerFnError> {
-    use crate::utils::{uuid, rapid};
+    use crate::utils::{rapid, uuid};
     let num: String = format!(
         "{}",
         rapid::rapidhash(&uuid::get_random_token().into_bytes())
@@ -199,7 +199,7 @@ pub async fn commit_user(
     if registration_input_err.is_none() {
         let (salt, password_hash) = match create_salt_hash(&input_reg.password) {
             Ok((ok_salt, ok_ph)) => (ok_salt, ok_ph),
-            Err(_) => return Ok(None)
+            Err(_) => return Ok(None),
         };
 
         //  取得软件状态
@@ -207,7 +207,8 @@ pub async fn commit_user(
             Some(s) => s,
             None => {
                 return Err(ServerFnError::Args(
-                    "ERROR<user/account/register.rs>: during application state retrieval".to_string(),
+                    "ERROR<user/account/register.rs>: during application state retrieval"
+                        .to_string(),
                 ))
             }
         };
@@ -215,7 +216,11 @@ pub async fn commit_user(
         //  取得数据库信息
         let pool = state.pool;
 
-        let sanitized_fullname = input_reg.fullname.chars().map(|c| if c == ' ' { '_' } else { c }).collect::<String>();
+        let sanitized_fullname = input_reg
+            .fullname
+            .chars()
+            .map(|c| if c == ' ' { '_' } else { c })
+            .collect::<String>();
 
         //  提取用户数据
         let sql_error = match sqlx::query("INSERT INTO students (username, salt, pw_hash, start_date, fullname, status, email, mobile)
@@ -240,9 +245,15 @@ pub async fn commit_user(
 
         match sql_error {
             Database(d_err) => match d_err.message() {
-                "UNIQUE constraint failed: students.mobile" => return Ok(Some(RegistrationError::ExistingMobileNumber.to_string())),
-                "UNIQUE constraint failed: students.username" => return Ok(Some(RegistrationError::ExistingUsername.to_string())),
-                "UNIQUE constraint failed: students.email" => return Ok(Some(RegistrationError::ExistingEmailAddress.to_string())),
+                "UNIQUE constraint failed: students.mobile" => {
+                    return Ok(Some(RegistrationError::ExistingMobileNumber.to_string()))
+                }
+                "UNIQUE constraint failed: students.username" => {
+                    return Ok(Some(RegistrationError::ExistingUsername.to_string()))
+                }
+                "UNIQUE constraint failed: students.email" => {
+                    return Ok(Some(RegistrationError::ExistingEmailAddress.to_string()))
+                }
                 &_ => return Ok(Some(RegistrationError::UnknownError.to_string())),
             },
             _ => return Ok(Some(RegistrationError::UnknownError.to_string())),

@@ -3,7 +3,6 @@ use leptos_meta::*;
 
 #[component]
 pub fn InstructorPage() -> impl IntoView {
-
     view! {
         <Title text="教师中心" />
 

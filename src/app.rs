@@ -1,9 +1,14 @@
 use crate::admin::AdminPage;
 use crate::courses::{content::ContentPagePortal, CoursesPage, NoCoursePage};
 use crate::error_template::{AppError, ErrorTemplate};
-use crate::home::{HomePage, about::AboutPage, collaboration::CollaborationPage, contact::ContactPage};
-use crate::student::{account::{login::LoginPage, logout::LogoutPage, register::RegistrationPage}, profile::ProfilePagePortal};
+use crate::home::{
+    about::AboutPage, collaboration::CollaborationPage, contact::ContactPage, HomePage,
+};
 use crate::instructor::InstructorPage;
+use crate::student::{
+    account::{login::LoginPage, logout::LogoutPage, register::RegistrationPage},
+    profile::ProfilePagePortal,
+};
 use crate::tutorials::TutorialPagePortal;
 
 use leptos::*;

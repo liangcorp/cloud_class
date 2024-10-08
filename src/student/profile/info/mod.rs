@@ -67,7 +67,11 @@ pub async fn get_personal_profile(user: String) -> Result<PersonalContent, Serve
     {
         Ok(ok_personal_content) => PersonalContent {
             username: ok_personal_content.username.clone(),
-            fullname: ok_personal_content.fullname.chars().map(|c| if c == '_' { ' ' } else { c }).collect::<String>(),
+            fullname: ok_personal_content
+                .fullname
+                .chars()
+                .map(|c| if c == '_' { ' ' } else { c })
+                .collect::<String>(),
             start_date: ok_personal_content.start_date.clone(),
             status: ok_personal_content.status.clone(),
             address: ok_personal_content.address.clone(),

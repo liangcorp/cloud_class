@@ -223,8 +223,9 @@ pub async fn commit_user(
             .collect::<String>();
 
         //  提取用户数据
-        let sql_error = match sqlx::query("INSERT INTO students (username, salt, pw_hash, start_date, fullname, status, email, mobile)
-            VALUES ($1, $2, $3, $4, $5, 'active', $6, $7);")
+        let sql_error = match sqlx::query("INSERT INTO students (username, salt, pw_hash, start_date, fullname, status, email, mobile, container_port)
+            VALUES ($1, $2, $3, $4, $5, 'active', $6, $7,
+                (SELECT container_port FROM students ORDER BY container_port DESC LIMIT 1) + 1);")
             .bind(&input_reg.username)
             .bind(&salt)
             .bind(&password_hash)
@@ -254,9 +255,15 @@ pub async fn commit_user(
                 "UNIQUE constraint failed: students.email" => {
                     return Ok(Some(RegistrationError::ExistingEmailAddress.to_string()))
                 }
-                &_ => return Ok(Some(RegistrationError::UnknownError.to_string())),
+                &_ => {
+                    // logging::log!("ERROR<student/account/register.rs:261>: {}", e.to_string());
+                    return Ok(Some(RegistrationError::UnknownError.to_string()))
+                }
             },
-            _ => return Ok(Some(RegistrationError::UnknownError.to_string())),
+            _ => {
+                // logging::log!("ERROR<student/account/register.rs:261>: {}", e.to_string());
+                return Ok(Some(RegistrationError::UnknownError.to_string()))
+            }
         }
     }
 
@@ -286,7 +293,6 @@ pub fn RegistrationPage() -> impl IntoView {
     }
 }
 
-/// @TODO ISLAND
 #[component]
 pub fn RegistrationForm() -> impl IntoView {
     let (reg_error_message, set_reg_error_message) = create_signal("".to_string());

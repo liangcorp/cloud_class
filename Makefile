@@ -19,6 +19,9 @@ serve:
 	export LEPTOS_WASM_OPT_VERSION=version_119
 	$(LEPTOS) serve
 
+test:
+	$(LEPTOS) end-to-end
+
 watch:
 	export LEPTOS_SASS_VERSION=1.71.0
 	export LEPTOS_WASM_OPT_VERSION=version_119

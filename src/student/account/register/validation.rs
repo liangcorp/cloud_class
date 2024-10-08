@@ -2,12 +2,9 @@ use cfg_if::cfg_if;
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
-        use leptos::use_context;
-        use super::errors::RegistrationError;
-        use super::InputRegistrationInfo;
-        use crate::{state::AppState, utils::regex::InputValidationRegex};
+        use crate::utils::regex::InputValidationRegex;
 
-        fn is_valid_username(validation_regex: &InputValidationRegex, input_username: &str) -> bool {
+        pub fn is_valid_username(validation_regex: &InputValidationRegex, input_username: &str) -> bool {
             //  between 5 - 30 charactors long without whitespace
             //  only allow alphabets and numbers
             //  can not start with number
@@ -18,7 +15,7 @@ cfg_if! {
             true
         }
 
-        fn is_valid_password(input_password: &str) -> bool {
+        pub fn is_valid_password(input_password: &str) -> bool {
             //  not a valid password if it's empty,
             //  contains whitespace, less than 8 characters
             //  long and more than 100 characters
@@ -31,7 +28,7 @@ cfg_if! {
             true
         }
 
-        fn is_valid_fullname(input_fullname: &str) -> bool {
+        pub fn is_valid_fullname(input_fullname: &str) -> bool {
             //  whitespace and '.' are allowed in full name
             //  user input must be sanitized before inserting into database
             if input_fullname.is_empty()
@@ -42,7 +39,7 @@ cfg_if! {
             true
         }
 
-        fn is_valid_email(validation_regex: &InputValidationRegex, input_email: &str) -> bool {
+        pub fn is_valid_email(validation_regex: &InputValidationRegex, input_email: &str) -> bool {
             //  disallowed email address characters based on RFC 5322 standard
             //  domain names only allow big and small alphabets, numbers and '-'
             //  less than 256 characters long
@@ -67,32 +64,5 @@ cfg_if! {
             true
         }
 
-        pub fn verify_input_content(input_reg: &InputRegistrationInfo) -> Option<String> {
-            //  取得软件状态
-            let state = match use_context::<AppState>() {
-                Some(s) => s,
-                None => return Some(RegistrationError::UnknownError.to_string()),
-            };
-
-            let validation_regex = state.validation_regex;
-
-            if !is_valid_username(&validation_regex, &input_reg.username) {
-                return Some(RegistrationError::InvalidUsername.to_string());
-            } else if !is_valid_password(&input_reg.password) {
-                return Some(RegistrationError::InvalidPassword.to_string());
-            } else if input_reg.password != input_reg.confirm_password {
-                return Some(RegistrationError::PasswordNotMatch.to_string());
-            } else if !is_valid_fullname(&input_reg.fullname) {
-                return Some(RegistrationError::InvalidFullName.to_string());
-            } else if !is_valid_email(&validation_regex, &input_reg.email)  {
-                return Some(RegistrationError::InvalidEmailAddress.to_string());
-            } else if !validation_regex.get_mobile_num_regex().is_match(&input_reg.mobile_num) {
-                return Some(RegistrationError::InvalidMobileNumber.to_string());
-            } else if !validation_regex.get_mobile_code_regex().is_match(&input_reg.mobile_verify_code) {
-                return Some(RegistrationError::InvalidMobileVerifyCode.to_string());
-            }
-
-            None
-        }
     }
 }

@@ -19,10 +19,39 @@ pub struct InputRegistrationInfo {
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
+        use crate::state::AppState;
         use errors::RegistrationError;
         use validation::*;
 
-        fn create_salt_hash(password: &str) -> Result<(String, String), RegistrationError> {
+        fn verify_input_content(input_reg: &InputRegistrationInfo) -> Option<String> {
+            //  取得软件状态
+            let state = match use_context::<AppState>() {
+                Some(s) => s,
+                None => return Some(RegistrationError::UnknownError.to_string()),
+            };
+
+            let validation_regex = state.validation_regex;
+
+            if !is_valid_username(&validation_regex, &input_reg.username) {
+                return Some(RegistrationError::InvalidUsername.to_string());
+            } else if !is_valid_password(&input_reg.password) {
+                return Some(RegistrationError::InvalidPassword.to_string());
+            } else if input_reg.password != input_reg.confirm_password {
+                return Some(RegistrationError::PasswordNotMatch.to_string());
+            } else if !is_valid_fullname(&input_reg.fullname) {
+                return Some(RegistrationError::InvalidFullName.to_string());
+            } else if !is_valid_email(&validation_regex, &input_reg.email)  {
+                return Some(RegistrationError::InvalidEmailAddress.to_string());
+            } else if !validation_regex.get_mobile_num_regex().is_match(&input_reg.mobile_num) {
+                return Some(RegistrationError::InvalidMobileNumber.to_string());
+            } else if !validation_regex.get_mobile_code_regex().is_match(&input_reg.mobile_verify_code) {
+                return Some(RegistrationError::InvalidMobileVerifyCode.to_string());
+            }
+
+            None
+        }
+
+        fn get_salt_hash_pw(password: &str) -> Result<(String, String), RegistrationError> {
             use crate::utils::crypto;
 
             let salt = crypto::get_salt();
@@ -72,7 +101,7 @@ pub async fn commit_user(
     let registration_input_err = verify_input_content(&input_reg);
 
     if registration_input_err.is_none() {
-        let (salt, password_hash) = match create_salt_hash(&input_reg.password) {
+        let (salt, password_hash) = match get_salt_hash_pw(&input_reg.password) {
             Ok((ok_salt, ok_ph)) => (ok_salt, ok_ph),
             Err(_) => return Ok(None),
         };
@@ -82,7 +111,7 @@ pub async fn commit_user(
             Some(s) => s,
             None => {
                 return Err(ServerFnError::Args(
-                    "ERROR<user/account/register.rs>: during application state retrieval"
+                    "ERROR<user/account/register/mod.rs>: during application state retrieval"
                         .to_string(),
                 ))
             }

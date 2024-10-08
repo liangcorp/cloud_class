@@ -2,6 +2,7 @@ use cfg_if::cfg_if;
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
+        use leptos::use_context;
         use super::errors::RegistrationError;
         use super::InputRegistrationInfo;
         use crate::{state::AppState, utils::regex::InputValidationRegex};

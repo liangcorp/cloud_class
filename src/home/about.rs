@@ -3,7 +3,7 @@ use leptos::*;
 /// Render the about page
 #[component]
 pub fn AboutPage() -> impl IntoView {
-    use super::header::HeaderSection;
+    use crate::header::HeaderSection;
 
     view! {
         <HeaderSection />

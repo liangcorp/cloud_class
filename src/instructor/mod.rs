@@ -3,15 +3,14 @@ use leptos_meta::*;
 
 #[component]
 pub fn InstructorPage() -> impl IntoView {
+    use crate::header::HeaderSection;
+
     view! {
         <Title text="教师中心" />
 
+        <HeaderSection />
+
         <div class="contents">
-            <div>
-                <a class="header" href="/">
-                    "回到主页"
-                </a>
-            </div>
         </div>
     }
 }

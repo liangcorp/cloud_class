@@ -9,6 +9,7 @@ pub mod state;
 pub mod student; // 用户登陆页
 pub mod tutorials;
 pub mod utils;
+pub mod header;
 
 #[cfg(feature = "ssr")]
 pub mod fileserv;

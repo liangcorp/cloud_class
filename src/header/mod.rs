@@ -94,12 +94,12 @@ fn LoginLogoutSection() -> impl IntoView {
                     view! {
                         <td class="header-login">
                             <a href="/login" class="home-login">
-                                "登陆"
+                                "学生登陆"
                             </a>
                         </td>
                         <td class="header-login">
                             <a href="/register" class="header">
-                                "注册"
+                                "学生注册"
                             </a>
                         </td>
                     }

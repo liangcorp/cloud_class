@@ -3,7 +3,7 @@ use leptos::*;
 /// Render the collaboration page
 #[component]
 pub fn ContactPage() -> impl IntoView {
-    use super::header::HeaderSection;
+    use crate::header::HeaderSection;
 
     view! {
         <HeaderSection />

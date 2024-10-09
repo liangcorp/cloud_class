@@ -4,7 +4,7 @@ use crate::error_template::{AppError, ErrorTemplate};
 use crate::home::{
     instructor_list::InstructorListPage, about::AboutPage, collaboration::CollaborationPage, contact::ContactPage, HomePage,
 };
-use crate::student::{
+use crate::user::{
     account::{login::LoginPage, logout::LogoutPage, register::RegistrationPage},
     profile::ProfilePagePortal,
 };

@@ -5,7 +5,7 @@ pub mod error_template;
 pub mod home; // 主页
 pub mod session;
 pub mod state;
-pub mod student; // 用户登陆页
+pub mod user; // 用户登陆页
 pub mod tutorials;
 pub mod utils;
 pub mod header;

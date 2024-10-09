@@ -24,10 +24,10 @@ pub fn ControlPanelPortal() -> impl IntoView {
                             }
                                 .into_view()
                         }
-                        None => view! { <Redirect path="/admin" /> }.into_view(),
+                        None => view! { <Redirect path="/admin/login" /> }.into_view(),
                     }
                 }
-                Err(_) => view! { <Redirect path="/admin" /> }.into_view(),
+                Err(_) => view! { <Redirect path="/admin/login" /> }.into_view(),
             }}
         </Await>
     }
@@ -41,22 +41,22 @@ pub fn HeaderSection(username: String) -> impl IntoView {
             <table>
                 <tr>
                     <td class="header-menu">
-                        <a href="#" class="header">
+                        <a href="/#" class="header">
                             "课程管理"
                         </a>
                     </td>
                     <td class="header-menu">
-                        <a href="#" class="header">
+                        <a href="/#" class="header">
                             "学员管理"
                         </a>
                     </td>
                     <td class="header-menu">
-                        <a href="#" class="header">
+                        <a href="/#" class="header">
                             "教师管理"
                         </a>
                     </td>
                     <td class="header-menu">
-                        <a href="#" class="header">
+                        <a href="/#" class="header">
                             "管理员中心"
                         </a>
                     </td>
@@ -65,7 +65,7 @@ pub fn HeaderSection(username: String) -> impl IntoView {
                     <td class="header-menu"></td>
                     <td class="header-menu"></td>
                     <td class="header-login">
-                        <a class="header" href="#">
+                        <a class="header" href="/#">
                             {username}
                         </a>
                     </td>

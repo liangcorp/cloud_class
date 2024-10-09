@@ -51,6 +51,7 @@ pub fn App() -> impl IntoView {
                     </Route>
                     <Route path="/admin" view=AdminPage>
                         <Route path="/control" view=ControlPanelPortal />
+                        <Route path="/login" view=AdminLoginPage />
                         <Route path="" view=AdminLoginPage />
                     </Route>
                 </Routes>

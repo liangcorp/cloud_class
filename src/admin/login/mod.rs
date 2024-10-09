@@ -111,7 +111,7 @@ pub fn LoginPanel() -> impl IntoView {
                     </td>
                 </tr>
                 <tr>
-                    <td>
+                    <td style="padding-bottom:10px">
                         "用户名:"<br />
                         <input
                             placeholder="请输入用户名"
@@ -122,9 +122,8 @@ pub fn LoginPanel() -> impl IntoView {
                         />
                     </td>
                 </tr>
-                <tr></tr>
                 <tr>
-                    <td>
+                    <td style="padding-bottom:10px">
                         "密码:"<br />
                         <input
                             placeholder="请输入密码"
@@ -135,12 +134,11 @@ pub fn LoginPanel() -> impl IntoView {
                         />
                     </td>
                 </tr>
-                <tr></tr>
                 <tr>
-                    <td>
+                    <td style="padding-bottom:10px">
                         <input
                             class="submit-button"
-                            style="width:100%"
+                            style="width:100%;padding-top:10px;padding-bottom:10px"
                             type="submit"
                             value="登陆"
                         />

@@ -1,4 +1,5 @@
 use leptos::*;
+use leptos_meta::Title;
 
 /// Render the collaboration page
 #[component]
@@ -6,6 +7,8 @@ pub fn ContactPage() -> impl IntoView {
     use crate::header::HeaderSection;
 
     view! {
+        <Title text="关于我们" />
+
         <HeaderSection />
 
         <div class="contents">

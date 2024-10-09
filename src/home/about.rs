@@ -1,4 +1,5 @@
 use leptos::*;
+use leptos_meta::Title;
 
 /// Render the about page
 #[component]
@@ -6,6 +7,8 @@ pub fn AboutPage() -> impl IntoView {
     use crate::header::HeaderSection;
 
     view! {
+        <Title text="学校简介" />
+
         <HeaderSection />
 
         <div class="contents">

@@ -61,10 +61,10 @@ pub async fn start_if_stopped_container(username: String) -> Result<String, Serv
     };
 
     if !command_error.is_empty() {
-        let _ = match Command::new("docker")
+        match Command::new("docker")
             .arg("container")
             .arg("start")
-            .arg(format!("{}", &username))
+            .arg(&username)
             .output()
         {
             Ok(_) => return Ok(sql_result.container_port.to_string()),

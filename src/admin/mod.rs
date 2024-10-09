@@ -6,7 +6,6 @@ use leptos_meta::*;
 /// 提供登陆页
 #[component]
 pub fn AdminPage() -> impl IntoView {
-    use login::LoginPage;
 
     view! {
         <Title text="数智化教学辅助系统" />

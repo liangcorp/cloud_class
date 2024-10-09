@@ -2,13 +2,13 @@ pub mod admin; // 管理员页
 pub mod app;
 pub mod courses;
 pub mod error_template;
+pub mod header;
 pub mod home; // 主页
 pub mod session;
 pub mod state;
 pub mod student; // 用户登陆页
 pub mod tutorials;
 pub mod utils;
-pub mod header;
 
 #[cfg(feature = "ssr")]
 pub mod fileserv;

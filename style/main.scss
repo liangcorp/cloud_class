@@ -212,6 +212,14 @@ table.login-form {
   width: 300px;
 }
 
+table.admin-login {
+  background-color: white;
+  padding: 50px;
+  box-shadow:
+    0 4px 8px 0 rgba(0, 0, 0, 0.2),
+    0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
 input.login-form {
   padding: 10px;
   width: 270px;
@@ -475,7 +483,7 @@ button.registration:active {
 }
 
 a.contact {
-  font-size:20;
+  font-size: 20;
   background-color: #333333; /* Light Black */
   border: none;
   color: white;
@@ -487,7 +495,7 @@ a.contact {
 }
 
 a.contact:active {
-  font-size:20;
+  font-size: 20;
   background-color: gray;
   border: none;
   color: white;

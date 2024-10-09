@@ -1,3 +1,9 @@
+CREATE TABLE administrators (
+    username varchar(100) NOT NULL PRIMARY KEY,
+    salt varchar(100),
+    pw_hash varchar(200),
+);
+
 CREATE TABLE students (
     username varchar(100) NOT NULL PRIMARY KEY,
     salt varchar(100),

@@ -2,7 +2,8 @@ use crate::admin::AdminPage;
 use crate::courses::{content::ContentPagePortal, CoursesPage, NoCoursePage};
 use crate::error_template::{AppError, ErrorTemplate};
 use crate::home::{
-    instructor_list::InstructorListPage, about::AboutPage, collaboration::CollaborationPage, contact::ContactPage, HomePage,
+    about::AboutPage, collaboration::CollaborationPage, contact::ContactPage,
+    instructor_list::InstructorListPage, HomePage,
 };
 use crate::student::{
     account::{login::LoginPage, logout::LogoutPage, register::RegistrationPage},

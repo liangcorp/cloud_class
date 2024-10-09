@@ -1,5 +1,5 @@
-mod login;
 pub mod control;
+mod login;
 
 use leptos::*;
 use leptos_meta::Title;

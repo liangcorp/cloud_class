@@ -1,4 +1,4 @@
-use crate::admin::{AdminPage, AdminLoginPage, control::ControlPanelPortal};
+use crate::admin::{control::ControlPanelPortal, AdminLoginPage, AdminPage};
 use crate::courses::{content::ContentPagePortal, CoursesPage, NoCoursePage};
 use crate::error_template::{AppError, ErrorTemplate};
 use crate::home::{

@@ -18,12 +18,11 @@ pub fn ControlPanelPortal() -> impl IntoView {
                     match ok_username {
                         Some(some_username) => {
                             view! {
-                                <HeaderSection username=some_username.to_string()/>
+                                <HeaderSection username=some_username.to_string() />
 
-                                <div class="contents">
-                                    "you got it!"
-                                </div>
-                            }.into_view()
+                                <div class="contents">"you got it!"</div>
+                            }
+                                .into_view()
                         }
                         None => view! { <Redirect path="/admin" /> }.into_view(),
                     }

@@ -1,7 +1,7 @@
 CREATE TABLE administrators (
     username varchar(100) NOT NULL PRIMARY KEY,
     salt varchar(100),
-    pw_hash varchar(200),
+    pw_hash varchar(200)
 );
 
 CREATE TABLE students (
@@ -116,6 +116,9 @@ VALUES ('student4', 'x1z2S4jDbLrigzigZp9CdA', 'zhZt3RLLVZV9watjOg/gIvAhjuOvSox9J
 
 INSERT INTO instructors (username, salt, pw_hash, start_date, fullname, about, status, email, mobile)
 VALUES ('teacher1', 'x1z2S4jDbLrigzigZp9CdA', 'zhZt3RLLVZV9watjOg/gIvAhjuOvSox9JOf2nxdZ2S8', '2024-08-21', '教师 1', '10 年教学经验', 'active',  'teacher1@example.com', '18602341237');
+
+INSERT INTO administrators (username, salt, pw_hash)
+VALUES ('admin1', 'x1z2S4jDbLrigzigZp9CdA', 'zhZt3RLLVZV9watjOg/gIvAhjuOvSox9JOf2nxdZ2S8');
 
 INSERT INTO courses (course_id, title, price, course_language, rating, target_level, requirement, duration_minutes, about, description, tag_line, update_date, status, series_id)
 VALUES ('97931561-7689-44a4-bf80-f2e7c9e8d2dd', 'Python - 面向物联网控制', 100.00, '中文', 9, '初学者', '无需经验', 960, '对Python语言有基本的了解.对物联网有基本的了解.','面对小学生和初中生的Python编成教学课程。以物联网为背景。','以物联网为背景,面对小学生和初中生的Python编成教学课程。', '2024-08-20', 'live', 'series-01');

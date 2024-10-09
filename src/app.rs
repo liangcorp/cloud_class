@@ -1,4 +1,4 @@
-use crate::admin::AdminPage;
+use crate::admin::{AdminPage, AdminLoginPage, control::ControlPagePortal};
 use crate::courses::{content::ContentPagePortal, CoursesPage, NoCoursePage};
 use crate::error_template::{AppError, ErrorTemplate};
 use crate::home::{
@@ -42,13 +42,16 @@ pub fn App() -> impl IntoView {
                     <Route path="/login" view=LoginPage />
                     <Route path="/logout" view=LogoutPage />
                     <Route path="/register" view=RegistrationPage />
-                    <Route path="/admin" view=AdminPage />
                     <Route path="/instructor" view=InstructorListPage />
                     <Route path="/profile" view=ProfilePagePortal />
                     <Route path="/tutorials/:course_id" view=TutorialPagePortal />
                     <Route path="/courses" view=CoursesPage>
                         <Route path=":course_id" view=ContentPagePortal />
                         <Route path="" view=NoCoursePage />
+                    </Route>
+                    <Route path="/admin" view=AdminPage>
+                        <Route path="/control" view=ControlPagePortal />
+                        <Route path="" view=AdminLoginPage />
                     </Route>
                 </Routes>
             </main>

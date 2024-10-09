@@ -1,11 +1,17 @@
 mod login;
+pub mod control;
 
 use leptos::*;
-use leptos_meta::*;
+use leptos_meta::Title;
+use leptos_router::*;
 
-/// 提供登陆页
 #[component]
 pub fn AdminPage() -> impl IntoView {
+    view! { <Outlet /> }
+}
+
+#[component]
+pub fn AdminLoginPage() -> impl IntoView {
     use login::LoginPanel;
 
     view! {
@@ -13,12 +19,6 @@ pub fn AdminPage() -> impl IntoView {
 
         <div align="center" style="margin-top:100px">
             <LoginPanel />
-            <ControlPanel />
         </div>
     }
-}
-
-#[component]
-pub fn ControlPanel() -> impl IntoView {
-    view! {}
 }

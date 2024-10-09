@@ -50,7 +50,7 @@ pub async fn admin_auth(user: String, password: String) -> Result<(), ServerFnEr
         Cache::set_cache(&session_token, &account.username)?;
 
         //  改变网址到学生资料
-        leptos_axum::redirect("/profile");
+        leptos_axum::redirect("/admin/control");
     } else {
         return Err(ServerFnError::Args("failed".to_string()));
     }

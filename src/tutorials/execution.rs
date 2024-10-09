@@ -19,7 +19,6 @@ pub async fn start_if_stopped_container(username: String) -> Result<String, Serv
     use crate::state::AppState;
     use std::process::Command;
 
-
     //  取得软件状态
     let state = match use_context::<AppState>() {
         Some(s) => s,
@@ -34,10 +33,12 @@ pub async fn start_if_stopped_container(username: String) -> Result<String, Serv
     let pool = state.pool;
 
     //  提取用户数据
-    let sql_result = sqlx::query_as::<_, User>("SELECT username, container_port FROM students WHERE username==$1;")
-        .bind(&username)
-        .fetch_one(&pool)
-        .await?;
+    let sql_result = sqlx::query_as::<_, User>(
+        "SELECT username, container_port FROM students WHERE username==$1;",
+    )
+    .bind(&username)
+    .fetch_one(&pool)
+    .await?;
 
     //  docker run -p <user's container port no>:8501 -d --name <username> -it streamlit
     let command_error = match Command::new("docker")
@@ -52,9 +53,7 @@ pub async fn start_if_stopped_container(username: String) -> Result<String, Serv
         .arg("streamlit")
         .output()
     {
-        Ok(ok_output) => {
-            ok_output.stderr
-        }
+        Ok(ok_output) => ok_output.stderr,
         Err(e) => {
             // logging::log!("ERROR <tutorials/execution.rs:56>: {}", e.to_string());
             return Err(ServerFnError::Args(e.to_string()));
@@ -82,7 +81,6 @@ pub async fn start_if_stopped_container(username: String) -> Result<String, Serv
 #[component]
 pub fn TutorialExecutionArea(username: String) -> impl IntoView {
     view! {
-
         <Await
             // `future` provides the `Future` to be resolved
             future=move || start_if_stopped_container(username.clone())
@@ -92,7 +90,10 @@ pub fn TutorialExecutionArea(username: String) -> impl IntoView {
             <div class="output-area">
                 // "container_port" was created during user creation.
                 // So it's safe to unwrap here
-                <iframe class="code-execution" src=format!("http://localhost:{}/", container_port.as_ref().unwrap()) />
+                <iframe
+                    class="code-execution"
+                    src=format!("http://localhost:{}/", container_port.as_ref().unwrap())
+                />
             </div>
         </Await>
     }

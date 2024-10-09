@@ -267,7 +267,7 @@ fn TutorialContent(username: String, course_id: String) -> impl IntoView {
         </div>
         <div>
             <TutorialEditor course_id=course_id.clone() username=username.to_string() />
-            <TutorialExecutionArea username=username.to_string()/>
+            <TutorialExecutionArea username=username.to_string() />
         </div>
     }
 }

@@ -24,12 +24,14 @@ CREATE TABLE instructors (
     fullname varchar(200),
     about varchar(4000),
     total_students INT,
-    tags varchar(400),
+    tag_line varchar(400),
     start_date varchar(30),
     status varchar(20),
     address varchar(400),
     email varchar(100) NOT NULL UNIQUE,
-    mobile varchar(30) NOT NULL UNIQUE
+    mobile varchar(30) NOT NULL UNIQUE,
+    priority INT,
+    rating INT
 );
 
 CREATE TABLE courses (
@@ -114,8 +116,8 @@ VALUES ('student3', 'x1z2S4jDbLrigzigZp9CdA', 'zhZt3RLLVZV9watjOg/gIvAhjuOvSox9J
 INSERT INTO students (username, salt, pw_hash, start_date, fullname, status, email, mobile, container_port)
 VALUES ('student4', 'x1z2S4jDbLrigzigZp9CdA', 'zhZt3RLLVZV9watjOg/gIvAhjuOvSox9JOf2nxdZ2S8', '2024-08-21', '学生 4', 'active', 'student4@example.com', '18602341237', (SELECT container_port FROM students ORDER BY container_port DESC LIMIT 1) + 1);
 
-INSERT INTO instructors (username, salt, pw_hash, start_date, fullname, about, status, email, mobile)
-VALUES ('teacher1', 'x1z2S4jDbLrigzigZp9CdA', 'zhZt3RLLVZV9watjOg/gIvAhjuOvSox9JOf2nxdZ2S8', '2024-08-21', '教师 1', '10 年教学经验', 'active',  'teacher1@example.com', '18602341237');
+INSERT INTO instructors (username, salt, pw_hash, fullname, about, total_students, tag_line, start_date, status, email, mobile, priority, rating)
+VALUES ('teacher1', 'x1z2S4jDbLrigzigZp9CdA', 'zhZt3RLLVZV9watjOg/gIvAhjuOvSox9JOf2nxdZ2S8', '教师 1', '10 年教学经验', 100, '10 年教学经验', '2024-08-21', 'active', 'teacher1@example.com', '18602341237', 1, 5);
 
 INSERT INTO administrators (username, salt, pw_hash)
 VALUES ('admin1', 'x1z2S4jDbLrigzigZp9CdA', 'zhZt3RLLVZV9watjOg/gIvAhjuOvSox9JOf2nxdZ2S8');

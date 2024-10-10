@@ -97,17 +97,16 @@ pub fn InstructorListPage() -> impl IntoView {
         <HeaderSection />
 
         <div class="contents">
-            <InstructorListPanel instructor_list=instructor_list/>
+            <InstructorListPanel instructor_list=instructor_list />
         </div>
     }
 }
 
 #[component]
 pub fn InstructorListPanel(instructor_list: ReadSignal<Vec<InstructorInfo>>) -> impl IntoView {
-
     view! {
         <For each=move || instructor_list.get() key=|_| () let:instructor_info>
-            { instructor_info.fullname }
+            {instructor_info.fullname}
         </For>
     }
 }

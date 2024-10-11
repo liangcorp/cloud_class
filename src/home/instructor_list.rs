@@ -89,7 +89,9 @@ pub fn InstructorListPage() -> impl IntoView {
         <HeaderSection />
 
         <div class="contents">
-            <InstructorListPanel />
+            <div class="instructor-panel">
+                <InstructorListPanel />
+            </div>
         </div>
     }
 }
@@ -110,26 +112,36 @@ pub fn InstructorListPanel() -> impl IntoView {
 
     view! {
         <For each=move || instructor_list.get() key=|_| () let:instructor_info>
-            <div class="instructor-panel">
-                <table>
-                    <tr>
-                        <td>
+            <table>
+                <tr>
+                    <td>
+                        <img src=format!(
+                            "images/users/instructors/{}",
+                            instructor_info.profile_image_id,
+                        ) />
+                    </td>
+                    <td style="width:200px;word-wrap:break-word">
+                        <p>
                             <b>{instructor_info.fullname}</b>
-                        </td>
-                        <td>{instructor_info.tag_line}</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <img src=format!(
-                                "images/users/instructors/{}",
-                                instructor_info.profile_image_id,
-                            ) />
-                        </td>
-                    </tr>
-                    <tr>{instructor_info.start_date}</tr>
-                    <tr>{instructor_info.rating}</tr>
-                </table>
-            </div>
+                        </p>
+                        <p>{instructor_info.tag_line}</p>
+                        <p>"加入日: "{instructor_info.start_date}</p>
+                        <p>
+                            <span>
+                                {(0..instructor_info.rating)
+                                    .map(|_| view! { <span style="color:red;">"★"</span> })
+                                    .collect_view()}
+                            </span>
+                            <span>
+                                {(instructor_info.rating..5)
+                                    .map(|_| view! { <span style="color:gray;">"★"</span> })
+                                    .collect_view()}
+                            </span>
+                        </p>
+                    </td>
+                </tr>
+                <tr></tr>
+            </table>
         </For>
     }
 }

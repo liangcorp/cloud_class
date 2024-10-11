@@ -1,3 +1,9 @@
+CREATE TABLE sponsors (
+    uuid varchar(100) NOT NULL PRIMARY KEY,
+    org_name varchar(200),
+    priority INT
+);
+
 CREATE TABLE administrators (
     username varchar(100) NOT NULL PRIMARY KEY,
     salt varchar(100),
@@ -183,3 +189,22 @@ VALUES ('t-c-0000-001', 1, '#include <stdio.h>', 'c-0000-001', '10031561-7689-44
 INSERT INTO tutorials (tutorial_id, chapter_number, code_content, chapter_id, course_id)
 VALUES ('t-c-0000-002', 2, '#include <stdio.h>
 int main()', 'c-0000-002', '10031561-7689-44a4-bf80-f2e7c9e8d2dd');
+
+
+INSERT INTO sponsors (uuid, org_name, priority)
+VALUES ('08b40464983bcb9522f24f87c76a9e7e', 'ant-group', 1);
+
+INSERT INTO sponsors (uuid, org_name, priority)
+VALUES ('26eaa84cc6d2a9f48c8dae60f98fd496', 'dji', 2);
+
+INSERT INTO sponsors (uuid, org_name, priority)
+VALUES ('82a4b2c1852f56545d249288ba7e30c4', 'huawei', 3);
+
+INSERT INTO sponsors (uuid, org_name, priority)
+VALUES ('92bb00ea903bd360d0fb0294b8728ab4', 'xiaomi', 4);
+
+INSERT INTO sponsors (uuid, org_name, priority)
+VALUES ('98aba9d0f5c22c1e3397d2272c25ebd5', 'tencent', 5);
+
+INSERT INTO sponsors (uuid, org_name, priority)
+VALUES ('beaaf4670511cb474198e3c1492376cb', 'byd', 6);

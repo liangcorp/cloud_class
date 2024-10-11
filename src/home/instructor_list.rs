@@ -115,12 +115,15 @@ pub fn InstructorListPanel() -> impl IntoView {
             <table>
                 <tr>
                     <td>
-                        <img src=format!(
-                            "images/users/instructors/{}",
-                            instructor_info.profile_image_id,
-                        ) />
+                        <img
+                            src=format!(
+                                "images/users/instructors/{}",
+                                instructor_info.profile_image_id,
+                            )
+                            style="width:200px"
+                        />
                     </td>
-                    <td style="width:200px;word-wrap:break-word">
+                    <td style="width:200px;word-wrap:break-word;padding-left:5px">
                         <p>
                             <b>{instructor_info.fullname}</b>
                         </p>

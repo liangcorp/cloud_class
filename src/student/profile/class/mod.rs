@@ -218,17 +218,17 @@ pub fn CourseContentPage(user: String) -> impl IntoView {
                                                 future=move || get_instructor(course_id_clone.clone())
                                                 let:instructors
                                             >
-                                                {
-                                                    let list = instructors.as_ref().unwrap();
-                                                    list.into_iter()
-                                                        .map(|n| {
-                                                            view! {
-                                                                {n.fullname.to_string()}
-                                                                ", "
-                                                            }
-                                                        })
-                                                        .collect_view()
-                                                }
+                                                {instructors
+                                                    .as_ref()
+                                                    .unwrap()
+                                                    .into_iter()
+                                                    .map(|n| {
+                                                        view! {
+                                                            {n.fullname.to_string()}
+                                                            ", "
+                                                        }
+                                                    })
+                                                    .collect_view()}
                                             </Await>
                                         }
                                     }
@@ -279,7 +279,7 @@ pub fn CourseContentPage(user: String) -> impl IntoView {
                 <a
                     target="_blank"
                     rel="noopener noreferrer"
-                    href=format!("/tutorials/{}", course_content.course_id)
+                    href=format!("/tutorials/{}", &course_content.course_id)
                     class="tutorial-link"
                 >
                     "⚒ 实验室"

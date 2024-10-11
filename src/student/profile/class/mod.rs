@@ -40,6 +40,18 @@ impl Default for CourseContent {
     }
 }
 
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct CourseInstructor {
+    fullname: String,
+}
+
+impl Default for CourseInstructor {
+    fn default() -> CourseInstructor {
+        CourseInstructor {
+            fullname: "".to_string(),
+        }
+    }
+}
 cfg_if! {
     if #[cfg(feature = "ssr")] {
         #[derive(Clone, Debug, PartialEq)]
@@ -58,6 +70,12 @@ cfg_if! {
             tag_line: String,
             update_date: String,
             image_id: String,
+        }
+
+        #[derive(Clone, Debug, PartialEq)]
+        #[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
+        pub struct CourseInstructorQuery {
+            fullname: String,
         }
     }
 }
@@ -111,6 +129,42 @@ pub async fn get_user_courses(user: String) -> Result<Vec<CourseContent>, Server
     Ok(user_courses)
 }
 
+#[server]
+pub async fn get_instructor(course_id: String) -> Result<Vec<CourseInstructor>, ServerFnError> {
+    use crate::state::AppState;
+
+    //  取得软件状态
+    let state = match use_context::<AppState>() {
+        Some(s) => s,
+        None => return Ok(vec![CourseInstructor::default()]),
+    };
+
+    //  取得数据库信息
+    let pool = state.pool;
+
+    //  提取用户数据
+    let course_instructors = match sqlx::query_as::<_, CourseInstructorQuery>(
+        "SELECT fullname
+        FROM course_instructor
+        WHERE course_id = $1
+        ORDER BY priority;",
+    )
+    .bind(&course_id)
+    .fetch_all(&pool)
+    .await
+    {
+        Ok(ok_courses_instructor) => ok_courses_instructor
+            .iter()
+            .map(|ok_courses_instructor| CourseInstructor {
+                fullname: ok_courses_instructor.fullname.clone(),
+            })
+            .collect(),
+        Err(e) => return Err(ServerFnError::Args(e.to_string())),
+    };
+
+    Ok(course_instructors)
+}
+
 #[component]
 pub fn CourseContentPage(user: String) -> impl IntoView {
     let (content, set_content) = create_signal(Vec::new());
@@ -129,7 +183,7 @@ pub fn CourseContentPage(user: String) -> impl IntoView {
         <For each=move || content.get() key=|state| (state.course_id.clone()) let:course_content>
             <div class="each-class">
                 <a
-                    href=format!("/courses/{}", course_content.course_id)
+                    href=format!("/courses/{}", &course_content.course_id)
                     style="text-decoration-line: none;color: #333333;"
                 >
                     <div style="display: inline-block; width:40%">
@@ -158,6 +212,22 @@ pub fn CourseContentPage(user: String) -> impl IntoView {
                                 <td align="left" style="color:gray;">
                                     "教师: "
                                 // {course_content.instructor}
+                                {
+                                    let course_id_clone = course_content.course_id.clone();
+                                    view! {
+                                        <Await
+                                            future=move || get_instructor(course_id_clone.clone())
+                                            let:instructors
+                                        >
+                                        {
+                                            let list = instructors.as_ref().unwrap();
+                                            list.into_iter()
+                                                .map(|n| view! { {n.fullname.to_string()}", "})
+                                                .collect_view()
+                                        }
+                                        </Await>
+                                    }
+                                }
                                 </td>
                                 <td align="right"></td>
                             </tr>

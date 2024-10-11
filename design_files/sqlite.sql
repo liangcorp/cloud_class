@@ -66,6 +66,7 @@ CREATE TABLE course_instructor (
     course_id char(36) NOT NULL,
     username varchar(100) NOT NULL,
     fullname varchar(200),
+    priority INT,
     PRIMARY KEY(course_id, username)
 );
 
@@ -120,7 +121,10 @@ INSERT INTO students (username, salt, pw_hash, start_date, fullname, status, ema
 VALUES ('student4', 'x1z2S4jDbLrigzigZp9CdA', 'zhZt3RLLVZV9watjOg/gIvAhjuOvSox9JOf2nxdZ2S8', '2024-08-21', '学生 4', 'active', 'student4@example.com', '18602341237', (SELECT container_port FROM students ORDER BY container_port DESC LIMIT 1) + 1);
 
 INSERT INTO instructors (username, salt, pw_hash, fullname, about, total_students, tag_line, start_date, status, email, mobile, priority, rating, profile_image_id)
-VALUES ('teacher1', 'x1z2S4jDbLrigzigZp9CdA', 'zhZt3RLLVZV9watjOg/gIvAhjuOvSox9JOf2nxdZ2S8', '教师 1', '10 年教学经验', 100, '10 年教学经验', '2024-08-21', 'active', 'teacher1@example.com', '18602341237', 1, 5, '0c2a3ed6fc1d62a5ff36a99cbdead670.jpeg');
+VALUES ('teacher1', 'x1z2S4jDbLrigzigZp9CdA', 'zhZt3RLLVZV9watjOg/gIvAhjuOvSox9JOf2nxdZ2S8', '教师 1', '10年Python教学经验', 100, '10年Python教学经验', '2024-08-21', 'active', 'teacher1@example.com', '18602341237', 1, 5, '0c2a3ed6fc1d62a5ff36a99cbdead670.jpeg');
+
+INSERT INTO instructors (username, salt, pw_hash, fullname, about, total_students, tag_line, start_date, status, email, mobile, priority, rating, profile_image_id)
+VALUES ('teacher2', 'x1z2S4jDbLrigzigZp9CdA', 'zhZt3RLLVZV9watjOg/gIvAhjuOvSox9JOf2nxdZ2S8', '教师 2', '10年C教学经验', 100, '10年C教学经验', '2024-08-21', 'active', 'teacher2@example.com', '18602341238', 2, 4, 'bda9ff00a6db34f77844bf8718bc0832.webp');
 
 INSERT INTO administrators (username, salt, pw_hash)
 VALUES ('admin1', 'x1z2S4jDbLrigzigZp9CdA', 'zhZt3RLLVZV9watjOg/gIvAhjuOvSox9JOf2nxdZ2S8');
@@ -130,6 +134,12 @@ VALUES ('97931561-7689-44a4-bf80-f2e7c9e8d2dd', 'Python - 面向物联网控制'
 
 INSERT INTO courses (course_id, title, price, course_language, rating, target_level, requirement, duration_minutes, about, description, tag_line, update_date, status, series_id, image_id)
 VALUES ('10031561-7689-44a4-bf80-f2e7c9e8d2dd', 'C 编程语言基础', 100.00, '中文', 9, '初学者', '无需经验', 960, '对C语言有基本的了解.','面对所有人的C编成教学课程。','基础C语言编成教学课程。', '2024-08-21', 'live', 'series-01', '091c0066136730598dd01a0cfeb2d6c6.png');
+
+INSERT INTO course_instructor (course_id, username, fullname, priority)
+VALUES ('97931561-7689-44a4-bf80-f2e7c9e8d2dd', 'teacher1', '教师 1', 1);
+
+INSERT INTO course_instructor (course_id, username, fullname, priority)
+VALUES ('10031561-7689-44a4-bf80-f2e7c9e8d2dd', 'teacher2', '教师 2', 1);
 
 INSERT INTO student_course (username, course_id, allow_code, priority)
 VALUES ('student1', '97931561-7689-44a4-bf80-f2e7c9e8d2dd', true, 1);
@@ -145,9 +155,6 @@ VALUES ('student3', '97931561-7689-44a4-bf80-f2e7c9e8d2dd', true, 1);
 
 INSERT INTO student_course (username, course_id, allow_code, priority)
 VALUES ('student3', '10031561-7689-44a4-bf80-f2e7c9e8d2dd', true, 2);
-
-INSERT INTO course_instructor (course_id, username)
-VALUES ('97931561-7689-44a4-bf80-f2e7c9e8d2dd', 'teacher1');
 
 INSERT INTO chapters (chapter_id, title, content, chapter_number, course_id)
 VALUES ('welcome-0000', '欢迎', '# 欢迎来到课程', 0, '00000000-0000-0000-0000-000000000000');

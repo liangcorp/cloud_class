@@ -17,6 +17,7 @@ pub struct CourseContent {
     description: String,
     tag_line: String,
     update_date: String,
+    image_id: String,
 }
 
 impl Default for CourseContent {
@@ -34,6 +35,7 @@ impl Default for CourseContent {
             description: "".to_string(),
             tag_line: "".to_string(),
             update_date: "".to_string(),
+            image_id: "class_default.png".to_string(),
         }
     }
 }
@@ -55,6 +57,7 @@ cfg_if! {
             description: String,
             tag_line: String,
             update_date: String,
+            image_id: String,
         }
     }
 }
@@ -99,6 +102,7 @@ pub async fn get_user_courses(user: String) -> Result<Vec<CourseContent>, Server
                 description: ok_user_courses.description.clone(),
                 tag_line: ok_user_courses.tag_line.clone(),
                 update_date: ok_user_courses.update_date.clone(),
+                image_id: ok_user_courses.image_id.clone(),
             })
             .collect(),
         Err(e) => return Err(ServerFnError::Args(e.to_string())),
@@ -130,7 +134,7 @@ pub fn CourseContentPage(user: String) -> impl IntoView {
                 >
                     <div style="display: inline-block; width:40%">
                         <img
-                            src="images/classes/class_default.png"
+                            src=format!("images/courses/{}", course_content.image_id)
                             style="width:350px;height:250px"
                         />
                     </div>

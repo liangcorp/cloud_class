@@ -10,6 +10,7 @@ pub struct InstructorInfo {
     tag_line: String,
     start_date: String,
     rating: i8,
+    profile_image_id: String,
 }
 
 impl Default for InstructorInfo {
@@ -19,6 +20,7 @@ impl Default for InstructorInfo {
             tag_line: "".to_string(),
             start_date: "".to_string(),
             rating: 5,
+            profile_image_id: "default_profile.png".to_string(),
         }
     }
 }
@@ -32,6 +34,7 @@ cfg_if! {
             tag_line: String,
             start_date: String,
             rating: i8,
+            profile_image_id: String,
         }
     }
 }
@@ -51,7 +54,7 @@ pub async fn get_instructors() -> Result<Vec<InstructorInfo>, ServerFnError> {
 
     //  提取用户数据
     let instructor_list = match sqlx::query_as::<_, InstructorInfoQuery>(
-        "SELECT fullname, tag_line, start_date, rating
+        "SELECT fullname, tag_line, start_date, rating, profile_image_id
         FROM instructors
         WHERE status = 'active'
         ORDER BY priority;",
@@ -66,6 +69,7 @@ pub async fn get_instructors() -> Result<Vec<InstructorInfo>, ServerFnError> {
                 tag_line: ok_instr_info.tag_line.clone(),
                 start_date: ok_instr_info.start_date.clone(),
                 rating: ok_instr_info.rating,
+                profile_image_id: ok_instr_info.profile_image_id.clone(),
             })
             .collect(),
         Err(e) => return Err(ServerFnError::Args(e.to_string())),
@@ -79,7 +83,20 @@ pub async fn get_instructors() -> Result<Vec<InstructorInfo>, ServerFnError> {
 pub fn InstructorListPage() -> impl IntoView {
     use crate::header::HeaderSection;
 
-    let (instructor_list, set_instructor_list) = create_signal(vec![InstructorInfo::default()]);
+    view! {
+        <Title text="教师中心" />
+
+        <HeaderSection />
+
+        <div class="contents">
+            <InstructorListPanel />
+        </div>
+    }
+}
+
+#[component]
+pub fn InstructorListPanel() -> impl IntoView {
+    let (instructor_list, set_instructor_list) = create_signal(Vec::new());
 
     spawn_local(async move {
         match get_instructors().await {
@@ -92,21 +109,27 @@ pub fn InstructorListPage() -> impl IntoView {
     });
 
     view! {
-        <Title text="教师中心" />
-
-        <HeaderSection />
-
-        <div class="contents">
-            <InstructorListPanel instructor_list=instructor_list />
-        </div>
-    }
-}
-
-#[component]
-pub fn InstructorListPanel(instructor_list: ReadSignal<Vec<InstructorInfo>>) -> impl IntoView {
-    view! {
         <For each=move || instructor_list.get() key=|_| () let:instructor_info>
-            {instructor_info.fullname}
+            <div class="instructor-panel">
+                <table>
+                    <tr>
+                        <td>
+                            <b>{instructor_info.fullname}</b>
+                        </td>
+                        <td>{instructor_info.tag_line}</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <img src=format!(
+                                "images/users/instructors/{}",
+                                instructor_info.profile_image_id,
+                            ) />
+                        </td>
+                    </tr>
+                    <tr>{instructor_info.start_date}</tr>
+                    <tr>{instructor_info.rating}</tr>
+                </table>
+            </div>
         </For>
     }
 }

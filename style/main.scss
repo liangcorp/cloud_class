@@ -208,6 +208,11 @@ div.sidebar-resize-handle {
   display: inline-block;
 }
 
+div.instructor-panel {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 table.login-form {
   width: 300px;
 }

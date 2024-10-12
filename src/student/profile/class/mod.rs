@@ -219,7 +219,9 @@ pub fn CourseContentPanel(course_contents: Vec<CourseContent>) -> impl IntoView 
                             <tr>
                                 <td align="left" style="color:gray;">
                                     "教师: "
-                                    <InstructorsNamePanel course_id=single_content.course_id.clone() />
+                                    <InstructorsNamePanel course_id=single_content
+                                        .course_id
+                                        .clone() />
                                 </td>
                                 <td align="right"></td>
                             </tr>
@@ -291,16 +293,25 @@ pub fn InstructorsNamePanel(course_id: String) -> impl IntoView {
 
     view! {
         <For each=move || instructors.get() key=|_| () let:single_instructor>
-            {   single_instructor.fullname.clone() }
+            {single_instructor.fullname.clone()}
             {
-                // probably not need to handle this
-                // iterator won't get here if vector is empty
                 let empty_vec = CourseInstructor::default();
+                if single_instructor
+                    != *(move || instructors.get())().last().unwrap_or_else(|| &empty_vec)
+                {
+                    view! {
+                        // probably not need to handle this
+                        // iterator won't get here if vector is empty
 
-                if single_instructor != *(move || instructors.get())().last().unwrap_or_else(|| &empty_vec) {
-                    view! { ", " }
+                        ", "
+                    }
                 } else {
-                    view! { "" }
+                    view! {
+                        // probably not need to handle this
+                        // iterator won't get here if vector is empty
+
+                        ""
+                    }
                 }
             }
         </For>

@@ -109,7 +109,7 @@ pub fn SponsorsPanel() -> impl IntoView {
                                             "images/sponsors/{}.png",
                                             image_entry.uuid.to_string(),
                                         )
-                                        style="width:150px;"
+                                        style="width:150px;filter: grayscale(100%);-webkit-filter: grayscale(100%);"
                                     />
                                 </td>
                             </For>

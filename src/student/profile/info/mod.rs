@@ -93,10 +93,7 @@ pub fn PersonalContentPage(user: String) -> impl IntoView {
                     Ok(d) => (*d).clone(),
                     Err(_) => PersonalContent::default(),
                 };
-
-                view! {
-                    <PersonalContentPanel personal_content=content />
-                }
+                view! { <PersonalContentPanel personal_content=content /> }
             }
         </Await>
     }
@@ -109,7 +106,7 @@ pub fn PersonalContentPanel(personal_content: PersonalContent) -> impl IntoView 
             <tr>
                 <td>
                     <h1>{personal_content.fullname}</h1>
-                    <table>
+                    <table style="padding:5px">
                         <tr>
                             <td>
                                 <b>"注册日:"</b>

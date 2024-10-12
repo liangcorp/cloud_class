@@ -93,10 +93,7 @@ pub fn HomePage() -> impl IntoView {
 #[component]
 pub fn SponsorsPanel() -> impl IntoView {
     view! {
-        <Await
-            future=|| get_sponsor_icons()
-            let:data
-        >
+        <Await future=|| get_sponsor_icons() let:data>
             {
                 let data_clone = match data.as_ref() {
                     Ok(d) => (*d).clone(),

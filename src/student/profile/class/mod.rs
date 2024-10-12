@@ -167,20 +167,23 @@ pub async fn get_instructor(course_id: String) -> Result<Vec<CourseInstructor>, 
 
 #[component]
 pub fn CourseContentPage(user: String) -> impl IntoView {
-    let (content, set_content) = create_signal(Vec::new());
-
-    spawn_local(async move {
-        match get_user_courses(user).await {
-            Ok(data) => set_content.set(data),
-            Err(e) => {
-                set_content.set(Vec::new());
-                logging::log!("{}", e.to_string());
-            }
-        }
-    });
-
     view! {
-        <For each=move || content.get() key=|state| (state.course_id.clone()) let:course_content>
+        <Await future=move || get_user_courses(user.clone()) let:data>
+            {
+                let content = match data.as_ref() {
+                    Ok(d) => (*d).clone(),
+                    Err(_) => Vec::new(),
+                };
+                view! { <CourseContentPanel content=content /> }
+            }
+        </Await>
+    }
+}
+
+#[component]
+pub fn CourseContentPanel(content: Vec<CourseContent>) -> impl IntoView {
+    view! {
+        <For each=move || { content.clone() } key=|_| () let:course_content>
             <div class="each-class">
                 <a
                     href=format!("/courses/{}", &course_content.course_id)

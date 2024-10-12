@@ -214,27 +214,7 @@ pub fn CourseContentPanel(content: Vec<CourseContent>) -> impl IntoView {
                             <tr>
                                 <td align="left" style="color:gray;">
                                     "教师: "
-                                    {
-                                        let course_id_clone = course_content.course_id.clone();
-                                        view! {
-                                            <Await
-                                                future=move || get_instructor(course_id_clone.clone())
-                                                let:instructors
-                                            >
-                                                {instructors
-                                                    .as_ref()
-                                                    .unwrap()
-                                                    .into_iter()
-                                                    .map(|n| {
-                                                        view! {
-                                                            {n.fullname.to_string()}
-                                                            ", "
-                                                        }
-                                                    })
-                                                    .collect_view()}
-                                            </Await>
-                                        }
-                                    }
+                                    <InstructorsNamePanel course_id=course_content.course_id.clone() />
                                 </td>
                                 <td align="right"></td>
                             </tr>
@@ -290,5 +270,28 @@ pub fn CourseContentPanel(content: Vec<CourseContent>) -> impl IntoView {
             </div>
             <hr />
         </For>
+    }
+}
+
+#[component]
+pub fn InstructorsNamePanel(course_id: String) -> impl IntoView {
+
+    view! {
+        <Await
+            future=move || get_instructor(course_id.clone())
+            let:instructors
+        >
+            {instructors
+                .as_ref()
+                .unwrap()
+                .into_iter()
+                .map(|n| {
+                    view! {
+                        {n.fullname.to_string()}
+                        ", "
+                    }
+                })
+                .collect_view()}
+        </Await>
     }
 }

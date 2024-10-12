@@ -86,48 +86,53 @@ pub async fn get_personal_profile(user: String) -> Result<PersonalContent, Serve
 
 #[component]
 pub fn PersonalContentPage(user: String) -> impl IntoView {
-    let (personal_content, set_peronsal_content) = create_signal(PersonalContent::default());
-
-    spawn_local(async move {
-        match get_personal_profile(user).await {
-            Ok(ok_personal_content) => set_peronsal_content.set(ok_personal_content),
-            Err(_) => {
-                set_peronsal_content.set(PersonalContent::default());
-                // logging::log!("ERROR<user/profile/info/mod.rs>: {}", e.to_string());
-            }
-        }
-    });
-
     view! {
-        <p style="color:gray; font-weight:bold;">学生</p>
+        <Await future=move || get_personal_profile(user.clone()) let:data>
+            {
+                let content = match data.as_ref() {
+                    Ok(d) => (*d).clone(),
+                    Err(_) => PersonalContent::default(),
+                };
+
+                view! {
+                    <PersonalContentPanel personal_content=content />
+                }
+            }
+        </Await>
+    }
+}
+
+#[component]
+pub fn PersonalContentPanel(personal_content: PersonalContent) -> impl IntoView {
+    view! {
         <table style="width:100%">
             <tr>
                 <td>
-                    <h1>{move || personal_content.get().fullname}</h1>
+                    <h1>{personal_content.fullname}</h1>
                     <table>
                         <tr>
                             <td>
                                 <b>"注册日:"</b>
                             </td>
-                            <td>{move || personal_content.get().start_date}</td>
+                            <td>{personal_content.start_date}</td>
                         </tr>
                         <tr>
                             <td>
                                 <b>"邮件地址:"</b>
                             </td>
-                            <td>{move || personal_content.get().email}</td>
+                            <td>{personal_content.email}</td>
                         </tr>
                         <tr>
                             <td>
                                 <b>"手机号:"</b>
                             </td>
-                            <td>{move || personal_content.get().mobile}</td>
+                            <td>{personal_content.mobile}</td>
                         </tr>
                         <tr>
                             <td>
                                 <b>"地址:"</b>
                             </td>
-                            <td>{move || personal_content.get().address}</td>
+                            <td>{personal_content.address}</td>
                         </tr>
                     </table>
                 </td>

@@ -95,14 +95,14 @@ pub fn SponsorsPanel() -> impl IntoView {
     view! {
         <Await future=|| get_sponsor_icons() let:data>
             {
-                let data_clone = match data.as_ref() {
+                let content = match data.as_ref() {
                     Ok(d) => (*d).clone(),
                     Err(_) => Vec::new(),
                 };
                 view! {
                     <table>
                         <tr>
-                            <For each=move || { data_clone.clone() } key=|_| () let:image_entry>
+                            <For each=move || { content.clone() } key=|_| () let:image_entry>
                                 <td>
                                     <img
                                         src=format!(

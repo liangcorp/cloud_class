@@ -1,5 +1,5 @@
 use crate::admin::{
-    control::{instructors::AdminInstructorPortal, ControlPanelPortal, ControlPanel},
+    control::{instructors::AdminInstructorPortal, ControlPanel, ControlPanelPortal},
     AdminLoginPage, AdminPage, AdminRedirectPage,
 };
 use crate::courses::{content::ContentPagePortal, CoursesPage, NoCoursePage};

@@ -293,7 +293,11 @@ pub fn InstructorsNamePanel(course_id: String) -> impl IntoView {
         <For each=move || instructors.get() key=|_| () let:single_instructor>
             {   single_instructor.fullname.clone() }
             {
-                if single_instructor != *(move || instructors.get())().last().unwrap() {
+                // probably not need to handle this
+                // iterator won't get here if vector is empty
+                let empty_vec = CourseInstructor::default();
+
+                if single_instructor != *(move || instructors.get())().last().unwrap_or_else(|| &empty_vec) {
                     view! { ", " }
                 } else {
                     view! { "" }

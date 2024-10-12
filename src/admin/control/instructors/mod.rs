@@ -125,7 +125,7 @@ fn AdminInstructorPanel() -> impl IntoView {
     });
 
     view! {
-            <table>
+            <table class="control-instructor">
                 <For each=move || instructor_list.get() key=|_| () let:instructor_info>
                     <tr>
                         <td>

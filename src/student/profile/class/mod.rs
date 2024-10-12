@@ -299,9 +299,7 @@ fn InstructorsNamePanel(course_id: String) -> impl IntoView {
             {
                 let empty_vec = CourseInstructor::default();
                 let i_get = move || instructors.get();
-
-                if single_instructor != *i_get().last().unwrap_or(&empty_vec)
-                {
+                if single_instructor != *i_get().last().unwrap_or(&empty_vec) {
                     view! { ", " }
                 } else {
                     view! { "" }

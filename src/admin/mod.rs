@@ -26,20 +26,10 @@ pub fn AdminLoginPage() -> impl IntoView {
                 Ok(ok_username) => {
                     match ok_username {
                         Some(_) => view! { <Redirect path="/admin/control" /> }.into_view(),
-                        None => {
-                            view! {
-                                <LoginPanel />
-                            }
-                                .into_view()
-                        }
+                        None => view! { <LoginPanel /> }.into_view(),
                     }
                 }
-                Err(_) => {
-                    view! {
-                        <LoginPanel />
-                    }
-                        .into_view()
-                }
+                Err(_) => view! { <LoginPanel /> }.into_view(),
             }}
         </Await>
     }

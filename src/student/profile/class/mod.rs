@@ -185,8 +185,9 @@ pub fn CourseContentPage(user: String) -> impl IntoView {
     }
 }
 
+/// Rendring Course Contents
 #[component]
-pub fn CourseContentPanel(course_contents: Vec<CourseContent>) -> impl IntoView {
+fn CourseContentPanel(course_contents: Vec<CourseContent>) -> impl IntoView {
     view! {
         <For each=move || { course_contents.clone() } key=|_| () let:single_content>
             <div class="each-class">
@@ -280,8 +281,9 @@ pub fn CourseContentPanel(course_contents: Vec<CourseContent>) -> impl IntoView 
     }
 }
 
+/// Render instructors names and append comma if necesary
 #[component]
-pub fn InstructorsNamePanel(course_id: String) -> impl IntoView {
+fn InstructorsNamePanel(course_id: String) -> impl IntoView {
     let (instructors, set_instructors) = create_signal(Vec::new());
 
     spawn_local(async move {
@@ -300,19 +302,10 @@ pub fn InstructorsNamePanel(course_id: String) -> impl IntoView {
                     != *(move || instructors.get())().last().unwrap_or_else(|| &empty_vec)
                 {
                     view! {
-                        // probably not need to handle this
-                        // iterator won't get here if vector is empty
-
                         ", "
                     }
                 } else {
                     view! {
-                        // probably not need to handle this
-                        // iterator won't get here if vector is empty
-
-                        // probably not need to handle this
-                        // iterator won't get here if vector is empty
-
                         ""
                     }
                 }

@@ -76,7 +76,7 @@ pub fn HomePage() -> impl IntoView {
 
         <HeaderSection />
 
-        <img src="images/banners/default_home.jpg" style="width:100%"/>
+        <img src="images/banners/default_home.jpg" style="width:100%" />
 
         <div class="contents">
             <div align="center">
@@ -92,21 +92,45 @@ pub fn HomePage() -> impl IntoView {
 
 #[component]
 pub fn SponsorsPanel() -> impl IntoView {
-    let (image_entries, set_image_entries) = create_signal(Vec::new());
+    // let (image_entries, set_image_entries) = create_signal(Vec::new());
 
-    spawn_local(async move {
-        match get_sponsor_icons().await {
-            Ok(data) => set_image_entries.set(data),
-            Err(e) => {
-                set_image_entries.set(Vec::new());
-                logging::log!("ERROR<home/mod.rs>: {}", e.to_string());
-            }
-        }
-    });
+    // spawn_local(async move {
+    //     match get_sponsor_icons().await {
+    //         Ok(data) => set_image_entries.set(data),
+    //         Err(e) => logging::log!("ERROR<home/mod.rs>: {}", e.to_string()),
+    //     }
+    // });
 
     view! {
-    <For each=move || image_entries.get() key=|_| () let:image_entry>
-        <p>{image_entry.uuid}</p>
-    </For>
+        <Await
+            // `future` provides the `Future` to be resolved
+            future=|| get_sponsor_icons()
+            // the data is bound to whatever variable name you provide
+            let:data
+        >
+            {
+                let data_clone = match data.as_ref() {
+                    Ok(d) => (*d).clone(),
+                    Err(_) => Vec::new(),
+                };
+                view! {
+                    <table>
+                        <tr>
+                            <For each=move || { data_clone.clone() } key=|_| () let:image_entry>
+                                <td>
+                                    <img
+                                        src=format!(
+                                            "images/sponsors/{}.png",
+                                            image_entry.uuid.to_string(),
+                                        )
+                                        style="width:150px;"
+                                    />
+                                </td>
+                            </For>
+                        </tr>
+                    </table>
+                }
+            }
+        </Await>
     }
 }

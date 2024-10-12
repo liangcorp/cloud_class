@@ -280,24 +280,18 @@ pub fn CourseContentPanel(course_contents: Vec<CourseContent>) -> impl IntoView 
 
 #[component]
 pub fn InstructorsNamePanel(course_id: String) -> impl IntoView {
+    let (instructors, set_instructors) = create_signal(Vec::new());
+
+    spawn_local(async move {
+        match get_instructor(course_id).await {
+            Ok(data) => set_instructors.set(data),
+            Err(_) => set_instructors.set(Vec::new()),
+        };
+    });
 
     view! {
-        <Await
-            future=move || get_instructor(course_id.clone())
-            let:instructors
-        >
-        <p>"test"</p>
-            // {instructors
-            //     .as_ref()
-            //     .unwrap()
-            //     .into_iter()
-            //     .map(|n| {
-            //         view! {
-            //             {n.fullname.to_string()}
-            //             ", "
-            //         }
-            //     })
-            //     .collect_view()}
-        </Await>
+        <For each=move || instructors.get() key=|_| () let:single_instructor>
+            {single_instructor.fullname}
+        </For>
     }
 }

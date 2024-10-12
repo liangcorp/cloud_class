@@ -1,6 +1,6 @@
 use leptos::*;
 
-/// Renders the header menu of control panel.
+/// Renders the header menu of control panel
 #[component]
 pub fn HeaderSection(username: String) -> impl IntoView {
     view! {
@@ -14,11 +14,26 @@ pub fn HeaderSection(username: String) -> impl IntoView {
                     </td>
                     <td class="header-menu">
                         <a href="#" class="header">
-                            "学员管理"
+                            "教材管理"
                         </a>
                     </td>
                     <td class="header-menu">
                         <a href="#" class="header">
+                            "练习管理"
+                        </a>
+                    </td>
+                    <td class="header-menu">
+                        <a href="#" class="header">
+                            "赞助商管理"
+                        </a>
+                    </td>
+                    <td class="header-menu">
+                        <a href="#" class="header">
+                            "学员管理"
+                        </a>
+                    </td>
+                    <td class="header-menu">
+                        <a href="/admin/control/instructors" class="header">
                             "教师管理"
                         </a>
                     </td>
@@ -27,9 +42,6 @@ pub fn HeaderSection(username: String) -> impl IntoView {
                             "管理员中心"
                         </a>
                     </td>
-                    <td class="header-menu"></td>
-                    <td class="header-menu"></td>
-                    <td class="header-menu"></td>
                     <td class="header-menu"></td>
                     <td class="header-login">
                         <b>{username}</b>

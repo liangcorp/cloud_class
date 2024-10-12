@@ -1,10 +1,18 @@
 mod header;
+pub mod instructors;
 
 use leptos::*;
-use leptos_router::Redirect;
+use leptos_router::*;
 
 #[component]
 pub fn ControlPanelPortal() -> impl IntoView {
+    view! {
+        <Outlet />
+    }
+}
+
+#[component]
+pub fn ControlPanelBlankPage() -> impl IntoView {
     use crate::session::extract_session_user;
     use header::HeaderSection;
 
@@ -21,9 +29,8 @@ pub fn ControlPanelPortal() -> impl IntoView {
                     match ok_username {
                         Some(some_username) => {
                             view! {
-                                <HeaderSection username=some_username.to_string() />
-
-                                <div class="contents">"you got it!"</div>
+                                <HeaderSection username=some_username.to_string()/>
+                                "请选项"
                             }
                                 .into_view()
                         }
@@ -35,3 +42,4 @@ pub fn ControlPanelPortal() -> impl IntoView {
         </Await>
     }
 }
+

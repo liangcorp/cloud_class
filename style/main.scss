@@ -225,6 +225,15 @@ table.admin-login {
 }
 
 table.control-instructor {
+  border: 1px solid black;
+}
+
+th.control-instructor {
+  padding: 10px;
+  border: 1px solid black;
+}
+
+td.control-instructor {
   padding: 10px;
   border: 1px solid black;
 }

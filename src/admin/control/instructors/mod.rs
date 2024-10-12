@@ -6,9 +6,17 @@ use server_fn::ServerFnError;
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct InstructorInfo {
+    username: String,
     fullname: String,
+    about: String,
+    total_students: i32,
     tag_line: String,
     start_date: String,
+    status: String,
+    address: String,
+    email: String,
+    mobile: String,
+    priority: i32,
     rating: i8,
     profile_image_id: String,
 }
@@ -16,9 +24,17 @@ pub struct InstructorInfo {
 impl Default for InstructorInfo {
     fn default() -> InstructorInfo {
         InstructorInfo {
+            username: "".to_string(),
             fullname: "".to_string(),
+            about: "".to_string(),
+            total_students: 0,
             tag_line: "".to_string(),
             start_date: "".to_string(),
+            status: "".to_string(),
+            address: "".to_string(),
+            email: "".to_string(),
+            mobile: "".to_string(),
+            priority: 0,
             rating: 5,
             profile_image_id: "default_profile.png".to_string(),
         }
@@ -30,9 +46,17 @@ cfg_if! {
         #[derive(Clone, Debug, PartialEq)]
         #[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
         pub struct InstructorInfoQuery {
+            username: String,
             fullname: String,
+            about: String,
+            total_students: i32,
             tag_line: String,
             start_date: String,
+            status: String,
+            address: String,
+            email: String,
+            mobile: String,
+            priority: i32,
             rating: i8,
             profile_image_id: String,
         }
@@ -54,9 +78,8 @@ pub async fn get_instructors() -> Result<Vec<InstructorInfo>, ServerFnError> {
 
     //  提取用户数据
     let instructor_list = match sqlx::query_as::<_, InstructorInfoQuery>(
-        "SELECT fullname, tag_line, start_date, rating, profile_image_id
+        "SELECT *
         FROM instructors
-        WHERE status = 'active'
         ORDER BY priority;",
     )
     .fetch_all(&pool)
@@ -65,9 +88,17 @@ pub async fn get_instructors() -> Result<Vec<InstructorInfo>, ServerFnError> {
         Ok(ok_instr_info) => ok_instr_info
             .iter()
             .map(|ok_instr_info| InstructorInfo {
+                username: ok_instr_info.username.clone(),
                 fullname: ok_instr_info.fullname.clone(),
+                about: ok_instr_info.about.clone(),
                 tag_line: ok_instr_info.tag_line.clone(),
+                total_students: ok_instr_info.total_students,
                 start_date: ok_instr_info.start_date.clone(),
+                status: ok_instr_info.status.clone(),
+                address: ok_instr_info.address.clone(),
+                email: ok_instr_info.email.clone(),
+                mobile: ok_instr_info.mobile.clone(),
+                priority: ok_instr_info.priority,
                 rating: ok_instr_info.rating,
                 profile_image_id: ok_instr_info.profile_image_id.clone(),
             })
@@ -114,6 +145,32 @@ pub fn AdminInstructorPortal() -> impl IntoView {
 /// Rendering control panel for instructors
 #[component]
 fn AdminInstructorPage() -> impl IntoView {
+
+    view! {
+        <table class="control-instructor">
+            <tr>
+                <th class="control-instructor">"用户名"</th>
+                <th class="control-instructor">"全名"</th>
+                <th class="control-instructor">"about"</th>
+                <th class="control-instructor">"tag_line"</th>
+                <th class="control-instructor">"total_students"</th>
+                <th class="control-instructor">"start_date"</th>
+                <th class="control-instructor">"status"</th>
+                <th class="control-instructor">"address"</th>
+                <th class="control-instructor">"email"</th>
+                <th class="control-instructor">"mobile"</th>
+                <th class="control-instructor">"priority"</th>
+                <th class="control-instructor">"rating"</th>
+                <th class="control-instructor">"profile_image_id"</th>
+            </tr>
+            <DisplayInstructors />
+        </table>
+    }
+}
+
+/// Rendering iterator of instructors
+#[component]
+fn DisplayInstructors() -> impl IntoView {
     let (instructor_list, set_instructor_list) = create_signal(Vec::new());
 
     spawn_local(async move {
@@ -127,14 +184,22 @@ fn AdminInstructorPage() -> impl IntoView {
     });
 
     view! {
-        <table class="control-instructor">
-            <For each=move || instructor_list.get() key=|_| () let:instructor_info>
-                <tr>
-                    <td>{instructor_info.fullname}</td>
-                    <td>{instructor_info.tag_line}</td>
-                    <td>"加入日: "{instructor_info.start_date}</td>
-                </tr>
-            </For>
-        </table>
+        <For each=move || instructor_list.get() key=|_| () let:instructor_info>
+            <tr>
+                <td class="control-instructor">{instructor_info.username}</td>
+                <td class="control-instructor">{instructor_info.fullname}</td>
+                <td class="control-instructor">{instructor_info.about}</td>
+                <td class="control-instructor">{instructor_info.total_students}</td>
+                <td class="control-instructor">{instructor_info.tag_line}</td>
+                <td class="control-instructor">{instructor_info.start_date}</td>
+                <td class="control-instructor">{instructor_info.status}</td>
+                <td class="control-instructor">{instructor_info.address}</td>
+                <td class="control-instructor">{instructor_info.email}</td>
+                <td class="control-instructor">{instructor_info.mobile}</td>
+                <td class="control-instructor">{instructor_info.priority}</td>
+                <td class="control-instructor">{instructor_info.rating}</td>
+                <td class="control-instructor">{instructor_info.profile_image_id}</td>
+            </tr>
+        </For>
     }
 }

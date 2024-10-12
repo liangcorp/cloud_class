@@ -80,32 +80,21 @@ pub fn HomePage() -> impl IntoView {
 
         <div class="contents">
             <div align="center">
-                <p>
-                    <h3>"受到全球 16,000 多家公司和数百万学习者的信赖"</h3>
-                </p>
+                <h3>"受到全球 16,000 多家公司和数百万学习者的信赖"</h3>
 
                 <SponsorsPanel />
+
             </div>
         </div>
     }
 }
 
+/// Render the sponsors icons
 #[component]
 pub fn SponsorsPanel() -> impl IntoView {
-    // let (image_entries, set_image_entries) = create_signal(Vec::new());
-
-    // spawn_local(async move {
-    //     match get_sponsor_icons().await {
-    //         Ok(data) => set_image_entries.set(data),
-    //         Err(e) => logging::log!("ERROR<home/mod.rs>: {}", e.to_string()),
-    //     }
-    // });
-
     view! {
         <Await
-            // `future` provides the `Future` to be resolved
             future=|| get_sponsor_icons()
-            // the data is bound to whatever variable name you provide
             let:data
         >
             {

@@ -1,5 +1,5 @@
 use crate::admin::{
-    control::{instructors::AdminInstructorPage, ControlPanelBlankPage, ControlPanelPortal},
+    control::{instructors::AdminInstructorPortal, ControlPanelPortal, ControlPanel},
     AdminLoginPage, AdminPage, AdminRedirectPage,
 };
 use crate::courses::{content::ContentPagePortal, CoursesPage, NoCoursePage};
@@ -53,9 +53,9 @@ pub fn App() -> impl IntoView {
                         <Route path="" view=NoCoursePage />
                     </Route>
                     <Route path="/admin" view=AdminPage>
-                        <Route path="/control" view=ControlPanelPortal>
-                            <Route path="/instructors" view=AdminInstructorPage />
-                            <Route path="" view=ControlPanelBlankPage />
+                        <Route path="/control" view=ControlPanel>
+                            <Route path="/instructors" view=AdminInstructorPortal />
+                            <Route path="" view=ControlPanelPortal />
                         </Route>
 
                         <Route path="/login" view=AdminLoginPage />

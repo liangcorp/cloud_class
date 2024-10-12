@@ -77,9 +77,10 @@ pub async fn get_instructors() -> Result<Vec<InstructorInfo>, ServerFnError> {
 
     Ok(instructor_list)
 }
-/// Renders the control panel for manaing instructors
+
+/// Renders the admin login check panel
 #[component]
-pub fn AdminInstructorPage() -> impl IntoView {
+pub fn AdminInstructorPortal() -> impl IntoView {
     use super::header::HeaderSection;
     use crate::session::extract_session_user;
 
@@ -97,7 +98,7 @@ pub fn AdminInstructorPage() -> impl IntoView {
                         Some(some_username) => {
                             view! {
                                 <HeaderSection username=some_username.to_string() />
-                                <AdminInstructorPanel />
+                                <AdminInstructorPage />
                             }
                                 .into_view()
                         }
@@ -110,8 +111,9 @@ pub fn AdminInstructorPage() -> impl IntoView {
     }
 }
 
+/// Rendering control panel for instructors
 #[component]
-fn AdminInstructorPanel() -> impl IntoView {
+fn AdminInstructorPage() -> impl IntoView {
     let (instructor_list, set_instructor_list) = create_signal(Vec::new());
 
     spawn_local(async move {
@@ -125,20 +127,14 @@ fn AdminInstructorPanel() -> impl IntoView {
     });
 
     view! {
-            <table class="control-instructor">
-                <For each=move || instructor_list.get() key=|_| () let:instructor_info>
-                    <tr>
-                        <td>
-                            {instructor_info.fullname}
-                        </td>
-                        <td>
-                            {instructor_info.tag_line}
-                        </td>
-                        <td>
-                            "加入日: "{instructor_info.start_date}
-                        </td>
-                    </tr>
-                </For>
-            </table>
+        <table class="control-instructor">
+            <For each=move || instructor_list.get() key=|_| () let:instructor_info>
+                <tr>
+                    <td>{instructor_info.fullname}</td>
+                    <td>{instructor_info.tag_line}</td>
+                    <td>"加入日: "{instructor_info.start_date}</td>
+                </tr>
+            </For>
+        </table>
     }
 }

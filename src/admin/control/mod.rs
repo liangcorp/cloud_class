@@ -5,12 +5,12 @@ use leptos::*;
 use leptos_router::*;
 
 #[component]
-pub fn ControlPanelPortal() -> impl IntoView {
+pub fn ControlPanel() -> impl IntoView {
     view! { <Outlet /> }
 }
 
 #[component]
-pub fn ControlPanelBlankPage() -> impl IntoView {
+pub fn ControlPanelPortal() -> impl IntoView {
     use crate::session::extract_session_user;
     use header::HeaderSection;
 
@@ -28,9 +28,7 @@ pub fn ControlPanelBlankPage() -> impl IntoView {
                         Some(some_username) => {
                             view! {
                                 <HeaderSection username=some_username.to_string() />
-                                <div class="contents">
-                                    <img src="images/banners/admin_home.png" />
-                                </div>
+                                <ControlPanelLandingPage />
                             }
                                 .into_view()
                         }
@@ -40,5 +38,14 @@ pub fn ControlPanelBlankPage() -> impl IntoView {
                 Err(_) => view! { <Redirect path="/admin/login" /> }.into_view(),
             }}
         </Await>
+    }
+}
+
+#[component]
+fn ControlPanelLandingPage() -> impl IntoView {
+    view! {
+        <div class="contents">
+            <img src="images/banners/admin_home.png" />
+        </div>
     }
 }

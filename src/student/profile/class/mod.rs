@@ -301,13 +301,9 @@ fn InstructorsNamePanel(course_id: String) -> impl IntoView {
                 if single_instructor
                     != *(move || instructors.get())().last().unwrap_or_else(|| &empty_vec)
                 {
-                    view! {
-                        ", "
-                    }
+                    view! { ", " }
                 } else {
-                    view! {
-                        ""
-                    }
+                    view! { "" }
                 }
             }
         </For>

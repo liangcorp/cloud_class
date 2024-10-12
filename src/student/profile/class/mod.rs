@@ -42,16 +42,19 @@ impl Default for CourseContent {
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct CourseInstructor {
+    username: String,
     fullname: String,
 }
 
 impl Default for CourseInstructor {
     fn default() -> CourseInstructor {
         CourseInstructor {
+            username: "".to_string(),
             fullname: "".to_string(),
         }
     }
 }
+
 cfg_if! {
     if #[cfg(feature = "ssr")] {
         #[derive(Clone, Debug, PartialEq)]
@@ -75,6 +78,7 @@ cfg_if! {
         #[derive(Clone, Debug, PartialEq)]
         #[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
         pub struct CourseInstructorQuery {
+            username: String,
             fullname: String,
         }
     }
@@ -144,7 +148,7 @@ pub async fn get_instructor(course_id: String) -> Result<Vec<CourseInstructor>, 
 
     //  提取用户数据
     let course_instructors = match sqlx::query_as::<_, CourseInstructorQuery>(
-        "SELECT fullname
+        "SELECT username, fullname
         FROM course_instructor
         WHERE course_id = $1
         ORDER BY priority;",
@@ -156,6 +160,7 @@ pub async fn get_instructor(course_id: String) -> Result<Vec<CourseInstructor>, 
         Ok(ok_courses_instructor) => ok_courses_instructor
             .iter()
             .map(|ok_courses_instructor| CourseInstructor {
+                username: ok_courses_instructor.username.clone(),
                 fullname: ok_courses_instructor.fullname.clone(),
             })
             .collect(),
@@ -170,28 +175,28 @@ pub fn CourseContentPage(user: String) -> impl IntoView {
     view! {
         <Await future=move || get_user_courses(user.clone()) let:data>
             {
-                let content = match data.as_ref() {
+                let course_contents = match data.as_ref() {
                     Ok(d) => (*d).clone(),
                     Err(_) => Vec::new(),
                 };
-                view! { <CourseContentPanel content=content /> }
+                view! { <CourseContentPanel course_contents=course_contents /> }
             }
         </Await>
     }
 }
 
 #[component]
-pub fn CourseContentPanel(content: Vec<CourseContent>) -> impl IntoView {
+pub fn CourseContentPanel(course_contents: Vec<CourseContent>) -> impl IntoView {
     view! {
-        <For each=move || { content.clone() } key=|_| () let:course_content>
+        <For each=move || { course_contents.clone() } key=|_| () let:single_content>
             <div class="each-class">
                 <a
-                    href=format!("/courses/{}", &course_content.course_id)
+                    href=format!("/courses/{}", &single_content.course_id)
                     style="text-decoration-line: none;color: #333333;"
                 >
                     <div style="display: inline-block; width:40%">
                         <img
-                            src=format!("images/courses/{}", course_content.image_id)
+                            src=format!("images/courses/{}", single_content.image_id)
                             style="width:350px;height:250px"
                         />
                     </div>
@@ -199,42 +204,42 @@ pub fn CourseContentPanel(content: Vec<CourseContent>) -> impl IntoView {
                         <table width="100%">
                             <tr>
                                 <td align="left">
-                                    <h3>{course_content.title}</h3>
+                                    <h3>{single_content.title}</h3>
                                 </td>
                                 <td stype="padding-left:300px" align="right">
-                                    <b>"¥" {course_content.price}" (CNY)"</b>
+                                    <b>"¥" {single_content.price}" (CNY)"</b>
                                 </td>
                             </tr>
                             <tr>
                                 <td align="left">
-                                    <p>{course_content.tag_line}</p>
+                                    <p>{single_content.tag_line}</p>
                                 </td>
                                 <td align="right"></td>
                             </tr>
                             <tr>
                                 <td align="left" style="color:gray;">
                                     "教师: "
-                                    <InstructorsNamePanel course_id=course_content.course_id.clone() />
+                                    <InstructorsNamePanel course_id=single_content.course_id.clone() />
                                 </td>
                                 <td align="right"></td>
                             </tr>
                             <tr>
-                                <td align="left">"面对: "{course_content.target_level}</td>
+                                <td align="left">"面对: "{single_content.target_level}</td>
                                 <td align="right"></td>
                             </tr>
                             <tr>
-                                <td align="left">"语言: "{course_content.course_language}</td>
+                                <td align="left">"语言: "{single_content.course_language}</td>
                                 <td align="right"></td>
                             </tr>
                             <tr>
                                 <td align="left">
                                     <span>
-                                        {(0..course_content.rating)
+                                        {(0..single_content.rating)
                                             .map(|_| view! { <span style="color:red;">"★"</span> })
                                             .collect_view()}
                                     </span>
                                     <span>
-                                        {(course_content.rating..10)
+                                        {(single_content.rating..10)
                                             .map(|_| view! { <span style="color:gray;">"★"</span> })
                                             .collect_view()}
                                     </span>
@@ -243,14 +248,14 @@ pub fn CourseContentPanel(content: Vec<CourseContent>) -> impl IntoView {
                             </tr>
                             <tr>
                                 <td align="left">
-                                    "时间: "{course_content.duration_minutes} "分钟"
+                                    "时间: "{single_content.duration_minutes} "分钟"
                                 </td>
                                 <td align="right"></td>
                             </tr>
                             <tr>
                                 <td align="left" style="color:#1e6055;">
                                     "更新日: "
-                                    <b>{course_content.update_date}</b>
+                                    <b>{single_content.update_date}</b>
                                 </td>
                                 <td align="right"></td>
                             </tr>
@@ -262,7 +267,7 @@ pub fn CourseContentPanel(content: Vec<CourseContent>) -> impl IntoView {
                 <a
                     target="_blank"
                     rel="noopener noreferrer"
-                    href=format!("/tutorials/{}", &course_content.course_id)
+                    href=format!("/tutorials/{}", &single_content.course_id)
                     class="tutorial-link"
                 >
                     "⚒ 实验室"
@@ -281,17 +286,18 @@ pub fn InstructorsNamePanel(course_id: String) -> impl IntoView {
             future=move || get_instructor(course_id.clone())
             let:instructors
         >
-            {instructors
-                .as_ref()
-                .unwrap()
-                .into_iter()
-                .map(|n| {
-                    view! {
-                        {n.fullname.to_string()}
-                        ", "
-                    }
-                })
-                .collect_view()}
+        <p>"test"</p>
+            // {instructors
+            //     .as_ref()
+            //     .unwrap()
+            //     .into_iter()
+            //     .map(|n| {
+            //         view! {
+            //             {n.fullname.to_string()}
+            //             ", "
+            //         }
+            //     })
+            //     .collect_view()}
         </Await>
     }
 }

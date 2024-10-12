@@ -93,7 +93,7 @@ pub fn HomePage() -> impl IntoView {
 #[component]
 pub fn SponsorsPanel() -> impl IntoView {
     view! {
-        <Await future=|| get_sponsor_icons() let:data>
+        <Await future=get_sponsor_icons let:data>
             {
                 let content = match data.as_ref() {
                     Ok(d) => (*d).clone(),
@@ -109,7 +109,9 @@ pub fn SponsorsPanel() -> impl IntoView {
                                             "images/sponsors/{}.png",
                                             image_entry.uuid.to_string(),
                                         )
-                                        style="width:150px;filter: grayscale(100%);-webkit-filter: grayscale(100%);"
+                                        // style="width:150px;filter: grayscale(100%);-webkit-filter: grayscale(100%);"
+                                        // To grayscale or not to grayscale? That is the question.
+                                        style="width:150px;"
                                     />
                                 </td>
                             </For>

@@ -4,8 +4,8 @@ use leptos_router::*;
 /// Renders the control panel for manaing instructors
 #[component]
 pub fn AdminInstructorPage() -> impl IntoView {
-    use crate::session::extract_session_user;
     use super::header::HeaderSection;
+    use crate::session::extract_session_user;
 
     view! {
         <Await
@@ -20,7 +20,7 @@ pub fn AdminInstructorPage() -> impl IntoView {
                     match ok_username {
                         Some(some_username) => {
                             view! {
-                                <HeaderSection username=some_username.to_string()/>
+                                <HeaderSection username=some_username.to_string() />
                                 "instructor admin page"
                             }
                                 .into_view()

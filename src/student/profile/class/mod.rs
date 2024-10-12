@@ -310,6 +310,9 @@ pub fn InstructorsNamePanel(course_id: String) -> impl IntoView {
                         // probably not need to handle this
                         // iterator won't get here if vector is empty
 
+                        // probably not need to handle this
+                        // iterator won't get here if vector is empty
+
                         ""
                     }
                 }

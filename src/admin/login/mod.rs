@@ -1,5 +1,6 @@
 use cfg_if::cfg_if;
 use leptos::*;
+use leptos_meta::Title;
 use server_fn::ServerFnError;
 
 cfg_if! {
@@ -98,53 +99,57 @@ pub fn LoginPanel() -> impl IntoView {
     };
 
     view! {
-        <form on:submit=on_submit>
-            <table class="admin-login">
-                <tr>
-                    <td>
-                        <h3>"数字化教辅平台-控制端"</h3>
-                    </td>
-                </tr>
-                <tr style:display=move || auth_success.get() style="color:red">
-                    <td>
-                        <h4>"用户名或者密码不正确"</h4>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding-bottom:10px">
-                        "用户名:"<br />
-                        <input
-                            placeholder="请输入用户名"
-                            class="login-form"
-                            type="text"
-                            value=username
-                            node_ref=input_username
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding-bottom:10px">
-                        "密码:"<br />
-                        <input
-                            placeholder="请输入密码"
-                            class="login-form"
-                            type="password"
-                            value=password
-                            node_ref=input_password
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding-bottom:10px">
-                        <input
-                            class="submit-button"
-                            style="width:100%;padding-top:10px;padding-bottom:10px"
-                            type="submit"
-                            value="登陆"
-                        />
-                    </td>
-                </tr>
-            </table>
-        </form>
+        <Title text="数智化教学辅助系统" />
+
+        <div align="center" style="margin-top:100px">
+            <form on:submit=on_submit>
+                <table class="admin-login">
+                    <tr>
+                        <td>
+                            <h3>"数字化教辅平台-控制端"</h3>
+                        </td>
+                    </tr>
+                    <tr style:display=move || auth_success.get() style="color:red">
+                        <td>
+                            <h4>"用户名或者密码不正确"</h4>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-bottom:10px">
+                            "用户名:"<br />
+                            <input
+                                placeholder="请输入用户名"
+                                class="login-form"
+                                type="text"
+                                value=username
+                                node_ref=input_username
+                            />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-bottom:10px">
+                            "密码:"<br />
+                            <input
+                                placeholder="请输入密码"
+                                class="login-form"
+                                type="password"
+                                value=password
+                                node_ref=input_password
+                            />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-bottom:10px">
+                            <input
+                                class="submit-button"
+                                style="width:100%;padding-top:10px;padding-bottom:10px"
+                                type="submit"
+                                value="登陆"
+                            />
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
     }
 }

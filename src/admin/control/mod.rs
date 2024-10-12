@@ -6,9 +6,7 @@ use leptos_router::*;
 
 #[component]
 pub fn ControlPanelPortal() -> impl IntoView {
-    view! {
-        <Outlet />
-    }
+    view! { <Outlet /> }
 }
 
 #[component]
@@ -29,8 +27,10 @@ pub fn ControlPanelBlankPage() -> impl IntoView {
                     match ok_username {
                         Some(some_username) => {
                             view! {
-                                <HeaderSection username=some_username.to_string()/>
-                                "请选项"
+                                <HeaderSection username=some_username.to_string() />
+                                <div class="contents">
+                                    <img src="images/banners/admin_home.png" />
+                                </div>
                             }
                                 .into_view()
                         }
@@ -42,4 +42,3 @@ pub fn ControlPanelBlankPage() -> impl IntoView {
         </Await>
     }
 }
-

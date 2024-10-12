@@ -145,7 +145,6 @@ pub fn AdminInstructorPortal() -> impl IntoView {
 /// Rendering control panel for instructors
 #[component]
 fn AdminInstructorPage() -> impl IntoView {
-
     view! {
         <table class="control-instructor">
             <tr>
@@ -162,6 +161,8 @@ fn AdminInstructorPage() -> impl IntoView {
                 <th class="control-instructor">"priority"</th>
                 <th class="control-instructor">"rating"</th>
                 <th class="control-instructor">"profile_image_id"</th>
+                <th class="control-instructor">"修改"</th>
+                <th class="control-instructor">"删除"</th>
             </tr>
             <DisplayInstructors />
         </table>
@@ -189,8 +190,8 @@ fn DisplayInstructors() -> impl IntoView {
                 <td class="control-instructor">{instructor_info.username}</td>
                 <td class="control-instructor">{instructor_info.fullname}</td>
                 <td class="control-instructor">{instructor_info.about}</td>
-                <td class="control-instructor">{instructor_info.total_students}</td>
                 <td class="control-instructor">{instructor_info.tag_line}</td>
+                <td class="control-instructor">{instructor_info.total_students}</td>
                 <td class="control-instructor">{instructor_info.start_date}</td>
                 <td class="control-instructor">{instructor_info.status}</td>
                 <td class="control-instructor">{instructor_info.address}</td>
@@ -198,7 +199,21 @@ fn DisplayInstructors() -> impl IntoView {
                 <td class="control-instructor">{instructor_info.mobile}</td>
                 <td class="control-instructor">{instructor_info.priority}</td>
                 <td class="control-instructor">{instructor_info.rating}</td>
-                <td class="control-instructor">{instructor_info.profile_image_id}</td>
+                <td class="control-instructor">
+                    <img
+                        src=format!(
+                            "images/users/instructors/{}",
+                            { instructor_info.profile_image_id },
+                        )
+                        style="width:100px"
+                    />
+                </td>
+                <td class="control-instructor">
+                    <button>"修改"</button>
+                </td>
+                <td class="control-instructor">
+                    <button>"删除"</button>
+                </td>
             </tr>
         </For>
     }

@@ -291,7 +291,14 @@ pub fn InstructorsNamePanel(course_id: String) -> impl IntoView {
 
     view! {
         <For each=move || instructors.get() key=|_| () let:single_instructor>
-            {single_instructor.fullname}
+            {   single_instructor.fullname.clone() }
+            {
+                if single_instructor != *(move || instructors.get())().last().unwrap() {
+                    view! { ", " }
+                } else {
+                    view! { "" }
+                }
+            }
         </For>
     }
 }

@@ -147,6 +147,9 @@ VALUES ('97931561-7689-44a4-bf80-f2e7c9e8d2dd', 'teacher1', '教师 1', 1);
 INSERT INTO course_instructor (course_id, username, fullname, priority)
 VALUES ('10031561-7689-44a4-bf80-f2e7c9e8d2dd', 'teacher2', '教师 2', 1);
 
+INSERT INTO course_instructor (course_id, username, fullname, priority)
+VALUES ('10031561-7689-44a4-bf80-f2e7c9e8d2dd', 'teacher1', '教师 1', 2);
+
 INSERT INTO student_course (username, course_id, allow_code, priority)
 VALUES ('student1', '97931561-7689-44a4-bf80-f2e7c9e8d2dd', true, 1);
 

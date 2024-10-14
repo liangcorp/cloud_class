@@ -109,6 +109,11 @@ pub async fn get_instructors() -> Result<Vec<InstructorInfo>, ServerFnError> {
     Ok(instructor_list)
 }
 
+#[server]
+pub async fn update_instructor_info() -> Result<(), ServerFnError> {
+    todo!()
+}
+
 /// Renders the admin login check panel
 #[component]
 pub fn AdminInstructorPortal() -> impl IntoView {
@@ -195,6 +200,67 @@ fn DisplayInstructors() -> impl IntoView {
             }
         }
     });
+
+    let on_submit = move |ev: leptos::ev::SubmitEvent| {
+        // stop the page from reloading!
+        ev.prevent_default();
+
+        // here, we'll extract the value from the input
+        let fullname_value = input_fullname
+            .get()
+            .expect("<input> should be mounted")
+            .value();
+
+        let about_value = input_about
+            .get()
+            .expect("<input> should be mounted")
+            .value();
+
+        let tag_line_value = input_tag_line
+            .get()
+            .expect("<input> should be mounted")
+            .value();
+
+        let total_students_value = input_total_students
+            .get()
+            .expect("<input> should be mounted")
+            .value();
+
+        let start_date_value = input_start_date
+            .get()
+            .expect("<input> should be mounted")
+            .value();
+
+        let status_value = input_status
+            .get()
+            .expect("<input> should be mounted")
+            .value();
+
+        let address_value = input_address
+            .get()
+            .expect("<input> should be mounted")
+            .value();
+
+        let email_value = input_email
+            .get()
+            .expect("<input> should be mounted")
+            .value();
+
+        let mobile_value = input_mobile
+            .get()
+            .expect("<input> should be mounted")
+            .value();
+
+        let priority_value = input_priority
+            .get()
+            .expect("<input> should be mounted")
+            .value();
+
+        let rating_value = input_rating
+            .get()
+            .expect("<input> should be mounted")
+            .value();
+    };
 
     view! {
         <For each=move || instructor_list.get() key=|_| () let:instructor_info>
@@ -294,6 +360,7 @@ fn DisplayInstructors() -> impl IntoView {
                 <td class="control-instructor">
                     <button>"删除"</button>
                 </td>
+                </form>
             </tr>
         </For>
     }

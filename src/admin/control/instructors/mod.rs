@@ -421,7 +421,7 @@ fn AdminInstructorPage() -> impl IntoView {
                                 </tr>
                                 <tr>
                                     <td>"照片:"</td>
-                                    <td><a href=format!("images/users/instructors/{}", instructor_info.get().profile_image_id)>{move || instructor_info.get().profile_image_id}</a></td>
+                                    <td><a target="_blank" href=format!("images/users/instructors/{}", instructor_info.get().profile_image_id)>{move || instructor_info.get().profile_image_id}</a></td>
                                 </tr>
                             </table>
                         </div>

@@ -360,7 +360,6 @@ fn DisplayInstructors() -> impl IntoView {
                 <td class="control-instructor">
                     <button>"删除"</button>
                 </td>
-                </form>
             </tr>
         </For>
     }

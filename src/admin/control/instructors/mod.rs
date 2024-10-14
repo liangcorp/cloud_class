@@ -161,7 +161,7 @@ fn AdminInstructorPage() -> impl IntoView {
                 <th class="control-instructor">"priority"</th>
                 <th class="control-instructor">"rating"</th>
                 <th class="control-instructor">"profile_image_id"</th>
-                <th class="control-instructor">"修改"</th>
+                <th class="control-instructor">"保存"</th>
                 <th class="control-instructor">"删除"</th>
             </tr>
             <DisplayInstructors />
@@ -173,6 +173,18 @@ fn AdminInstructorPage() -> impl IntoView {
 #[component]
 fn DisplayInstructors() -> impl IntoView {
     let (instructor_list, set_instructor_list) = create_signal(Vec::new());
+
+    let input_fullname: NodeRef<html::Input> = create_node_ref();
+    let input_about: NodeRef<html::Input> = create_node_ref();
+    let input_tag_line: NodeRef<html::Input> = create_node_ref();
+    let input_total_students: NodeRef<html::Input> = create_node_ref();
+    let input_start_date: NodeRef<html::Input> = create_node_ref();
+    let input_status: NodeRef<html::Input> = create_node_ref();
+    let input_address: NodeRef<html::Input> = create_node_ref();
+    let input_email: NodeRef<html::Input> = create_node_ref();
+    let input_mobile: NodeRef<html::Input> = create_node_ref();
+    let input_priority: NodeRef<html::Input> = create_node_ref();
+    let input_rating: NodeRef<html::Input> = create_node_ref();
 
     spawn_local(async move {
         match get_instructors().await {
@@ -187,18 +199,86 @@ fn DisplayInstructors() -> impl IntoView {
     view! {
         <For each=move || instructor_list.get() key=|_| () let:instructor_info>
             <tr>
-                <td class="control-instructor">{instructor_info.username}</td>
-                <td class="control-instructor">{instructor_info.fullname}</td>
-                <td class="control-instructor">{instructor_info.about}</td>
-                <td class="control-instructor">{instructor_info.tag_line}</td>
-                <td class="control-instructor">{instructor_info.total_students}</td>
-                <td class="control-instructor">{instructor_info.start_date}</td>
-                <td class="control-instructor">{instructor_info.status}</td>
-                <td class="control-instructor">{instructor_info.address}</td>
-                <td class="control-instructor">{instructor_info.email}</td>
-                <td class="control-instructor">{instructor_info.mobile}</td>
-                <td class="control-instructor">{instructor_info.priority}</td>
-                <td class="control-instructor">{instructor_info.rating}</td>
+                <td class="control-instructor">
+                    {instructor_info.username}
+                </td>
+                <td class="control-instructor">
+                    <input
+                        type="text"
+                        value=instructor_info.fullname
+                        node_ref=input_fullname
+                    />
+                </td>
+                <td class="control-instructor">
+                    <input
+                        type="text"
+                        value=instructor_info.about
+                        node_ref=input_about
+                    />
+                </td>
+                <td class="control-instructor">
+                    <input
+                        type="text"
+                        value=instructor_info.tag_line
+                        node_ref=input_tag_line
+                    />
+                </td>
+                <td class="control-instructor">
+                    <input
+                        type="text"
+                        value=instructor_info.total_students
+                        node_ref=input_total_students
+                    />
+                </td>
+                <td class="control-instructor">
+                    <input
+                        type="text"
+                        value=instructor_info.start_date
+                        node_ref=input_start_date
+                    />
+                </td>
+                <td class="control-instructor">
+                    <input
+                        type="text"
+                        value=instructor_info.status
+                        node_ref=input_status
+                    />
+                </td>
+                <td class="control-instructor">
+                    <input
+                        type="text"
+                        value=instructor_info.address
+                        node_ref=input_address
+                    />
+                </td>
+                <td class="control-instructor">
+                    <input
+                        type="text"
+                        value=instructor_info.email
+                        node_ref=input_email
+                    />
+                </td>
+                <td class="control-instructor">
+                    <input
+                        type="text"
+                        value=instructor_info.mobile
+                        node_ref=input_mobile
+                    />
+                </td>
+                <td class="control-instructor">
+                    <input
+                        type="text"
+                        value=instructor_info.priority
+                        node_ref=input_priority
+                    />
+                </td>
+                <td class="control-instructor">
+                    <input
+                        type="text"
+                        value=instructor_info.rating
+                        node_ref=input_rating
+                    />
+                </td>
                 <td class="control-instructor">
                     <img
                         src=format!(
@@ -209,7 +289,7 @@ fn DisplayInstructors() -> impl IntoView {
                     />
                 </td>
                 <td class="control-instructor">
-                    <button>"修改"</button>
+                    <button>"保存"</button>
                 </td>
                 <td class="control-instructor">
                     <button>"删除"</button>

@@ -106,8 +106,6 @@ pub async fn get_all_instructors() -> Result<Vec<String>, ServerFnError> {
 pub async fn get_single_instructor(username: String) -> Result<InstructorInfo, ServerFnError> {
     use crate::state::AppState;
 
-    logging::log!("DEBUG<admin/control/instructors/mod.rs>: {}", &username);
-
     //  取得软件状态
     let state = match use_context::<AppState>() {
         Some(s) => s,
@@ -280,7 +278,7 @@ fn AdminInstructorPage() -> impl IntoView {
             .value();
     };
 
-    let on_username_submit = move |ev: leptos::ev::SubmitEvent| {
+    let on_username_select = move |ev: leptos::ev::SubmitEvent| {
         // stop the page from reloading!
         ev.prevent_default();
 
@@ -299,29 +297,117 @@ fn AdminInstructorPage() -> impl IntoView {
         set_show_editor.set(true);
     };
 
-    view! {
-        <div class:display=move || show_editor.get()>
-            <form on:submit=on_username_submit>
-                <label for="instructors">"教师用户名: "</label>
-                <select
-                    on:change=move |ev| {
-                        let new_username_value = event_target_value(&ev);
-                        set_username.set(new_username_value);
-                    }
-                    prop:username=move || username.get()
-                >
-                    <For each=move || instructor_list.get() key=|_| () let:instructor_username>
-                        <option username=instructor_username.clone()>{instructor_username.clone()}</option>
-                    </For>
-                </select>
-                <input type="submit" value="确定" />
-            </form>
-        </div>
-        {move || username.get()}
+    let on_username_change = move |ev| {
+        let new_username_value = event_target_value(&ev);
 
-        <div class:display=move || !show_editor.get()>
-            "editing panel"
-            {move || username.get()}
-        </div>
+        set_username.set(new_username_value);
+
+        let user = (move || username.get())();
+
+        spawn_local(async move {
+            match get_single_instructor(user).await {
+                Ok(data) => set_instructor_info.set(data),
+                Err(e) => {
+                    set_instructor_info.set(InstructorInfo::default());
+                    logging::log!("ERROR<admin/control/instructors/mod.rs>: {}", e.to_string());
+                }
+            }
+        });
+
+    };
+
+    let on_username_update = move |ev: leptos::ev::SubmitEvent| {
+        // stop the page from reloading!
+        ev.prevent_default();
+
+        set_show_editor.set(false);
+    };
+
+    view! {
+        <Await
+            future=|| get_all_instructors()
+            let:data
+        >
+            {
+                let instructors = (data.as_ref().unwrap_or(&Vec::new())).to_vec();
+
+                let first_instructor = instructors[0].clone();
+
+                spawn_local(async move {
+                    match get_single_instructor(first_instructor).await {
+                        Ok(data) => set_instructor_info.set(data),
+                        Err(e) => {
+                            set_instructor_info.set(InstructorInfo::default());
+                            logging::log!("ERROR<admin/control/instructors/mod.rs>: {}", e.to_string());
+                        }
+                    }
+                });
+
+                set_username.set(instructors[0].clone());
+                set_instructor_list.set(instructors);
+
+
+                view! {
+                    <div class="contents" class:display=move || show_editor.get() >
+                        <div>
+                            <form on:submit=on_username_select>
+                                <table>
+                                    <tr>
+                                        <td style="padding:10px">
+                                            <label for="instructors">"教师用户名: "</label>
+                                        </td>
+                                        <td style="padding:10px">
+                                            <select
+                                                on:change=on_username_change
+                                                prop:username=move || username.get()
+                                            >
+                                                <For each=move || instructor_list.get() key=|_| () let:instructor_username>
+                                                    <option username=instructor_username.clone()>{instructor_username.clone()}</option>
+                                                </For>
+                                            </select>
+                                        </td>
+                                        <td style="padding:10px">
+                                            <input type="submit" value="更改" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </form>
+                        </div>
+                        <div>
+                            <table>
+                                <tr>
+                                    <td>"全名:"</td><td>{move || instructor_info.get().fullname}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="contents" class:display=move || !show_editor.get()>
+                        <div>
+                            <form on:submit=on_username_update>
+                                <table>
+                                    <tr>
+                                        <td style="padding:10px">
+                                            <label for="instructors">"教师用户名: "</label>
+                                        </td>
+                                        <td style="padding:10px">
+                                            { move || username.get() }
+                                        </td>
+                                        <td style="padding:10px">
+                                            <input type="submit" value="保存" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </form>
+                        </div>
+                        <div>
+                            "editing panel"
+                            {move || username.get()}
+                        </div>
+                    </div>
+                }
+            }
+        </Await>
+
     }
 }

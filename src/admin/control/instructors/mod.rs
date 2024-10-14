@@ -376,7 +376,52 @@ fn AdminInstructorPage() -> impl IntoView {
                         <div>
                             <table>
                                 <tr>
-                                    <td>"全名:"</td><td>{move || instructor_info.get().fullname}</td>
+                                    <td>"全名:"</td>
+                                    <td>{move || instructor_info.get().fullname}</td>
+                                </tr>
+                                <tr>
+                                    <td>"介绍:"</td>
+                                    <td>{move || instructor_info.get().about}</td>
+                                </tr>
+                                <tr>
+                                    <td>"学生数:"</td>
+                                    <td>{move || instructor_info.get().total_students}</td>
+                                </tr>
+                                <tr>
+                                    <td>"简介:"</td>
+                                    <td>{move || instructor_info.get().tag_line}</td>
+                                </tr>
+                                <tr>
+                                    <td>"加入日:"</td>
+                                    <td>{move || instructor_info.get().start_date}</td>
+                                </tr>
+                                <tr>
+                                    <td>"状态:"</td>
+                                    <td>{move || instructor_info.get().status}</td>
+                                </tr>
+                                <tr>
+                                    <td>"地址:"</td>
+                                    <td>{move || instructor_info.get().address}</td>
+                                </tr>
+                                <tr>
+                                    <td>"邮件:"</td>
+                                    <td>{move || instructor_info.get().email}</td>
+                                </tr>
+                                <tr>
+                                    <td>"电话号码:"</td>
+                                    <td>{move || instructor_info.get().mobile}</td>
+                                </tr>
+                                <tr>
+                                    <td>"优先权:"</td>
+                                    <td>{move || instructor_info.get().priority}</td>
+                                </tr>
+                                <tr>
+                                    <td>"评价:"</td>
+                                    <td>{move || instructor_info.get().rating}</td>
+                                </tr>
+                                <tr>
+                                    <td>"照片:"</td>
+                                    <td><a href=format!("images/users/instructors/{}", instructor_info.get().profile_image_id)>{move || instructor_info.get().profile_image_id}</a></td>
                                 </tr>
                             </table>
                         </div>

@@ -571,7 +571,6 @@ fn AdminInstructorPage() -> impl IntoView {
                                                 )
                                             }
                                         />
-                                        <button>"上传"</button>
                                     </td>
                                 </tr>
                             </table>

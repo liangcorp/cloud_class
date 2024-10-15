@@ -93,8 +93,7 @@ pub async fn get_all_instructors() -> Result<Vec<String>, ServerFnError> {
     {
         Ok(ok_instructor) => ok_instructor
             .iter()
-            .map(|ok_instructor| ok_instructor.username.clone()
-            )
+            .map(|ok_instructor| ok_instructor.username.clone())
             .collect(),
         Err(e) => return Err(ServerFnError::Args(e.to_string())),
     };
@@ -209,11 +208,11 @@ fn AdminInstructorPage() -> impl IntoView {
             Ok(data) => {
                 set_username.set(data[0].clone());
                 set_instructor_list.set(data)
-            },
+            }
             Err(e) => {
                 set_instructor_list.set(Vec::new());
                 logging::log!("ERROR<home/instructor_list.rs>: {}", e.to_string())
-            },
+            }
         }
     });
 
@@ -313,7 +312,6 @@ fn AdminInstructorPage() -> impl IntoView {
                 }
             }
         });
-
     };
 
     let on_username_update = move |ev: leptos::ev::SubmitEvent| {
@@ -324,31 +322,25 @@ fn AdminInstructorPage() -> impl IntoView {
     };
 
     view! {
-        <Await
-            future=|| get_all_instructors()
-            let:data
-        >
+        <Await future=|| get_all_instructors() let:data>
             {
                 let instructors = (data.as_ref().unwrap_or(&Vec::new())).to_vec();
-
                 let first_instructor = instructors[0].clone();
-
                 spawn_local(async move {
                     match get_single_instructor(first_instructor).await {
                         Ok(data) => set_instructor_info.set(data),
                         Err(e) => {
                             set_instructor_info.set(InstructorInfo::default());
-                            logging::log!("ERROR<admin/control/instructors/mod.rs>: {}", e.to_string());
+                            logging::log!(
+                                "ERROR<admin/control/instructors/mod.rs>: {}", e.to_string()
+                            );
                         }
                     }
                 });
-
                 set_username.set(instructors[0].clone());
                 set_instructor_list.set(instructors);
-
-
                 view! {
-                    <div class="contents" class:display=move || show_editor.get() >
+                    <div class="contents" class:display=move || show_editor.get()>
                         <div>
                             <form on:submit=on_username_select>
                                 <table>
@@ -361,8 +353,13 @@ fn AdminInstructorPage() -> impl IntoView {
                                                 on:change=on_username_change
                                                 prop:username=move || username.get()
                                             >
-                                                <For each=move || instructor_list.get() key=|_| () let:instructor_username>
-                                                    <option username=instructor_username.clone()>{instructor_username.clone()}</option>
+                                                <For
+                                                    each=move || instructor_list.get()
+                                                    key=|_| ()
+                                                    let:instructor_username
+                                                >
+                                                    <option username=instructor_username
+                                                        .clone()>{instructor_username.clone()}</option>
                                                 </For>
                                             </select>
                                         </td>
@@ -421,8 +418,14 @@ fn AdminInstructorPage() -> impl IntoView {
                                 </tr>
                                 <tr>
                                     <td>"照片:"</td>
-                                    //<td><a target="_blank" href=format!("images/users/instructors/{}", (move || instructor_info.get())().profile_image_id)>{move || instructor_info.get().profile_image_id}</a></td>
-                                    <td>{move || instructor_info.get().profile_image_id}</td>
+                                    <td>
+                                        <img src=move || {
+                                            format!(
+                                                "images/users/instructors/{}",
+                                                instructor_info.get().profile_image_id,
+                                            )
+                                        } />
+                                    </td>
                                 </tr>
                             </table>
                         </div>
@@ -436,9 +439,7 @@ fn AdminInstructorPage() -> impl IntoView {
                                         <td style="padding:10px">
                                             <label for="instructors">"教师用户名: "</label>
                                         </td>
-                                        <td style="padding:10px">
-                                            { move || username.get() }
-                                        </td>
+                                        <td style="padding:10px">{move || username.get()}</td>
                                         <td style="padding:10px">
                                             <input type="submit" value="保存" />
                                         </td>
@@ -446,14 +447,10 @@ fn AdminInstructorPage() -> impl IntoView {
                                 </table>
                             </form>
                         </div>
-                        <div>
-                            "editing panel"
-                            {move || username.get()}
-                        </div>
+                        <div>"editing panel" {move || username.get()}</div>
                     </div>
                 }
             }
         </Await>
-
     }
 }

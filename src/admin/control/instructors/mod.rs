@@ -447,7 +447,65 @@ fn AdminInstructorPage() -> impl IntoView {
                                 </table>
                             </form>
                         </div>
-                        <div>"editing panel" {move || username.get()}</div>
+                        <div>
+                            <table>
+                                <tr>
+                                    <td>"全名:"</td>
+                                    <td><input type="text" value={move || instructor_info.get().fullname} node_ref=input_fullname /></td>
+                                </tr>
+                                <tr>
+                                    <td>"介绍:"</td>
+                                    <td><input type="text" value={move || instructor_info.get().about} node_ref=input_about/></td>
+                                </tr>
+                                <tr>
+                                    <td>"学生数:"</td>
+                                    <td><input type="text" value={move || instructor_info.get().total_students} node_ref=input_total_students /></td>
+                                </tr>
+                                <tr>
+                                    <td>"简介:"</td>
+                                    <td><input type="text" value={move || instructor_info.get().tag_line} node_ref=input_tag_line /></td>
+                                </tr>
+                                <tr>
+                                    <td>"加入日:"</td>
+                                    <td><input type="text" value={move || instructor_info.get().start_date} node_ref=input_start_date /></td>
+                                </tr>
+                                <tr>
+                                    <td>"状态:"</td>
+                                    <td><input type="text" value={move || instructor_info.get().status} node_ref=input_status /></td>
+                                </tr>
+                                <tr>
+                                    <td>"地址:"</td>
+                                    <td><input type="text" value={move || instructor_info.get().address} node_ref=input_address /></td>
+                                </tr>
+                                <tr>
+                                    <td>"邮件:"</td>
+                                    <td><input type="text" value={move || instructor_info.get().email} node_ref=input_email /></td>
+                                </tr>
+                                <tr>
+                                    <td>"电话号码:"</td>
+                                    <td><input type="text" value={move || instructor_info.get().mobile} node_ref=input_mobile /></td>
+                                </tr>
+                                <tr>
+                                    <td>"优先权:"</td>
+                                    <td><input type="text" value={move || instructor_info.get().priority} node_ref=input_priority /></td>
+                                </tr>
+                                <tr>
+                                    <td>"评价:"</td>
+                                    <td><input type="text" value={move || instructor_info.get().rating} node_ref=input_rating /></td>
+                                </tr>
+                                <tr>
+                                    <td>"照片:"</td>
+                                    <td>
+                                        <input type="file" value=move ||
+                                            format!(
+                                                "images/users/instructors/{}",
+                                                instructor_info.get().profile_image_id,
+                                            )/>
+                                        <button>"上传"</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
                 }
             }

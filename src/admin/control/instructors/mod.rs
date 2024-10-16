@@ -146,8 +146,38 @@ pub async fn get_single_instructor(username: String) -> Result<InstructorInfo, S
 }
 
 #[server]
-pub async fn update_instructor_info() -> Result<(), ServerFnError> {
-    todo!()
+pub async fn update_instructor_info(username: String, fullname: String, about: String, tag_line: String, total_students: String, start_date: String, status: String, address: String, email: String, mobile: String, priority: String, rating: String) -> Result<(), ServerFnError> {
+    use crate::state::AppState;
+
+    //  取得软件状态
+    let state = match use_context::<AppState>() {
+        Some(s) => s,
+        None => return Err(ServerFnError::Args("Error in database pool".to_string())),
+    };
+
+    //  取得数据库信息
+    let pool = state.pool;
+
+    match sqlx::query("UPDATE instructors
+        SET fullname = $1, about = $2, total_students = $3, tag_line = $4, start_date = $5, status = $6, address = $7, email = $8, mobile = $9, priority = $10, rating = $11, profile_image_id = $12
+        WHERE username = $13;")
+        .bind(&fullname)
+        .bind(&about)
+        .bind(&total_students)
+        .bind(&tag_line)
+        .bind(&start_date)
+        .bind(&status)
+        .bind(&address)
+        .bind(&email)
+        .bind(&mobile)
+        .bind(&priority)
+        .bind(&rating)
+        .bind(&username)
+        .execute(&pool)
+        .await {
+            Ok(_) => Ok(()),
+            Err(e) => return Err(ServerFnError::Args(e.to_string())),
+        }
 }
 
 /// Renders the admin login check panel
@@ -191,6 +221,7 @@ fn AdminInstructorPage() -> impl IntoView {
     let (username, set_username) = create_signal("".to_string());
     let (instructor_info, set_instructor_info) = create_signal(InstructorInfo::default());
 
+    let input_username: NodeRef<html::Input> = create_node_ref();
     let input_fullname: NodeRef<html::Input> = create_node_ref();
     let input_about: NodeRef<html::Input> = create_node_ref();
     let input_tag_line: NodeRef<html::Input> = create_node_ref();
@@ -221,6 +252,11 @@ fn AdminInstructorPage() -> impl IntoView {
         ev.prevent_default();
 
         // here, we'll extract the value from the input
+        let username_value = input_username
+            .get()
+            .expect("<input> should be mounted")
+            .value();
+
         let fullname_value = input_fullname
             .get()
             .expect("<input> should be mounted")
@@ -275,6 +311,17 @@ fn AdminInstructorPage() -> impl IntoView {
             .get()
             .expect("<input> should be mounted")
             .value();
+
+        spawn_local(async move {
+            match update_instructor_info(username_value, fullname_value, about_value, tag_line_value, total_students_value, start_date_value, status_value, address_value, email_value, mobile_value, priority_value, rating_value).await {
+                Ok(()) => (),
+                Err(e) => {
+                    logging::log!("ERROR<admin/control/instructors/mod.rs>: {}", e.to_string());
+                }
+            };
+        });
+
+        set_show_editor.set(false);
     };
 
     let on_username_select = move |ev: leptos::ev::SubmitEvent| {
@@ -312,13 +359,6 @@ fn AdminInstructorPage() -> impl IntoView {
                 }
             }
         });
-    };
-
-    let on_username_update = move |ev: leptos::ev::SubmitEvent| {
-        // stop the page from reloading!
-        ev.prevent_default();
-
-        set_show_editor.set(false);
     };
 
     view! {
@@ -432,8 +472,8 @@ fn AdminInstructorPage() -> impl IntoView {
                     </div>
 
                     <div class="contents" class:display=move || !show_editor.get()>
+                        <form on:submit=on_submit>
                         <div>
-                            <form on:submit=on_username_update>
                                 <table>
                                     <tr>
                                         <td style="padding:10px">
@@ -445,136 +485,146 @@ fn AdminInstructorPage() -> impl IntoView {
                                         </td>
                                     </tr>
                                 </table>
-                            </form>
                         </div>
                         <div>
-                            <table>
-                                <tr>
-                                    <td>"全名:"</td>
-                                    <td>
-                                        <input
-                                            type="text"
-                                            value=move || instructor_info.get().fullname
-                                            node_ref=input_fullname
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>"介绍:"</td>
-                                    <td>
-                                        <input
-                                            type="text"
-                                            value=move || instructor_info.get().about
-                                            node_ref=input_about
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>"学生数:"</td>
-                                    <td>
-                                        <input
-                                            type="text"
-                                            value=move || instructor_info.get().total_students
-                                            node_ref=input_total_students
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>"简介:"</td>
-                                    <td>
-                                        <input
-                                            type="text"
-                                            value=move || instructor_info.get().tag_line
-                                            node_ref=input_tag_line
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>"加入日:"</td>
-                                    <td>
-                                        <input
-                                            type="text"
-                                            value=move || instructor_info.get().start_date
-                                            node_ref=input_start_date
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>"状态:"</td>
-                                    <td>
-                                        <input
-                                            type="text"
-                                            value=move || instructor_info.get().status
-                                            node_ref=input_status
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>"地址:"</td>
-                                    <td>
-                                        <input
-                                            type="text"
-                                            value=move || instructor_info.get().address
-                                            node_ref=input_address
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>"邮件:"</td>
-                                    <td>
-                                        <input
-                                            type="text"
-                                            value=move || instructor_info.get().email
-                                            node_ref=input_email
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>"电话号码:"</td>
-                                    <td>
-                                        <input
-                                            type="text"
-                                            value=move || instructor_info.get().mobile
-                                            node_ref=input_mobile
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>"优先权:"</td>
-                                    <td>
-                                        <input
-                                            type="text"
-                                            value=move || instructor_info.get().priority
-                                            node_ref=input_priority
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>"评价:"</td>
-                                    <td>
-                                        <input
-                                            type="text"
-                                            value=move || instructor_info.get().rating
-                                            node_ref=input_rating
-                                        />
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>"照片:"</td>
-                                    <td>
-                                        <input
-                                            type="file"
-                                            value=move || {
-                                                format!(
-                                                    "images/users/instructors/{}",
-                                                    instructor_info.get().profile_image_id,
-                                                )
-                                            }
-                                        />
-                                    </td>
-                                </tr>
-                            </table>
+                                <table>
+                                    <tr>
+                                        <td>"用户名"</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value=move || instructor_info.get().username
+                                                node_ref=input_username
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>"全名:"</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value=move || instructor_info.get().fullname
+                                                node_ref=input_fullname
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>"介绍:"</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value=move || instructor_info.get().about
+                                                node_ref=input_about
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>"学生数:"</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value=move || instructor_info.get().total_students
+                                                node_ref=input_total_students
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>"简介:"</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value=move || instructor_info.get().tag_line
+                                                node_ref=input_tag_line
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>"加入日:"</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value=move || instructor_info.get().start_date
+                                                node_ref=input_start_date
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>"状态:"</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value=move || instructor_info.get().status
+                                                node_ref=input_status
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>"地址:"</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value=move || instructor_info.get().address
+                                                node_ref=input_address
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>"邮件:"</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value=move || instructor_info.get().email
+                                                node_ref=input_email
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>"电话号码:"</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value=move || instructor_info.get().mobile
+                                                node_ref=input_mobile
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>"优先权:"</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value=move || instructor_info.get().priority
+                                                node_ref=input_priority
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>"评价:"</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value=move || instructor_info.get().rating
+                                                node_ref=input_rating
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>"照片:"</td>
+                                        <td>
+                                            <input
+                                                type="file"
+                                                value=move || {
+                                                    format!(
+                                                        "images/users/instructors/{}",
+                                                        instructor_info.get().profile_image_id,
+                                                    )
+                                                }
+                                            />
+                                        </td>
+                                    </tr>
+                                </table>
                         </div>
+                        </form>
                     </div>
                 }
             }

@@ -146,7 +146,20 @@ pub async fn get_single_instructor(username: String) -> Result<InstructorInfo, S
 }
 
 #[server]
-pub async fn update_instructor_info(username: String, fullname: String, about: String, tag_line: String, total_students: String, start_date: String, status: String, address: String, email: String, mobile: String, priority: String, rating: String) -> Result<(), ServerFnError> {
+pub async fn update_instructor_info(
+    username: String,
+    fullname: String,
+    about: String,
+    tag_line: String,
+    total_students: String,
+    start_date: String,
+    status: String,
+    address: String,
+    email: String,
+    mobile: String,
+    priority: String,
+    rating: String,
+) -> Result<(), ServerFnError> {
     use crate::state::AppState;
 
     //  取得软件状态
@@ -159,8 +172,8 @@ pub async fn update_instructor_info(username: String, fullname: String, about: S
     let pool = state.pool;
 
     match sqlx::query("UPDATE instructors
-        SET fullname = $1, about = $2, total_students = $3, tag_line = $4, start_date = $5, status = $6, address = $7, email = $8, mobile = $9, priority = $10, rating = $11, profile_image_id = $12
-        WHERE username = $13;")
+        SET fullname = $1, about = $2, total_students = $3, tag_line = $4, start_date = $5, status = $6, address = $7, email = $8, mobile = $9, priority = $10, rating = $11
+        WHERE username = $12;")
         .bind(&fullname)
         .bind(&about)
         .bind(&total_students)
@@ -257,6 +270,8 @@ fn AdminInstructorPage() -> impl IntoView {
             .expect("<input> should be mounted")
             .value();
 
+        let username_value_clone = username_value.clone();
+
         let fullname_value = input_fullname
             .get()
             .expect("<input> should be mounted")
@@ -313,7 +328,22 @@ fn AdminInstructorPage() -> impl IntoView {
             .value();
 
         spawn_local(async move {
-            match update_instructor_info(username_value, fullname_value, about_value, tag_line_value, total_students_value, start_date_value, status_value, address_value, email_value, mobile_value, priority_value, rating_value).await {
+            match update_instructor_info(
+                username_value,
+                fullname_value,
+                about_value,
+                tag_line_value,
+                total_students_value,
+                start_date_value,
+                status_value,
+                address_value,
+                email_value,
+                mobile_value,
+                priority_value,
+                rating_value,
+            )
+            .await
+            {
                 Ok(()) => (),
                 Err(e) => {
                     logging::log!("ERROR<admin/control/instructors/mod.rs>: {}", e.to_string());
@@ -322,6 +352,16 @@ fn AdminInstructorPage() -> impl IntoView {
         });
 
         set_show_editor.set(false);
+
+        spawn_local(async move {
+            match get_single_instructor(username_value_clone).await {
+                Ok(data) => set_instructor_info.set(data),
+                Err(e) => {
+                    set_instructor_info.set(InstructorInfo::default());
+                    logging::log!("ERROR<admin/control/instructors/mod.rs>: {}", e.to_string());
+                }
+            }
+        });
     };
 
     let on_username_select = move |ev: leptos::ev::SubmitEvent| {
@@ -366,6 +406,7 @@ fn AdminInstructorPage() -> impl IntoView {
             {
                 let instructors = (data.as_ref().unwrap_or(&Vec::new())).to_vec();
                 let first_instructor = instructors[0].clone();
+
                 spawn_local(async move {
                     match get_single_instructor(first_instructor).await {
                         Ok(data) => set_instructor_info.set(data),
@@ -377,8 +418,10 @@ fn AdminInstructorPage() -> impl IntoView {
                         }
                     }
                 });
+
                 set_username.set(instructors[0].clone());
                 set_instructor_list.set(instructors);
+
                 view! {
                     <div class="contents" class:display=move || show_editor.get()>
                         <div>
@@ -473,7 +516,7 @@ fn AdminInstructorPage() -> impl IntoView {
 
                     <div class="contents" class:display=move || !show_editor.get()>
                         <form on:submit=on_submit>
-                        <div>
+                            <div>
                                 <table>
                                     <tr>
                                         <td style="padding:10px">
@@ -485,8 +528,8 @@ fn AdminInstructorPage() -> impl IntoView {
                                         </td>
                                     </tr>
                                 </table>
-                        </div>
-                        <div>
+                            </div>
+                            <div>
                                 <table>
                                     <tr>
                                         <td>"用户名"</td>
@@ -623,7 +666,7 @@ fn AdminInstructorPage() -> impl IntoView {
                                         </td>
                                     </tr>
                                 </table>
-                        </div>
+                            </div>
                         </form>
                     </div>
                 }

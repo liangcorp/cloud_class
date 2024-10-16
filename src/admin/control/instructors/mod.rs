@@ -538,6 +538,7 @@ fn AdminInstructorPage() -> impl IntoView {
                                                 type="text"
                                                 value=move || instructor_info.get().username
                                                 node_ref=input_username
+                                                disabled
                                             />
                                         </td>
                                     </tr>

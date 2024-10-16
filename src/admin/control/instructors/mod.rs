@@ -406,7 +406,6 @@ fn AdminInstructorPage() -> impl IntoView {
             {
                 let instructors = (data.as_ref().unwrap_or(&Vec::new())).to_vec();
                 let first_instructor = instructors[0].clone();
-
                 spawn_local(async move {
                     match get_single_instructor(first_instructor).await {
                         Ok(data) => set_instructor_info.set(data),
@@ -418,12 +417,12 @@ fn AdminInstructorPage() -> impl IntoView {
                         }
                     }
                 });
-
                 set_username.set(instructors[0].clone());
                 set_instructor_list.set(instructors);
-
                 view! {
+                    // Display panel
                     <div class="contents" class:display=move || show_editor.get()>
+                        // Select instructor panel
                         <div>
                             <form on:submit=on_username_select>
                                 <table>
@@ -452,8 +451,9 @@ fn AdminInstructorPage() -> impl IntoView {
                                     </tr>
                                 </table>
                             </form>
-                        </div>
-                        <div>
+                        </div>  // End of select instructor panel
+
+                        <div> // Display content
                             <table>
                                 <tr>
                                     <td>"全名:"</td>
@@ -511,11 +511,13 @@ fn AdminInstructorPage() -> impl IntoView {
                                     </td>
                                 </tr>
                             </table>
-                        </div>
-                    </div>
+                        </div>  // End of display content
+                    </div> // End of display panel
 
+                    // Edit panel
                     <div class="contents" class:display=move || !show_editor.get()>
                         <form on:submit=on_submit>
+                            // Show control buttons
                             <div>
                                 <table>
                                     <tr>
@@ -525,10 +527,17 @@ fn AdminInstructorPage() -> impl IntoView {
                                         <td style="padding:10px">{move || username.get()}</td>
                                         <td style="padding:10px">
                                             <input type="submit" value="保存" />
+                                            <span style="padding-left:5px"></span>
+                                            <button on:click=move |ev| {
+                                                ev.prevent_default();
+                                                set_show_editor.set(false);
+                                            }>"取消"</button>
                                         </td>
                                     </tr>
                                 </table>
-                            </div>
+                            </div>  // End of show control buttons
+
+                            //  Display input boxes
                             <div>
                                 <table>
                                     <tr>
@@ -667,9 +676,9 @@ fn AdminInstructorPage() -> impl IntoView {
                                         </td>
                                     </tr>
                                 </table>
-                            </div>
+                            </div>  // End of display input boxes
                         </form>
-                    </div>
+                    </div>  // End of edit panel
                 }
             }
         </Await>

@@ -45,6 +45,12 @@ cfg_if! {
     if #[cfg(feature = "ssr")] {
         #[derive(Clone, Debug, PartialEq)]
         #[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
+        pub struct InstructorUsernameQuery {
+            username: String,
+        }
+
+        #[derive(Clone, Debug, PartialEq)]
+        #[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
         pub struct InstructorInfoQuery {
             username: String,
             fullname: String,
@@ -64,54 +70,132 @@ cfg_if! {
 }
 
 #[server]
-pub async fn get_instructors() -> Result<Vec<InstructorInfo>, ServerFnError> {
+pub async fn get_all_instructors() -> Result<Vec<String>, ServerFnError> {
     use crate::state::AppState;
 
     //  取得软件状态
     let state = match use_context::<AppState>() {
         Some(s) => s,
-        None => return Ok(vec![InstructorInfo::default()]),
+        None => return Ok(vec!["".to_string()]),
     };
 
     //  取得数据库信息
     let pool = state.pool;
 
     //  提取用户数据
-    let instructor_list = match sqlx::query_as::<_, InstructorInfoQuery>(
-        "SELECT *
+    let instructor_username = match sqlx::query_as::<_, InstructorUsernameQuery>(
+        "SELECT username
         FROM instructors
         ORDER BY priority;",
     )
     .fetch_all(&pool)
     .await
     {
-        Ok(ok_instr_info) => ok_instr_info
+        Ok(ok_instructor) => ok_instructor
             .iter()
-            .map(|ok_instr_info| InstructorInfo {
-                username: ok_instr_info.username.clone(),
-                fullname: ok_instr_info.fullname.clone(),
-                about: ok_instr_info.about.clone(),
-                tag_line: ok_instr_info.tag_line.clone(),
-                total_students: ok_instr_info.total_students,
-                start_date: ok_instr_info.start_date.clone(),
-                status: ok_instr_info.status.clone(),
-                address: ok_instr_info.address.clone(),
-                email: ok_instr_info.email.clone(),
-                mobile: ok_instr_info.mobile.clone(),
-                priority: ok_instr_info.priority,
-                rating: ok_instr_info.rating,
-                profile_image_id: ok_instr_info.profile_image_id.clone(),
-            })
+            .map(|ok_instructor| ok_instructor.username.clone())
             .collect(),
         Err(e) => return Err(ServerFnError::Args(e.to_string())),
     };
 
-    Ok(instructor_list)
+    Ok(instructor_username)
 }
 
 #[server]
-pub async fn update_instructor_info() -> Result<(), ServerFnError> {
-    todo!()
+pub async fn get_single_instructor(username: String) -> Result<InstructorInfo, ServerFnError> {
+    use crate::state::AppState;
+
+    //  取得软件状态
+    let state = match use_context::<AppState>() {
+        Some(s) => s,
+        None => return Ok(InstructorInfo::default()),
+    };
+
+    //  取得数据库信息
+    let pool = state.pool;
+
+    //  提取用户数据
+    let instructor_info = match sqlx::query_as::<_, InstructorInfoQuery>(
+        "SELECT *
+        FROM instructors
+        WHERE username = $1;",
+    )
+    .bind(&username)
+    .fetch_one(&pool)
+    .await
+    {
+        Ok(ok_instr_info) => InstructorInfo {
+            username: ok_instr_info.username.clone(),
+            fullname: ok_instr_info.fullname.clone(),
+            about: ok_instr_info.about.clone(),
+            tag_line: ok_instr_info.tag_line.clone(),
+            total_students: ok_instr_info.total_students,
+            start_date: ok_instr_info.start_date.clone(),
+            status: ok_instr_info.status.clone(),
+            address: ok_instr_info.address.clone(),
+            email: ok_instr_info.email.clone(),
+            mobile: ok_instr_info.mobile.clone(),
+            priority: ok_instr_info.priority,
+            rating: ok_instr_info.rating,
+            profile_image_id: ok_instr_info.profile_image_id.clone(),
+        },
+        Err(e) => return Err(ServerFnError::Args(e.to_string())),
+    };
+
+    Ok(instructor_info)
+}
+
+#[server]
+pub async fn update_instructor_info(
+    username: String,
+    fullname: String,
+    about: String,
+    tag_line: String,
+    total_students: String,
+    start_date: String,
+    status: String,
+    address: String,
+    email: String,
+    mobile: String,
+    priority: String,
+    rating: String,
+) -> Result<Option<String>, ServerFnError> {
+    use crate::state::AppState;
+
+    //  取得软件状态
+    let state = match use_context::<AppState>() {
+        Some(s) => s,
+        None => return Err(ServerFnError::Args("Error in database pool".to_string())),
+    };
+
+    //  取得数据库信息
+    let pool = state.pool;
+
+    match sqlx::query("UPDATE instructors
+        SET fullname = $1, about = $2, total_students = $3, tag_line = $4, start_date = $5, status = $6, address = $7, email = $8, mobile = $9, priority = $10, rating = $11
+        WHERE username = $12;")
+        .bind(&fullname)
+        .bind(&about)
+        .bind(&total_students)
+        .bind(&tag_line)
+        .bind(&start_date)
+        .bind(&status)
+        .bind(&address)
+        .bind(&email)
+        .bind(&mobile)
+        .bind(&priority)
+        .bind(&rating)
+        .bind(&username)
+        .execute(&pool)
+        .await {
+            Ok(_query_result) => {
+                // logging::log!("DEBUG<admin/control/instructors/mod.rs>: {:?}", query_result);
+               Ok(None)
+            },
+            Err(e) => {
+                Ok(Some(e.to_string()))
+            },
+        }
 }
 
 /// Renders the admin login check panel
@@ -150,35 +234,14 @@ pub fn AdminInstructorPortal() -> impl IntoView {
 /// Rendering control panel for instructors
 #[component]
 fn AdminInstructorPage() -> impl IntoView {
-    view! {
-        <table class="control-instructor">
-            <tr>
-                <th class="control-instructor">"用户名"</th>
-                <th class="control-instructor">"全名"</th>
-                <th class="control-instructor">"about"</th>
-                <th class="control-instructor">"tag_line"</th>
-                <th class="control-instructor">"total_students"</th>
-                <th class="control-instructor">"start_date"</th>
-                <th class="control-instructor">"status"</th>
-                <th class="control-instructor">"address"</th>
-                <th class="control-instructor">"email"</th>
-                <th class="control-instructor">"mobile"</th>
-                <th class="control-instructor">"priority"</th>
-                <th class="control-instructor">"rating"</th>
-                <th class="control-instructor">"profile_image_id"</th>
-                <th class="control-instructor">"保存"</th>
-                <th class="control-instructor">"删除"</th>
-            </tr>
-            <DisplayInstructors />
-        </table>
-    }
-}
-
-/// Rendering iterator of instructors
-#[component]
-fn DisplayInstructors() -> impl IntoView {
     let (instructor_list, set_instructor_list) = create_signal(Vec::new());
+    let (show_editor, set_show_editor) = create_signal(false);
+    let (username, set_username) = create_signal("".to_string());
+    let (instructor_info, set_instructor_info) = create_signal(InstructorInfo::default());
+    let (show_db_update_error, set_show_db_update_error) = create_signal(false);
+    let (db_update_error, set_db_update_error) = create_signal("".to_string());
 
+    let input_username: NodeRef<html::Input> = create_node_ref();
     let input_fullname: NodeRef<html::Input> = create_node_ref();
     let input_about: NodeRef<html::Input> = create_node_ref();
     let input_tag_line: NodeRef<html::Input> = create_node_ref();
@@ -192,11 +255,14 @@ fn DisplayInstructors() -> impl IntoView {
     let input_rating: NodeRef<html::Input> = create_node_ref();
 
     spawn_local(async move {
-        match get_instructors().await {
-            Ok(data) => set_instructor_list.set(data),
-            Err(e) => {
+        match get_all_instructors().await {
+            Ok(data) => {
+                set_username.set(data[0].clone());
+                set_instructor_list.set(data)
+            }
+            Err(_e) => {
                 set_instructor_list.set(Vec::new());
-                logging::log!("ERROR<home/instructor_list.rs>: {}", e.to_string());
+                // logging::log!("ERROR<home/instructor_list.rs>: {}", e.to_string())
             }
         }
     });
@@ -206,6 +272,13 @@ fn DisplayInstructors() -> impl IntoView {
         ev.prevent_default();
 
         // here, we'll extract the value from the input
+        let username_value = input_username
+            .get()
+            .expect("<input> should be mounted")
+            .value();
+
+        let username_value_clone = username_value.clone();
+
         let fullname_value = input_fullname
             .get()
             .expect("<input> should be mounted")
@@ -260,107 +333,386 @@ fn DisplayInstructors() -> impl IntoView {
             .get()
             .expect("<input> should be mounted")
             .value();
+
+        spawn_local(async move {
+            match update_instructor_info(
+                username_value,
+                fullname_value,
+                about_value,
+                tag_line_value,
+                total_students_value,
+                start_date_value,
+                status_value,
+                address_value,
+                email_value,
+                mobile_value,
+                priority_value,
+                rating_value,
+            )
+            .await
+            {
+                Ok(ok_query_error) => match ok_query_error {
+                    None => {
+                        set_show_db_update_error.set(true);
+                        set_show_editor.set(false)
+                    }
+                    Some(error) => {
+                        set_show_db_update_error.set(false);
+                        // logging::log!("ERROR<admin/control/instructors/mod.rs>: {}", &error);
+                        set_db_update_error.set(error)
+                    }
+                },
+                Err(e) => {
+                    logging::log!("ERROR<admin/control/instructors/mod.rs>: {}", e.to_string());
+                }
+            };
+        });
+
+        spawn_local(async move {
+            match get_single_instructor(username_value_clone).await {
+                Ok(data) => set_instructor_info.set(data),
+                Err(_e) => {
+                    set_instructor_info.set(InstructorInfo::default());
+                    // logging::log!("ERROR<admin/control/instructors/mod.rs>: {}", e.to_string());
+                }
+            }
+        });
+    };
+
+    let on_username_select = move |ev: leptos::ev::SubmitEvent| {
+        // stop the page from reloading!
+        ev.prevent_default();
+
+        let user = (move || username.get())();
+
+        spawn_local(async move {
+            match get_single_instructor(user).await {
+                Ok(data) => set_instructor_info.set(data),
+                Err(_e) => {
+                    set_instructor_info.set(InstructorInfo::default());
+                    // logging::log!("ERROR<admin/control/instructors/mod.rs>: {}", e.to_string());
+                }
+            }
+        });
+
+        set_show_editor.set(true);
+        set_show_db_update_error.set(true);
+    };
+
+    let on_username_change = move |ev| {
+        let new_username_value = event_target_value(&ev);
+
+        set_username.set(new_username_value);
+
+        let user = (move || username.get())();
+
+        spawn_local(async move {
+            match get_single_instructor(user).await {
+                Ok(data) => set_instructor_info.set(data),
+                Err(_e) => {
+                    set_instructor_info.set(InstructorInfo::default());
+                    // logging::log!("ERROR<admin/control/instructors/mod.rs>: {}", e.to_string());
+                }
+            }
+        });
     };
 
     view! {
-        <For each=move || instructor_list.get() key=|_| () let:instructor_info>
-            <tr>
-                <td class="control-instructor">
-                    {instructor_info.username}
-                </td>
-                <td class="control-instructor">
-                    <input
-                        type="text"
-                        value=instructor_info.fullname
-                        node_ref=input_fullname
-                    />
-                </td>
-                <td class="control-instructor">
-                    <input
-                        type="text"
-                        value=instructor_info.about
-                        node_ref=input_about
-                    />
-                </td>
-                <td class="control-instructor">
-                    <input
-                        type="text"
-                        value=instructor_info.tag_line
-                        node_ref=input_tag_line
-                    />
-                </td>
-                <td class="control-instructor">
-                    <input
-                        type="text"
-                        value=instructor_info.total_students
-                        node_ref=input_total_students
-                    />
-                </td>
-                <td class="control-instructor">
-                    <input
-                        type="text"
-                        value=instructor_info.start_date
-                        node_ref=input_start_date
-                    />
-                </td>
-                <td class="control-instructor">
-                    <input
-                        type="text"
-                        value=instructor_info.status
-                        node_ref=input_status
-                    />
-                </td>
-                <td class="control-instructor">
-                    <input
-                        type="text"
-                        value=instructor_info.address
-                        node_ref=input_address
-                    />
-                </td>
-                <td class="control-instructor">
-                    <input
-                        type="text"
-                        value=instructor_info.email
-                        node_ref=input_email
-                    />
-                </td>
-                <td class="control-instructor">
-                    <input
-                        type="text"
-                        value=instructor_info.mobile
-                        node_ref=input_mobile
-                    />
-                </td>
-                <td class="control-instructor">
-                    <input
-                        type="text"
-                        value=instructor_info.priority
-                        node_ref=input_priority
-                    />
-                </td>
-                <td class="control-instructor">
-                    <input
-                        type="text"
-                        value=instructor_info.rating
-                        node_ref=input_rating
-                    />
-                </td>
-                <td class="control-instructor">
-                    <img
-                        src=format!(
-                            "images/users/instructors/{}",
-                            { instructor_info.profile_image_id },
-                        )
-                        style="width:100px"
-                    />
-                </td>
-                <td class="control-instructor">
-                    <button>"保存"</button>
-                </td>
-                <td class="control-instructor">
-                    <button>"删除"</button>
-                </td>
-            </tr>
-        </For>
+        <Await future=|| get_all_instructors() let:data>
+            {
+                let instructors = (data.as_ref().unwrap_or(&Vec::new())).to_vec();
+                let first_instructor = instructors[0].clone();
+                spawn_local(async move {
+                    match get_single_instructor(first_instructor).await {
+                        Ok(data) => set_instructor_info.set(data),
+                        Err(_e) => {
+                            set_instructor_info.set(InstructorInfo::default());
+                            // logging::log!(
+                            //     "ERROR<admin/control/instructors/mod.rs>: {}", e.to_string()
+                            // );
+                        }
+                    }
+                });
+                set_username.set(instructors[0].clone());
+                set_instructor_list.set(instructors);
+                view! {
+                    // Display panel
+                    <div class="contents" class:display=move || show_editor.get()>
+                        // Select instructor panel
+                        <div>
+                            <form on:submit=on_username_select>
+                                <table>
+                                    <tr>
+                                        <td style="padding:10px">
+                                            <label for="instructors">"教师用户名: "</label>
+                                        </td>
+                                        <td style="padding:10px">
+                                            <select
+                                                on:change=on_username_change
+                                                prop:username=move || username.get()
+                                            >
+                                                <For
+                                                    each=move || instructor_list.get()
+                                                    key=|_| ()
+                                                    let:instructor_username
+                                                >
+                                                    <option username=instructor_username
+                                                        .clone()>{instructor_username.clone()}</option>
+                                                </For>
+                                            </select>
+                                        </td>
+                                        <td style="padding:10px">
+                                            <input type="submit" value="更改" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </form>
+                        // End of select instructor panel
+                        </div>
+
+                        // Display content
+                        <div>
+                            <table>
+                                <tr>
+                                    <td>"全名:"</td>
+                                    <td>{move || instructor_info.get().fullname}</td>
+                                </tr>
+                                <tr>
+                                    <td>"介绍:"</td>
+                                    <td>{move || instructor_info.get().about}</td>
+                                </tr>
+                                <tr>
+                                    <td>"学生数:"</td>
+                                    <td>{move || instructor_info.get().total_students}</td>
+                                </tr>
+                                <tr>
+                                    <td>"简介:"</td>
+                                    <td>{move || instructor_info.get().tag_line}</td>
+                                </tr>
+                                <tr>
+                                    <td>"加入日:"</td>
+                                    <td>{move || instructor_info.get().start_date}</td>
+                                </tr>
+                                <tr>
+                                    <td>"状态:"</td>
+                                    <td>{move || instructor_info.get().status}</td>
+                                </tr>
+                                <tr>
+                                    <td>"地址:"</td>
+                                    <td>{move || instructor_info.get().address}</td>
+                                </tr>
+                                <tr>
+                                    <td>"邮件:"</td>
+                                    <td>{move || instructor_info.get().email}</td>
+                                </tr>
+                                <tr>
+                                    <td>"电话号码:"</td>
+                                    <td>{move || instructor_info.get().mobile}</td>
+                                </tr>
+                                <tr>
+                                    <td>"优先权:"</td>
+                                    <td>{move || instructor_info.get().priority}</td>
+                                </tr>
+                                <tr>
+                                    <td>"评价:"</td>
+                                    <td>{move || instructor_info.get().rating}</td>
+                                </tr>
+                                <tr>
+                                    <td>"照片:"</td>
+                                    <td>
+                                        <img src=move || {
+                                            format!(
+                                                "images/users/instructors/{}",
+                                                instructor_info.get().profile_image_id,
+                                            )
+                                        } />
+                                    </td>
+                                </tr>
+                            </table>
+                        // End of display content
+                        </div>
+                    // End of display panel
+                    </div>
+
+                    // Edit panel
+                    <div class="contents" class:display=move || !show_editor.get()>
+                        <form on:submit=on_submit>
+                            // Show control buttons
+                            <div>
+                                <table>
+                                    <tr>
+                                        <td style="padding:10px">
+                                            <label for="instructors">"教师用户名: "</label>
+                                        </td>
+                                        <td style="padding:10px">{move || username.get()}</td>
+                                        <td style="padding:10px">
+                                            <input type="submit" value="保存" />
+                                            <span style="padding-left:5px"></span>
+                                            <button on:click=move |ev| {
+                                                ev.prevent_default();
+                                                set_show_editor.set(false);
+                                            }>"取消"</button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            // End of show control buttons
+                            </div>
+
+                            // Display input boxes
+                            <div>
+                                <div class:display=move || show_db_update_error.get()>
+                                    <h3 style="color:red">
+                                        "数据库保存问题: "{move || db_update_error.get()}
+                                    </h3>
+                                </div>
+                                <table>
+                                    <tr>
+                                        <td>"用户名"</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value=move || instructor_info.get().username
+                                                node_ref=input_username
+                                                disabled
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>"全名:"</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value=move || instructor_info.get().fullname
+                                                node_ref=input_fullname
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>"介绍:"</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value=move || instructor_info.get().about
+                                                node_ref=input_about
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>"学生数:"</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value=move || instructor_info.get().total_students
+                                                node_ref=input_total_students
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>"简介:"</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value=move || instructor_info.get().tag_line
+                                                node_ref=input_tag_line
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>"加入日:"</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value=move || instructor_info.get().start_date
+                                                node_ref=input_start_date
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>"状态:"</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value=move || instructor_info.get().status
+                                                node_ref=input_status
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>"地址:"</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value=move || instructor_info.get().address
+                                                node_ref=input_address
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>"邮件:"</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value=move || instructor_info.get().email
+                                                node_ref=input_email
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>"电话号码:"</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value=move || instructor_info.get().mobile
+                                                node_ref=input_mobile
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>"优先权:"</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value=move || instructor_info.get().priority
+                                                node_ref=input_priority
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>"评价:"</td>
+                                        <td>
+                                            <input
+                                                type="text"
+                                                value=move || instructor_info.get().rating
+                                                node_ref=input_rating
+                                            />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>"照片:"</td>
+                                        <td>
+                                            <input
+                                                type="file"
+                                                value=move || {
+                                                    format!(
+                                                        "images/users/instructors/{}",
+                                                        instructor_info.get().profile_image_id,
+                                                    )
+                                                }
+                                            />
+                                        </td>
+                                    </tr>
+                                </table>
+                            // End of display input boxes
+                            </div>
+                        </form>
+                    // End of edit panel
+                    </div>
+
+                    // Adding new instructor page
+                    <div>
+                    </div>
+                }
+            }
+        </Await>
     }
 }

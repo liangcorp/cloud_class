@@ -36,10 +36,16 @@ pub async fn admin_auth(user: String, password: String) -> Result<(), ServerFnEr
     let pool = state.pool;
 
     //  提取用户数据
-    let account = sqlx::query_as::<_, User>("SELECT * FROM administrators WHERE username==$1;")
+    let account = match sqlx::query_as::<_, User>("SELECT * FROM administrators WHERE username==$1;")
         .bind(&user)
         .fetch_one(&pool)
-        .await?;
+        .await {
+            Ok(ok_account) => ok_account,
+            Err(e) => {
+                // logging::log!("ERROR<admin/login/mod.rs>: {}", e.to_string());
+                return Err(ServerFnError::Args(e.to_string()))
+            },
+        };
 
     //  Salt Hash 用户输入密码
     let parsed_hash = crypto::get_parsed_hash(&password, account.salt.as_str())?;
@@ -48,7 +54,14 @@ pub async fn admin_auth(user: String, password: String) -> Result<(), ServerFnEr
         let session_token = uuid::get_session_token();
 
         Cookie::set_cookie(&session_token, false)?;
-        Cache::set_cache(&session_token, &account.username)?;
+
+        let _ = match Cache::set_cache(&session_token, &account.username) {
+            Ok(_) => (),
+            Err(e) => {
+                logging::log!("ERROR <admin/login/mod.rs:61>: set_cache() -- {}", e.to_string());
+                return Err(ServerFnError::Args(e.to_string()));
+            }
+        };
 
         //  改变网址到学生资料
         leptos_axum::redirect("/admin/control");

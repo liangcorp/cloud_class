@@ -159,7 +159,7 @@ pub async fn update_instructor_info(
     mobile: String,
     priority: String,
     rating: String,
-) -> Result<(), ServerFnError> {
+) -> Result<Option<String>, ServerFnError> {
     use crate::state::AppState;
 
     //  取得软件状态
@@ -188,8 +188,13 @@ pub async fn update_instructor_info(
         .bind(&username)
         .execute(&pool)
         .await {
-            Ok(_) => Ok(()),
-            Err(e) => return Err(ServerFnError::Args(e.to_string())),
+            Ok(_query_result) => {
+                // logging::log!("DEBUG<admin/control/instructors/mod.rs>: {:?}", query_result);
+               Ok(None)
+            },
+            Err(e) => {
+                Ok(Some(e.to_string()))
+            },
         }
 }
 
@@ -233,6 +238,8 @@ fn AdminInstructorPage() -> impl IntoView {
     let (show_editor, set_show_editor) = create_signal(false);
     let (username, set_username) = create_signal("".to_string());
     let (instructor_info, set_instructor_info) = create_signal(InstructorInfo::default());
+    let (show_db_update_error, set_show_db_update_error) = create_signal(false);
+    let (db_update_error, set_db_update_error) = create_signal("".to_string());
 
     let input_username: NodeRef<html::Input> = create_node_ref();
     let input_fullname: NodeRef<html::Input> = create_node_ref();
@@ -253,9 +260,9 @@ fn AdminInstructorPage() -> impl IntoView {
                 set_username.set(data[0].clone());
                 set_instructor_list.set(data)
             }
-            Err(e) => {
+            Err(_e) => {
                 set_instructor_list.set(Vec::new());
-                logging::log!("ERROR<home/instructor_list.rs>: {}", e.to_string())
+                // logging::log!("ERROR<home/instructor_list.rs>: {}", e.to_string())
             }
         }
     });
@@ -344,21 +351,29 @@ fn AdminInstructorPage() -> impl IntoView {
             )
             .await
             {
-                Ok(()) => (),
+                Ok(ok_query_error) => match ok_query_error {
+                    None => {
+                        set_show_db_update_error.set(true);
+                        set_show_editor.set(false)
+                    }
+                    Some(error) => {
+                        set_show_db_update_error.set(false);
+                        // logging::log!("ERROR<admin/control/instructors/mod.rs>: {}", &error);
+                        set_db_update_error.set(error)
+                    }
+                },
                 Err(e) => {
                     logging::log!("ERROR<admin/control/instructors/mod.rs>: {}", e.to_string());
                 }
             };
         });
 
-        set_show_editor.set(false);
-
         spawn_local(async move {
             match get_single_instructor(username_value_clone).await {
                 Ok(data) => set_instructor_info.set(data),
-                Err(e) => {
+                Err(_e) => {
                     set_instructor_info.set(InstructorInfo::default());
-                    logging::log!("ERROR<admin/control/instructors/mod.rs>: {}", e.to_string());
+                    // logging::log!("ERROR<admin/control/instructors/mod.rs>: {}", e.to_string());
                 }
             }
         });
@@ -373,14 +388,15 @@ fn AdminInstructorPage() -> impl IntoView {
         spawn_local(async move {
             match get_single_instructor(user).await {
                 Ok(data) => set_instructor_info.set(data),
-                Err(e) => {
+                Err(_e) => {
                     set_instructor_info.set(InstructorInfo::default());
-                    logging::log!("ERROR<admin/control/instructors/mod.rs>: {}", e.to_string());
+                    // logging::log!("ERROR<admin/control/instructors/mod.rs>: {}", e.to_string());
                 }
             }
         });
 
         set_show_editor.set(true);
+        set_show_db_update_error.set(true);
     };
 
     let on_username_change = move |ev| {
@@ -393,9 +409,9 @@ fn AdminInstructorPage() -> impl IntoView {
         spawn_local(async move {
             match get_single_instructor(user).await {
                 Ok(data) => set_instructor_info.set(data),
-                Err(e) => {
+                Err(_e) => {
                     set_instructor_info.set(InstructorInfo::default());
-                    logging::log!("ERROR<admin/control/instructors/mod.rs>: {}", e.to_string());
+                    // logging::log!("ERROR<admin/control/instructors/mod.rs>: {}", e.to_string());
                 }
             }
         });
@@ -409,11 +425,11 @@ fn AdminInstructorPage() -> impl IntoView {
                 spawn_local(async move {
                     match get_single_instructor(first_instructor).await {
                         Ok(data) => set_instructor_info.set(data),
-                        Err(e) => {
+                        Err(_e) => {
                             set_instructor_info.set(InstructorInfo::default());
-                            logging::log!(
-                                "ERROR<admin/control/instructors/mod.rs>: {}", e.to_string()
-                            );
+                            // logging::log!(
+                            //     "ERROR<admin/control/instructors/mod.rs>: {}", e.to_string()
+                            // );
                         }
                     }
                 });
@@ -451,9 +467,11 @@ fn AdminInstructorPage() -> impl IntoView {
                                     </tr>
                                 </table>
                             </form>
-                        </div>  // End of select instructor panel
+                        // End of select instructor panel
+                        </div>
 
-                        <div> // Display content
+                        // Display content
+                        <div>
                             <table>
                                 <tr>
                                     <td>"全名:"</td>
@@ -511,8 +529,10 @@ fn AdminInstructorPage() -> impl IntoView {
                                     </td>
                                 </tr>
                             </table>
-                        </div>  // End of display content
-                    </div> // End of display panel
+                        // End of display content
+                        </div>
+                    // End of display panel
+                    </div>
 
                     // Edit panel
                     <div class="contents" class:display=move || !show_editor.get()>
@@ -535,10 +555,16 @@ fn AdminInstructorPage() -> impl IntoView {
                                         </td>
                                     </tr>
                                 </table>
-                            </div>  // End of show control buttons
+                            // End of show control buttons
+                            </div>
 
-                            //  Display input boxes
+                            // Display input boxes
                             <div>
+                                <div class:display=move || show_db_update_error.get()>
+                                    <h3 style="color:red">
+                                        "数据库保存问题: "{move || db_update_error.get()}
+                                    </h3>
+                                </div>
                                 <table>
                                     <tr>
                                         <td>"用户名"</td>
@@ -676,9 +702,15 @@ fn AdminInstructorPage() -> impl IntoView {
                                         </td>
                                     </tr>
                                 </table>
-                            </div>  // End of display input boxes
+                            // End of display input boxes
+                            </div>
                         </form>
-                    </div>  // End of edit panel
+                    // End of edit panel
+                    </div>
+
+                    // Adding new instructor page
+                    <div>
+                    </div>
                 }
             }
         </Await>

@@ -146,20 +146,7 @@ pub async fn get_single_instructor(username: String) -> Result<InstructorInfo, S
 }
 
 #[server]
-pub async fn update_instructor_info(
-    username: String,
-    fullname: String,
-    about: String,
-    tag_line: String,
-    total_students: String,
-    start_date: String,
-    status: String,
-    address: String,
-    email: String,
-    mobile: String,
-    priority: String,
-    rating: String,
-) -> Result<Option<String>, ServerFnError> {
+pub async fn update_instructor_info(info: InstructorInfo) -> Result<Option<String>, ServerFnError> {
     use crate::state::AppState;
 
     //  取得软件状态
@@ -174,18 +161,18 @@ pub async fn update_instructor_info(
     match sqlx::query("UPDATE instructors
         SET fullname = $1, about = $2, total_students = $3, tag_line = $4, start_date = $5, status = $6, address = $7, email = $8, mobile = $9, priority = $10, rating = $11
         WHERE username = $12;")
-        .bind(&fullname)
-        .bind(&about)
-        .bind(&total_students)
-        .bind(&tag_line)
-        .bind(&start_date)
-        .bind(&status)
-        .bind(&address)
-        .bind(&email)
-        .bind(&mobile)
-        .bind(&priority)
-        .bind(&rating)
-        .bind(&username)
+        .bind(&info.fullname)
+        .bind(&info.about)
+        .bind(&info.total_students)
+        .bind(&info.tag_line)
+        .bind(&info.start_date)
+        .bind(&info.status)
+        .bind(&info.address)
+        .bind(&info.email)
+        .bind(&info.mobile)
+        .bind(&info.priority)
+        .bind(&info.rating)
+        .bind(&info.username)
         .execute(&pool)
         .await {
             Ok(_query_result) => {
@@ -336,18 +323,21 @@ fn AdminInstructorPage() -> impl IntoView {
 
         spawn_local(async move {
             match update_instructor_info(
-                username_value,
-                fullname_value,
-                about_value,
-                tag_line_value,
-                total_students_value,
-                start_date_value,
-                status_value,
-                address_value,
-                email_value,
-                mobile_value,
-                priority_value,
-                rating_value,
+                InstructorInfo {
+                    username: username_value,
+                    fullname: fullname_value,
+                    about: about_value,
+                    tag_line: tag_line_value,
+                    total_students: total_students_value.parse().unwrap(),
+                    start_date: start_date_value,
+                    status: status_value,
+                    address: address_value,
+                    email: email_value,
+                    mobile: mobile_value,
+                    priority: priority_value.parse().unwrap(),
+                    rating: rating_value.parse().unwrap(),
+                    .. Default::default()
+                }
             )
             .await
             {
@@ -383,7 +373,7 @@ fn AdminInstructorPage() -> impl IntoView {
         // stop the page from reloading!
         ev.prevent_default();
 
-        let user = (move || username.get())();
+        let user = username.get();
 
         spawn_local(async move {
             match get_single_instructor(user).await {
@@ -404,7 +394,7 @@ fn AdminInstructorPage() -> impl IntoView {
 
         set_username.set(new_username_value);
 
-        let user = (move || username.get())();
+        let user = username.get();
 
         spawn_local(async move {
             match get_single_instructor(user).await {

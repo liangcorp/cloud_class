@@ -58,7 +58,7 @@ pub async fn admin_auth(user: String, password: String) -> Result<(), ServerFnEr
         match Cache::set_cache(&session_token, &account.username) {
             Ok(_) => (),
             Err(e) => {
-                logging::log!("ERROR <admin/login/mod.rs:61>: set_cache() -- {}", e.to_string());
+                logging::log!("ERROR <admin/login/mod.rs:{}>: set_cache() -- {}", line!(), e.to_string());
                 return Err(ServerFnError::Args(e.to_string()));
             }
         };

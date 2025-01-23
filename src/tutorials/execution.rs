@@ -55,7 +55,7 @@ pub async fn start_if_stopped_container(username: String) -> Result<String, Serv
     {
         Ok(ok_output) => ok_output.stderr,
         Err(e) => {
-            // logging::log!("ERROR <tutorials/execution.rs:56>: {}", e.to_string());
+            // logging::log!("ERROR <tutorials/execution.rs:{}>: {}", line!(), e.to_string());
             return Err(ServerFnError::Args(e.to_string()));
         }
     };
@@ -69,7 +69,7 @@ pub async fn start_if_stopped_container(username: String) -> Result<String, Serv
         {
             Ok(_) => return Ok(sql_result.container_port.to_string()),
             Err(e) => {
-                // logging::log!("ERROR <tutorials/execution.rs:56>: {}", e.to_string());
+                // logging::log!("ERROR <tutorials/execution.rs:{}>: {}", line!(), e.to_string());
                 return Err(ServerFnError::Args(e.to_string()));
             }
         };

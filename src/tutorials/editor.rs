@@ -10,7 +10,7 @@ pub async fn execute_user_code(code: String, username: String) -> Result<(), Ser
     let mut file = match File::create(format!("/tmp/python_streamlit_{}.py", username)) {
         Ok(f) => f,
         Err(e) => {
-            // logging::log!("ERROR <tutorials/editor.rs:13>: {}", e.to_string());
+            // logging::log!("ERROR <tutorials/editor.rs:{}>: {}", line!(), e.to_string());
             return Err(ServerFnError::Args(e.to_string()));
         }
     };
@@ -25,7 +25,7 @@ pub async fn execute_user_code(code: String, username: String) -> Result<(), Ser
             {
                 Ok(_) => Ok(()),
                 Err(e) => {
-                    // logging::log!("ERROR <tutorials/editor.rs:28>: {}", e.to_string());
+                    // logging::log!("ERROR <tutorials/editor.rs:{}>: {}", line!(), e.to_string());
                     Err(ServerFnError::Args(e.to_string()))
                 }
             }

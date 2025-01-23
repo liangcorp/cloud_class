@@ -160,12 +160,12 @@ pub async fn commit_user(
                     return Ok(Some(RegistrationError::ExistingEmailAddress.to_string()))
                 }
                 &_ => {
-                    // logging::log!("ERROR<student/account/register.rs:261>: {}", e.to_string());
+                    // logging::log!("ERROR<student/account/register.rs:{}>: {}", line!(), e.to_string());
                     return Ok(Some(RegistrationError::UnknownError.to_string()));
                 }
             },
             _ => {
-                // logging::log!("ERROR<student/account/register.rs:261>: {}", e.to_string());
+                // logging::log!("ERROR<student/account/register.rs:{}>: {}", line!(), e.to_string());
                 return Ok(Some(RegistrationError::UnknownError.to_string()));
             }
         }

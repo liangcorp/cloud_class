@@ -1,5 +1,7 @@
 use cfg_if::cfg_if;
 use leptos::*;
+use leptos::prelude::*;
+use leptos::task::spawn_local;
 use leptos_meta::Title;
 use server_fn::ServerFnError;
 
@@ -75,12 +77,12 @@ pub async fn admin_auth(user: String, password: String) -> Result<(), ServerFnEr
 #[component]
 pub fn LoginPanel() -> impl IntoView {
     // 制作一个reactive值去更新提交按钮
-    let (username, set_username) = create_signal("".to_string());
-    let (password, set_password) = create_signal("".to_string());
-    let (auth_success, set_auth_success) = create_signal("none");
+    let (username, set_username) = signal("".to_string());
+    let (password, set_password) = signal("".to_string());
+    let (auth_success, set_auth_success) = signal("none");
 
-    let input_username: NodeRef<html::Input> = create_node_ref();
-    let input_password: NodeRef<html::Input> = create_node_ref();
+    let input_username: NodeRef<html::Input> = NodeRef::new();
+    let input_password: NodeRef<html::Input> = NodeRef::new();
 
     let on_submit = move |ev: leptos::ev::SubmitEvent| {
         // stop the page from reloading!

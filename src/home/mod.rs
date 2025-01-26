@@ -5,6 +5,7 @@ pub mod instructor_list;
 
 use cfg_if::cfg_if;
 use leptos::*;
+use leptos::prelude::*;
 use leptos_meta::Title;
 use serde::{Deserialize, Serialize};
 use server_fn::ServerFnError;

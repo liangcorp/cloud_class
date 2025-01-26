@@ -1,5 +1,6 @@
 use leptos::*;
-use leptos_router::Redirect;
+use leptos::prelude::*;
+use leptos_router::components::Redirect;
 use server_fn::ServerFnError;
 
 #[server(Logout, "/api")]

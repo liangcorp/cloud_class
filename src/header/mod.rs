@@ -1,4 +1,5 @@
 use leptos::*;
+use leptos::prelude::*;
 
 /// Renders the header menu of your home page.
 #[component]
@@ -71,7 +72,6 @@ fn LoginLogoutSection() -> impl IntoView {
                                     </a>
                                 </td>
                             }
-                                .into_view()
                         }
                         None => {
                             view! {
@@ -86,7 +86,6 @@ fn LoginLogoutSection() -> impl IntoView {
                                     </a>
                                 </td>
                             }
-                                .into_view()
                         }
                     }
                 }
@@ -103,7 +102,6 @@ fn LoginLogoutSection() -> impl IntoView {
                             </a>
                         </td>
                     }
-                        .into_view()
                 }
             }}
         </Await>

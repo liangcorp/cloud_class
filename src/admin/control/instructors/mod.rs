@@ -1,6 +1,8 @@
 use cfg_if::cfg_if;
 use leptos::*;
-use leptos_router::*;
+use leptos::prelude::*;
+use leptos_router::components::Redirect;
+use leptos::task::spawn_local;
 use serde::{Deserialize, Serialize};
 use server_fn::ServerFnError;
 
@@ -207,12 +209,12 @@ pub fn AdminInstructorPortal() -> impl IntoView {
                                 <HeaderSection username=some_username.to_string() />
                                 <AdminInstructorPage />
                             }
-                                .into_view()
+
                         }
-                        None => view! { <Redirect path="/admin/login" /> }.into_view(),
+                        None => view! { <Redirect path="/admin/login" /> },
                     }
                 }
-                Err(_) => view! { <Redirect path="/admin/login" /> }.into_view(),
+                Err(_) => view! { <Redirect path="/admin/login" /> },
             }}
         </Await>
     }
@@ -221,25 +223,25 @@ pub fn AdminInstructorPortal() -> impl IntoView {
 /// Rendering control panel for instructors
 #[component]
 fn AdminInstructorPage() -> impl IntoView {
-    let (instructor_list, set_instructor_list) = create_signal(Vec::new());
-    let (show_editor, set_show_editor) = create_signal(false);
-    let (username, set_username) = create_signal("".to_string());
-    let (instructor_info, set_instructor_info) = create_signal(InstructorInfo::default());
-    let (show_db_update_error, set_show_db_update_error) = create_signal(false);
-    let (db_update_error, set_db_update_error) = create_signal("".to_string());
+    let (instructor_list, set_instructor_list) = signal(Vec::new());
+    let (show_editor, set_show_editor) = signal(false);
+    let (username, set_username) = signal("".to_string());
+    let (instructor_info, set_instructor_info) = signal(InstructorInfo::default());
+    let (show_db_update_error, set_show_db_update_error) = signal(false);
+    let (db_update_error, set_db_update_error) = signal("".to_string());
 
-    let input_username: NodeRef<html::Input> = create_node_ref();
-    let input_fullname: NodeRef<html::Input> = create_node_ref();
-    let input_about: NodeRef<html::Input> = create_node_ref();
-    let input_tag_line: NodeRef<html::Input> = create_node_ref();
-    let input_total_students: NodeRef<html::Input> = create_node_ref();
-    let input_start_date: NodeRef<html::Input> = create_node_ref();
-    let input_status: NodeRef<html::Input> = create_node_ref();
-    let input_address: NodeRef<html::Input> = create_node_ref();
-    let input_email: NodeRef<html::Input> = create_node_ref();
-    let input_mobile: NodeRef<html::Input> = create_node_ref();
-    let input_priority: NodeRef<html::Input> = create_node_ref();
-    let input_rating: NodeRef<html::Input> = create_node_ref();
+    let input_username: NodeRef<html::Input> = NodeRef::new();
+    let input_fullname: NodeRef<html::Input> = NodeRef::new();
+    let input_about: NodeRef<html::Input> = NodeRef::new();
+    let input_tag_line: NodeRef<html::Input> = NodeRef::new();
+    let input_total_students: NodeRef<html::Input> = NodeRef::new();
+    let input_start_date: NodeRef<html::Input> = NodeRef::new();
+    let input_status: NodeRef<html::Input> = NodeRef::new();
+    let input_address: NodeRef<html::Input> = NodeRef::new();
+    let input_email: NodeRef<html::Input> = NodeRef::new();
+    let input_mobile: NodeRef<html::Input> = NodeRef::new();
+    let input_priority: NodeRef<html::Input> = NodeRef::new();
+    let input_rating: NodeRef<html::Input> = NodeRef::new();
 
     spawn_local(async move {
         match get_all_instructors().await {

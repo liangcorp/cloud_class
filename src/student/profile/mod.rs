@@ -2,7 +2,8 @@ pub mod class;
 pub mod info;
 
 use leptos::*;
-use leptos_router::Redirect;
+use leptos::prelude::*;
+use leptos_router::components::Redirect;
 
 /// Renders the profile page of your application.
 #[component]
@@ -32,7 +33,7 @@ pub fn ProfilePagePortal() -> impl IntoView {
 
 #[component]
 fn ProfilePage(username: String) -> impl IntoView {
-    let (show_layer, set_show_layer) = create_signal(true);
+    let (show_layer, set_show_layer) = signal(true);
 
     provide_context(show_layer);
     provide_context(set_show_layer);

@@ -3,6 +3,8 @@ mod validation;
 
 use cfg_if::cfg_if;
 use leptos::*;
+use leptos::prelude::*;
+use leptos::task::spawn_local;
 use leptos_meta::*;
 use serde::{Deserialize, Serialize};
 
@@ -199,16 +201,16 @@ pub fn RegistrationPage() -> impl IntoView {
 
 #[component]
 pub fn RegistrationForm() -> impl IntoView {
-    let (reg_error_message, set_reg_error_message) = create_signal("".to_string());
-    let (is_not_valid, set_not_valid) = create_signal(false);
+    let (reg_error_message, set_reg_error_message) = signal("".to_string());
+    let (is_not_valid, set_not_valid) = signal(false);
 
-    let input_username: NodeRef<html::Input> = create_node_ref();
-    let input_password: NodeRef<html::Input> = create_node_ref();
-    let input_confirm_password: NodeRef<html::Input> = create_node_ref();
-    let input_fullname: NodeRef<html::Input> = create_node_ref();
-    let input_email: NodeRef<html::Input> = create_node_ref();
-    let input_m_num: NodeRef<html::Input> = create_node_ref();
-    let input_m_verify_code: NodeRef<html::Input> = create_node_ref();
+    let input_username: NodeRef<html::Input> = NodeRef::new();
+    let input_password: NodeRef<html::Input> = NodeRef::new();
+    let input_confirm_password: NodeRef<html::Input> = NodeRef::new();
+    let input_fullname: NodeRef<html::Input> = NodeRef::new();
+    let input_email: NodeRef<html::Input> = NodeRef::new();
+    let input_m_num: NodeRef<html::Input> = NodeRef::new();
+    let input_m_verify_code: NodeRef<html::Input> = NodeRef::new();
 
     let ignore_enter = move |ev: leptos::ev::KeyboardEvent| {
         if ev.code() == "Enter" {

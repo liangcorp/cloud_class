@@ -15,8 +15,9 @@ use crate::student::{
 use crate::tutorials::TutorialPagePortal;
 
 use leptos::*;
+use leptos::prelude::*;
 use leptos_meta::*;
-use leptos_router::*;
+use leptos_router::components::{Router, Routes, Route};
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -34,7 +35,7 @@ pub fn App() -> impl IntoView {
         <Router fallback=|| {
             let mut outside_errors = Errors::default();
             outside_errors.insert_with_default_key(AppError::NotFound);
-            view! { <ErrorTemplate outside_errors /> }.into_view()
+            view! { <ErrorTemplate outside_errors /> }
         }>
             <main>
                 <Routes>

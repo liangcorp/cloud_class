@@ -1,4 +1,5 @@
 use leptos::*;
+use leptos::prelude::*;
 
 /// Renders the header menu of control panel
 #[component]

@@ -2,7 +2,8 @@ pub mod control;
 mod login;
 
 use leptos::*;
-use leptos_router::*;
+use leptos::prelude::*;
+use leptos_router::{ nested_router::Outlet, components::Redirect };
 
 #[component]
 pub fn AdminPage() -> impl IntoView {
@@ -25,11 +26,11 @@ pub fn AdminLoginPage() -> impl IntoView {
             {match session_user {
                 Ok(ok_username) => {
                     match ok_username {
-                        Some(_) => view! { <Redirect path="/admin/control" /> }.into_view(),
-                        None => view! { <LoginPanel /> }.into_view(),
+                        Some(_) => view! { <Redirect path="/admin/control" /> },
+                        None => view! { <LoginPanel /> },
                     }
                 }
-                Err(_) => view! { <LoginPanel /> }.into_view(),
+                Err(_) => view! { <LoginPanel /> },
             }}
         </Await>
     }

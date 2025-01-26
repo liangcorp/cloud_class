@@ -1,13 +1,14 @@
 use leptos::*;
+use leptos::prelude::*;
 
 #[component]
 pub fn MobileLoginLayer() -> impl IntoView {
     // 制作一个reactive值去更新提交按钮
-    let (mobile_no, set_mobile_no) = create_signal("".to_string());
-    let (sms, set_sms) = create_signal("".to_string());
+    let (mobile_no, set_mobile_no) = signal("".to_string());
+    let (sms, set_sms) = signal("".to_string());
 
-    let input_mobile_no: NodeRef<html::Input> = create_node_ref();
-    let input_sms: NodeRef<html::Input> = create_node_ref();
+    let input_mobile_no: NodeRef<html::Input> = NodeRef::new();
+    let input_sms: NodeRef<html::Input> = NodeRef::new();
 
     let on_submit = move |ev: leptos::ev::SubmitEvent| {
         // stop the page from reloading!

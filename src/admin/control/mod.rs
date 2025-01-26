@@ -1,8 +1,8 @@
 mod header;
 pub mod instructors;
 
-use leptos::*;
-use leptos_router::*;
+use leptos::prelude::*;
+use leptos_router::{components::Redirect, nested_router::Outlet};
 
 #[component]
 pub fn ControlPanel() -> impl IntoView {
@@ -30,12 +30,12 @@ pub fn ControlPanelPortal() -> impl IntoView {
                                 <HeaderSection username=some_username.to_string() />
                                 <ControlPanelLandingPage />
                             }
-                                .into_view()
+
                         }
-                        None => view! { <Redirect path="/admin/login" /> }.into_view(),
+                        None => view! { <Redirect path="/admin/login" /> },
                     }
                 }
-                Err(_) => view! { <Redirect path="/admin/login" /> }.into_view(),
+                Err(_) => view! { <Redirect path="/admin/login" /> },
             }}
         </Await>
     }

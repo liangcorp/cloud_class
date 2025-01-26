@@ -1,6 +1,8 @@
 use cfg_if::cfg_if;
 use leptos::*;
-use leptos_router::*;
+use leptos::prelude::*;
+use leptos::task::spawn_local;
+use leptos_router::{ components::Redirect, hooks::use_params_map };
 use serde::{Deserialize, Serialize};
 use server_fn::ServerFnError;
 
@@ -193,7 +195,7 @@ fn CourseContentPortal(username: String) -> impl IntoView {
     // id: || -> Option<String>
     let course_id = move || params.with_untracked(|params| params.get("course_id").cloned());
 
-    let (disable, set_disable) = create_signal(true);
+    let (disable, set_disable) = signal(true);
 
     let username_clone = username.clone();
 
@@ -276,9 +278,9 @@ fn CourseContentHeader(username: String, course_id: String) -> impl IntoView {
 #[component]
 fn CourseContentBody(course_id: String) -> impl IntoView {
     // @TODO: collapsible side navigation panel
-    // let (show_navbar, set_show_navbar) = create_signal(true);
+    // let (show_navbar, set_show_navbar) = signal(true);
 
-    let (chapter_id, set_chapter_id) = create_signal("welcome-0000".to_string());
+    let (chapter_id, set_chapter_id) = signal("welcome-0000".to_string());
 
     provide_context(chapter_id);
     provide_context(set_chapter_id);
@@ -304,7 +306,7 @@ fn CourseContentBody(course_id: String) -> impl IntoView {
 
 #[component]
 fn ChapterList(course_id: String) -> impl IntoView {
-    let (show_chapters, set_show_chapters) = create_signal(Vec::new());
+    let (show_chapters, set_show_chapters) = signal(Vec::new());
 
     let set_chapter_id = expect_context::<WriteSignal<String>>();
 

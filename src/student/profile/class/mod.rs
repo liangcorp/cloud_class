@@ -1,5 +1,7 @@
 use cfg_if::cfg_if;
 use leptos::*;
+use leptos::prelude::*;
+use leptos::task::spawn_local;
 use serde::{Deserialize, Serialize};
 use server_fn::ServerFnError;
 
@@ -207,7 +209,7 @@ fn CourseContentPanel(course_contents: Vec<CourseContent>) -> impl IntoView {
                                 <td align="left">
                                     <h3>{single_content.title}</h3>
                                 </td>
-                                <td stype="padding-left:300px" align="right">
+                                <td style="padding-left:300px" align="right">
                                     <b>"¥" {single_content.price}" (CNY)"</b>
                                 </td>
                             </tr>
@@ -284,7 +286,7 @@ fn CourseContentPanel(course_contents: Vec<CourseContent>) -> impl IntoView {
 /// Render instructors names and append comma if necesary
 #[component]
 fn InstructorsNamePanel(course_id: String) -> impl IntoView {
-    let (instructors, set_instructors) = create_signal(Vec::new());
+    let (instructors, set_instructors) = signal(Vec::new());
 
     spawn_local(async move {
         match get_instructor(course_id).await {

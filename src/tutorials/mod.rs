@@ -4,7 +4,9 @@ pub mod execution;
 
 use cfg_if::cfg_if;
 use leptos::*;
-use leptos_router::*;
+use leptos::prelude::*;
+use leptos::task::spawn_local;
+use leptos_router::hooks::use_params_map;
 use serde::{Deserialize, Serialize};
 use server_fn::ServerFnError;
 
@@ -164,7 +166,7 @@ pub async fn get_tutorial_chapter(
 #[component]
 pub fn TutorialPagePortal() -> impl IntoView {
     use crate::session::extract_session_user;
-    use leptos_router::Redirect;
+    use leptos_router::components::Redirect;
 
     view! {
         <Await
@@ -183,7 +185,6 @@ pub fn TutorialPagePortal() -> impl IntoView {
                                     <TutorialContentPortal username=some_username.to_string() />
                                 </div>
                             }
-                                .into_view()
                         }
                         None => view! { <Redirect path="/profile" /> },
                     }
@@ -201,8 +202,8 @@ fn TutorialContentPortal(username: String) -> impl IntoView {
     // id: || -> Option<String>
     let course_id = move || params.with_untracked(|params| params.get("course_id").cloned());
 
-    let (display_tutorial, set_display_tutorial) = create_signal(true);
-    let (course_title, set_course_title) = create_signal("".to_string());
+    let (display_tutorial, set_display_tutorial) = signal(true);
+    let (course_title, set_course_title) = signal("".to_string());
 
     let username_clone = username.clone();
     let course_id_clone = course_id().unwrap().clone();
@@ -248,7 +249,7 @@ fn TutorialContent(username: String, course_id: String) -> impl IntoView {
 
     let course_title = expect_context::<ReadSignal<String>>();
 
-    let (chapter_number, set_chapter_number) = create_signal(1_u32);
+    let (chapter_number, set_chapter_number) = signal(1_u32);
 
     provide_context(chapter_number);
     provide_context(set_chapter_number);
@@ -274,7 +275,7 @@ fn TutorialContent(username: String, course_id: String) -> impl IntoView {
 
 #[component]
 fn ChapterSelectionBox(course_id: String) -> impl IntoView {
-    let (chapter_list, set_chapter_list) = create_signal(vec![Chapter::default()]);
+    let (chapter_list, set_chapter_list) = signal(vec![Chapter::default()]);
 
     let chapter_number = expect_context::<ReadSignal<u32>>();
 
@@ -310,7 +311,7 @@ fn ChapterSelectionBox(course_id: String) -> impl IntoView {
 fn TutorialEditor(course_id: String, username: String) -> impl IntoView {
     use editor::TutorialEditorArea;
 
-    let (initial_code, set_initial_code) = create_signal("".to_string());
+    let (initial_code, set_initial_code) = signal("".to_string());
 
     let chapter_number = expect_context::<ReadSignal<u32>>();
 

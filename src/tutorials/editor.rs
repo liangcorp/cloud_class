@@ -1,5 +1,7 @@
 use leptos::ev::KeyboardEvent;
 use leptos::*;
+use leptos::prelude::*;
+use leptos::task::spawn_local;
 
 #[server]
 pub async fn execute_user_code(code: String, username: String) -> Result<(), ServerFnError> {
@@ -36,7 +38,7 @@ pub async fn execute_user_code(code: String, username: String) -> Result<(), Ser
 
 #[component]
 pub fn TutorialEditorArea(initial_code: ReadSignal<String>, username: String) -> impl IntoView {
-    let input_element: NodeRef<html::Textarea> = create_node_ref();
+    let input_element: NodeRef<html::Textarea> = NodeRef::new();
 
     let on_keydown = move |ev: KeyboardEvent| {
         if ev.code() == "Tab" {

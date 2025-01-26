@@ -3,6 +3,7 @@ use cfg_if::cfg_if;
 cfg_if! {
     if #[cfg(feature = "ssr")] {
         use leptos::*;
+        use leptos::prelude::*;
         use std::fmt;
         use server_fn::ServerFnError;
         use crate::utils::redis::Redis;

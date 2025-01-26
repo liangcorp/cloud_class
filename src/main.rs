@@ -5,6 +5,7 @@ async fn main() {
     use cloud_class::app::*;
     use cloud_class::fileserv::file_and_error_handler;
     use leptos::*;
+    use leptos::prelude::*;
     use leptos_axum::{generate_route_list, LeptosRoutes};
     use tower_http::compression::{
         predicate::{NotForContentType, SizeAbove},

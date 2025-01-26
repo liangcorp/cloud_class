@@ -1,5 +1,7 @@
 use cfg_if::cfg_if;
 use leptos::*;
+use leptos::prelude::*;
+use leptos::task::spawn_local;
 use leptos_meta::Title;
 use serde::{Deserialize, Serialize};
 use server_fn::ServerFnError;
@@ -98,7 +100,7 @@ pub fn InstructorListPage() -> impl IntoView {
 
 #[component]
 pub fn InstructorListPanel() -> impl IntoView {
-    let (instructor_list, set_instructor_list) = create_signal(Vec::new());
+    let (instructor_list, set_instructor_list) = signal(Vec::new());
 
     spawn_local(async move {
         match get_instructors().await {

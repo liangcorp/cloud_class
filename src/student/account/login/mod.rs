@@ -3,6 +3,7 @@ pub mod qr;
 pub mod username;
 
 use leptos::*;
+use leptos::prelude::*;
 use leptos_meta::*;
 
 use mobile::MobileLoginLayer;
@@ -61,7 +62,7 @@ pub fn LoginPage() -> impl IntoView {
 
 #[component]
 pub fn LoginLayer() -> impl IntoView {
-    let (show_layer, set_show_layer) = create_signal(true);
+    let (show_layer, set_show_layer) = signal(true);
     view! {
         <div style="padding:20px;top:0px">
             <div style="display:inline-block; padding-right:20px">
@@ -98,12 +99,11 @@ pub fn LoginLayer() -> impl IntoView {
             // match ok_pub_key {
             // Some(some_pub_key) => {
             // view! { <UsernameLoginLayer pub_key=some_pub_key.clone() /> }
-            // .into_view()
             // }
-            // None => view! {}.into_view(),
+            // None => view! {},
             // }
             // }
-            // Err(_) => view! {}.into_view(),
+            // Err(_) => view! {},
             // }}
             //
             // </Await>

@@ -71,7 +71,7 @@ fn LoginLogoutSection() -> impl IntoView {
                                         "退出"
                                     </a>
                                 </td>
-                            }
+                            }.into_any()
                         }
                         None => {
                             view! {
@@ -85,7 +85,7 @@ fn LoginLogoutSection() -> impl IntoView {
                                         "注册"
                                     </a>
                                 </td>
-                            }
+                            }.into_any()
                         }
                     }
                 }
@@ -101,7 +101,7 @@ fn LoginLogoutSection() -> impl IntoView {
                                 "学生注册"
                             </a>
                         </td>
-                    }
+                    }.into_any()
                 }
             }}
         </Await>

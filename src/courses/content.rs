@@ -177,12 +177,12 @@ pub fn ContentPagePortal() -> impl IntoView {
                 Ok(ok_username) => {
                     match ok_username {
                         Some(some_username) => {
-                            view! { <CourseContentPortal username=some_username.to_string() /> }
+                            view! { <CourseContentPortal username=some_username.to_string() /> }.into_any()
                         }
-                        None => view! { <Redirect path="/courses" /> },
+                        None => view! { <Redirect path="/courses" /> }.into_any(),
                     }
                 }
-                Err(_) => view! { <Redirect path="/courses" /> },
+                Err(_) => view! { <Redirect path="/courses" /> }.into_any(),
             }}
         </Await>
     }
@@ -246,7 +246,7 @@ fn CourseContent(username: String, course_id: String) -> impl IntoView {
 #[component]
 fn CourseContentHeader(username: String, course_id: String) -> impl IntoView {
     view! {
-        <div align="right" style="height:30px">
+        <div style="align:right;height:30px">
             <table>
                 <tr>
                     <td style="padding-right:20px">

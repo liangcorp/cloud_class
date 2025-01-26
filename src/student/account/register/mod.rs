@@ -2,9 +2,9 @@ mod errors;
 mod validation;
 
 use cfg_if::cfg_if;
-use leptos::*;
 use leptos::prelude::*;
 use leptos::task::spawn_local;
+use leptos::*;
 use leptos_meta::*;
 use serde::{Deserialize, Serialize};
 
@@ -183,7 +183,7 @@ pub fn RegistrationPage() -> impl IntoView {
         <Title text="学员注册" />
 
         <div class="full-height">
-            <div class="register-div" align="center">
+            <div class="register-div" style="align:center">
                 <div>
                     <img src="images/registration/registration_logo.png" class="login-register" />
                     <hr class="login-register" />

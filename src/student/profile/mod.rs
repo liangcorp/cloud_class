@@ -1,7 +1,6 @@
 pub mod class;
 pub mod info;
 
-use leptos::*;
 use leptos::prelude::*;
 use leptos_router::components::Redirect;
 
@@ -13,7 +12,7 @@ pub fn ProfilePagePortal() -> impl IntoView {
     view! {
         <Await
             // `future` provides the `Future` to be resolved
-            future=extract_session_user
+            future=extract_session_user()
 
             // the data is bound to whatever variable name you provide
             let:session_user
@@ -21,11 +20,11 @@ pub fn ProfilePagePortal() -> impl IntoView {
             {match session_user {
                 Ok(ok_u) => {
                     match ok_u {
-                        Some(some_u) => view! { <ProfilePage username=some_u.to_string() /> },
-                        None => view! { <Redirect path="/" /> },
+                        Some(some_u) => view! { <ProfilePage username=some_u.to_string() /> }.into_any(),
+                        None => view! { <Redirect path="/" /> }.into_any(),
                     }
                 }
-                Err(_) => view! { <Redirect path="/" /> },
+                Err(_) => view! { <Redirect path="/" /> }.into_any(),
             }}
         </Await>
     }

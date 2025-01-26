@@ -1,4 +1,4 @@
-use leptos::*;
+// use leptos::*;
 use leptos::prelude::*;
 
 /// Renders the header menu of your home page.
@@ -51,7 +51,7 @@ fn LoginLogoutSection() -> impl IntoView {
     view! {
         <Await
             // `future` provides the `Future` to be resolved
-            future=extract_session_user
+            future=extract_session_user()
 
             // the data is bound to whatever variable name you provide
             let:session_user
@@ -63,7 +63,7 @@ fn LoginLogoutSection() -> impl IntoView {
                             view! {
                                 <td class="header-login">
                                     <a class="header" href="/profile">
-                                        {some_username}
+                                        {some_username.clone()}
                                     </a>
                                 </td>
                                 <td class="header-login">

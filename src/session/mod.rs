@@ -1,7 +1,6 @@
 pub mod cache;
 pub mod cookie;
 
-use leptos::*;
 use leptos::prelude::*;
 use server_fn::ServerFnError;
 

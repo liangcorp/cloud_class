@@ -17,7 +17,7 @@ pub fn ControlPanelPortal() -> impl IntoView {
     view! {
         <Await
             // `future` provides the `Future` to be resolved
-            future=extract_session_user
+            future=extract_session_user()
 
             // the data is bound to whatever variable name you provide
             let:session_user
@@ -29,13 +29,13 @@ pub fn ControlPanelPortal() -> impl IntoView {
                             view! {
                                 <HeaderSection username=some_username.to_string() />
                                 <ControlPanelLandingPage />
-                            }
+                            }.into_any()
 
                         }
-                        None => view! { <Redirect path="/admin/login" /> },
+                        None => view! { <Redirect path="/admin/login" /> }.into_any(),
                     }
                 }
-                Err(_) => view! { <Redirect path="/admin/login" /> },
+                Err(_) => view! { <Redirect path="/admin/login" /> }.into_any(),
             }}
         </Await>
     }

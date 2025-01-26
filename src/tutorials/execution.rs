@@ -1,5 +1,4 @@
 use cfg_if::cfg_if;
-use leptos::*;
 use leptos::prelude::*;
 use server_fn::ServerFnError;
 // use rsa::{Pkcs1v15Encrypt, RsaPrivateKey, RsaPublicKey};
@@ -84,7 +83,7 @@ pub fn TutorialExecutionArea(username: String) -> impl IntoView {
     view! {
         <Await
             // `future` provides the `Future` to be resolved
-            future=move || start_if_stopped_container(username.clone())
+            future=start_if_stopped_container(username.clone())
             // the data is bound to whatever variable name you provide
             let:container_port
         >

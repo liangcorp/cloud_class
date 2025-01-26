@@ -6,8 +6,8 @@ use axum::{
     http::{Request, Response, StatusCode},
     response::IntoResponse,
 };
-use leptos::*;
 use leptos::prelude::*;
+use leptos::*;
 use tower::ServiceExt;
 use tower_http::services::ServeDir;
 

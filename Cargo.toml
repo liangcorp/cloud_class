@@ -9,21 +9,12 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 leptos = { version = "0.7.0" }
 leptos_router = { version = "0.7.0" }
-axum = { version = "0.7.6", optional = true, features=["macros"] }
+axum = { version = "0.7", optional = true }
 console_error_panic_hook = { version = "0.1", optional = true }
 leptos_axum = { version = "0.7.0", optional = true }
 leptos_meta = { version = "0.7.0" }
 tokio = { version = "1", features = ["rt-multi-thread"], optional = true }
-tower = { version = "0.5.1", optional = true }
-tower-http = { version = "0.6.1", features = [
-  "fs",
-  "compression-gzip",
-  "compression-br",
-], optional = true }
 wasm-bindgen = { version = "=0.2.96", optional = true }
-thiserror = "2"
-tracing = { version = "0.1", optional = true }
-http = "1"
 serde = { version = "1.0.214", features = ["derive"] }
 # serde_json = "1.0.127"
 sqlx = { version = "0.8.0", features = [
@@ -44,17 +35,18 @@ regex = { version = "1.11.1", optional = true }
 rand = "0.8.5"
 
 [features]
-hydrate = ["leptos/hydrate"]
+hydrate = [
+    "leptos/hydrate",
+    "dep:console_error_panic_hook",
+    "dep:wasm-bindgen",
+]
 ssr = [
     "dep:axum",
     "dep:tokio",
-    "dep:tower",
-    "dep:tower-http",
     "dep:leptos_axum",
     "leptos/ssr",
     "leptos_meta/ssr",
     "leptos_router/ssr",
-    "dep:tracing",
     "dep:sqlx",
     "dep:argon2",
     "dep:redis",

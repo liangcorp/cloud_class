@@ -1,4 +1,3 @@
-use leptos::*;
 use leptos::prelude::*;
 use leptos_router::components::Redirect;
 use server_fn::ServerFnError;
@@ -52,7 +51,7 @@ pub async fn user_logout() -> Result<Option<()>, ServerFnError> {
 
 #[component]
 pub fn LogoutPage() -> impl IntoView {
-    let logout_state = create_resource(|| (), |_| async move { user_logout().await });
+    let logout_state = Resource::new(|| (), |_| async move { user_logout().await });
 
     view! {
         <Transition fallback=move || {

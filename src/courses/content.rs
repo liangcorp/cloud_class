@@ -1,8 +1,8 @@
 use cfg_if::cfg_if;
-use leptos::*;
+// use leptos::*;
 use leptos::prelude::*;
 use leptos::task::spawn_local;
-use leptos_router::{ components::Redirect, hooks::use_params_map };
+use leptos_router::{components::Redirect, hooks::use_params_map};
 use serde::{Deserialize, Serialize};
 use server_fn::ServerFnError;
 
@@ -168,7 +168,7 @@ pub fn ContentPagePortal() -> impl IntoView {
     view! {
         <Await
             // `future` provides the `Future` to be resolved
-            future=extract_session_user
+            future=extract_session_user()
 
             // the data is bound to whatever variable name you provide
             let:session_user
@@ -193,7 +193,7 @@ fn CourseContentPortal(username: String) -> impl IntoView {
     let params = use_params_map();
 
     // id: || -> Option<String>
-    let course_id = move || params.with_untracked(|params| params.get("course_id").cloned());
+    let course_id = move || params.with_untracked(|params| params.get("course_id"));
 
     let (disable, set_disable) = signal(true);
 
@@ -347,8 +347,8 @@ fn ChapterList(course_id: String) -> impl IntoView {
 fn ChapterContent() -> impl IntoView {
     let chapter_id = expect_context::<ReadSignal<String>>();
 
-    // create_resource takes two arguments after its scope
-    let async_chapter_content = create_resource(
+    // Resource::new() takes two arguments after its scope
+    let async_chapter_content = Resource::new(
         // the first is the "source signal"
         move || chapter_id.get(),
         // the second is the loader

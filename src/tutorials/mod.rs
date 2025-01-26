@@ -3,7 +3,6 @@ pub mod execution;
 // pub mod console;
 
 use cfg_if::cfg_if;
-use leptos::*;
 use leptos::prelude::*;
 use leptos::task::spawn_local;
 use leptos_router::hooks::use_params_map;
@@ -171,7 +170,7 @@ pub fn TutorialPagePortal() -> impl IntoView {
     view! {
         <Await
             // `future` provides the `Future` to be resolved
-            future=extract_session_user
+            future=extract_session_user()
 
             // the data is bound to whatever variable name you provide
             let:session_user
@@ -184,12 +183,12 @@ pub fn TutorialPagePortal() -> impl IntoView {
                                 <div class="tutorial">
                                     <TutorialContentPortal username=some_username.to_string() />
                                 </div>
-                            }
+                            }.into_any()
                         }
-                        None => view! { <Redirect path="/profile" /> },
+                        None => view! { <Redirect path="/profile" /> }.into_any(),
                     }
                 }
-                Err(_) => view! { <Redirect path="/profile" /> },
+                Err(_) => view! { <Redirect path="/profile" /> }.into_any(),
             }}
         </Await>
     }
@@ -200,7 +199,7 @@ fn TutorialContentPortal(username: String) -> impl IntoView {
     let params = use_params_map();
 
     // id: || -> Option<String>
-    let course_id = move || params.with_untracked(|params| params.get("course_id").cloned());
+    let course_id = move || params.with_untracked(|params| params.get("course_id"));
 
     let (display_tutorial, set_display_tutorial) = signal(true);
     let (course_title, set_course_title) = signal("".to_string());
@@ -316,7 +315,7 @@ fn TutorialEditor(course_id: String, username: String) -> impl IntoView {
     let chapter_number = expect_context::<ReadSignal<u32>>();
 
     // our resource
-    let code_content = create_resource(
+    let code_content = Resource::new(
         move || chapter_number.get(),
         // every time `chapter_number` changes, this will run
         move |value| {

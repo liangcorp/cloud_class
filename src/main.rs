@@ -4,13 +4,10 @@ async fn main() {
     use axum::Router;
     use cloud_class::app::*;
     use cloud_class::fileserv::file_and_error_handler;
-    use leptos::*;
+    use leptos::logging:log;
     use leptos::prelude::*;
+    use leptos::*;
     use leptos_axum::{generate_route_list, LeptosRoutes};
-    use tower_http::compression::{
-        predicate::{NotForContentType, SizeAbove},
-        CompressionLayer, CompressionLevel, Predicate,
-    };
 
     use cloud_class::state::AppState;
     use cloud_class::utils::db::*;
@@ -51,17 +48,20 @@ async fn main() {
 
     // build our application with a route
     let app = Router::new()
-        .leptos_routes(&app_state, routes, App)
+        .leptos_routes(&app_state, routes, {
+            let leptos_options = leptos_options.clone();
+            move || shell(leptos_options.clone())
+        })
         .layer(
             CompressionLayer::new()
                 .quality(CompressionLevel::Fastest)
                 .compress_when(predicate),
         )
-        .fallback(file_and_error_handler)
+        .fallback(leptos_axum::file_and_error_handler(shell))
         .with_state(app_state);
 
     let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
-    logging::log!("listening on http://{}", &addr);
+    log!("listening on http://{}", &addr);
     axum::serve(listener, app.into_make_service())
         .await
         .unwrap();

@@ -1,7 +1,8 @@
 use cfg_if::cfg_if;
-use leptos::*;
+use leptos::html::*;
 use leptos::prelude::*;
 use leptos::task::spawn_local;
+use leptos::*;
 use leptos_meta::Title;
 use server_fn::ServerFnError;
 
@@ -38,15 +39,17 @@ pub async fn admin_auth(user: String, password: String) -> Result<(), ServerFnEr
     let pool = state.pool;
 
     //  提取用户数据
-    let account = match sqlx::query_as::<_, User>("SELECT * FROM administrators WHERE username==$1;")
-        .bind(&user)
-        .fetch_one(&pool)
-        .await {
+    let account =
+        match sqlx::query_as::<_, User>("SELECT * FROM administrators WHERE username==$1;")
+            .bind(&user)
+            .fetch_one(&pool)
+            .await
+        {
             Ok(ok_account) => ok_account,
             Err(e) => {
                 // logging::log!("ERROR<admin/login/mod.rs>: {}", e.to_string());
-                return Err(ServerFnError::Args(e.to_string()))
-            },
+                return Err(ServerFnError::Args(e.to_string()));
+            }
         };
 
     //  Salt Hash 用户输入密码
@@ -60,7 +63,11 @@ pub async fn admin_auth(user: String, password: String) -> Result<(), ServerFnEr
         match Cache::set_cache(&session_token, &account.username) {
             Ok(_) => (),
             Err(e) => {
-                logging::log!("ERROR <admin/login/mod.rs:{}>: set_cache() -- {}", line!(), e.to_string());
+                logging::log!(
+                    "ERROR <admin/login/mod.rs:{}>: set_cache() -- {}",
+                    line!(),
+                    e.to_string()
+                );
                 return Err(ServerFnError::Args(e.to_string()));
             }
         };
@@ -116,7 +123,7 @@ pub fn LoginPanel() -> impl IntoView {
     view! {
         <Title text="数智化教学辅助系统" />
 
-        <div align="center" style="margin-top:100px">
+        <div style="align:center;margin-top:100px">
             <form on:submit=on_submit>
                 <table class="admin-login">
                     <tr>

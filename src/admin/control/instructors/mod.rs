@@ -1,8 +1,8 @@
 use cfg_if::cfg_if;
-use leptos::*;
 use leptos::prelude::*;
-use leptos_router::components::Redirect;
 use leptos::task::spawn_local;
+use leptos::*;
+use leptos_router::components::Redirect;
 use serde::{Deserialize, Serialize};
 use server_fn::ServerFnError;
 
@@ -196,7 +196,7 @@ pub fn AdminInstructorPortal() -> impl IntoView {
     view! {
         <Await
             // `future` provides the `Future` to be resolved
-            future=extract_session_user
+            future=extract_session_user()
 
             // the data is bound to whatever variable name you provide
             let:session_user
@@ -208,13 +208,13 @@ pub fn AdminInstructorPortal() -> impl IntoView {
                             view! {
                                 <HeaderSection username=some_username.to_string() />
                                 <AdminInstructorPage />
-                            }
+                            }.into_any()
 
                         }
-                        None => view! { <Redirect path="/admin/login" /> },
+                        None => view! { <Redirect path="/admin/login" /> }.into_any(),
                     }
                 }
-                Err(_) => view! { <Redirect path="/admin/login" /> },
+                Err(_) => view! { <Redirect path="/admin/login" /> }.into_any(),
             }}
         </Await>
     }
@@ -324,23 +324,21 @@ fn AdminInstructorPage() -> impl IntoView {
             .value();
 
         spawn_local(async move {
-            match update_instructor_info(
-                InstructorInfo {
-                    username: username_value,
-                    fullname: fullname_value,
-                    about: about_value,
-                    tag_line: tag_line_value,
-                    total_students: total_students_value.parse().unwrap(),
-                    start_date: start_date_value,
-                    status: status_value,
-                    address: address_value,
-                    email: email_value,
-                    mobile: mobile_value,
-                    priority: priority_value.parse().unwrap(),
-                    rating: rating_value.parse().unwrap(),
-                    .. Default::default()
-                }
-            )
+            match update_instructor_info(InstructorInfo {
+                username: username_value,
+                fullname: fullname_value,
+                about: about_value,
+                tag_line: tag_line_value,
+                total_students: total_students_value.parse().unwrap(),
+                start_date: start_date_value,
+                status: status_value,
+                address: address_value,
+                email: email_value,
+                mobile: mobile_value,
+                priority: priority_value.parse().unwrap(),
+                rating: rating_value.parse().unwrap(),
+                ..Default::default()
+            })
             .await
             {
                 Ok(ok_query_error) => match ok_query_error {
@@ -410,7 +408,7 @@ fn AdminInstructorPage() -> impl IntoView {
     };
 
     view! {
-        <Await future=|| get_all_instructors() let:data>
+        <Await future=get_all_instructors() let:data>
             {
                 let instructors = (data.as_ref().unwrap_or(&Vec::new())).to_vec();
                 let first_instructor = instructors[0].clone();

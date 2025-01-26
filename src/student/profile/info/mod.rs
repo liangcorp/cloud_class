@@ -1,7 +1,6 @@
 use cfg_if::cfg_if;
-use leptos::*;
 use leptos::control_flow::Await;
-use leptos::prelude::ElementChild;
+use leptos::prelude::*;
 use serde::{Deserialize, Serialize};
 use server_fn::ServerFnError;
 
@@ -89,7 +88,7 @@ pub async fn get_personal_profile(user: String) -> Result<PersonalContent, Serve
 #[component]
 pub fn PersonalContentPage(user: String) -> impl IntoView {
     view! {
-        <Await future=move || get_personal_profile(user.clone()) let:data>
+        <Await future=get_personal_profile(user.clone()) let:data>
             {
                 let content = match data.as_ref() {
                     Ok(d) => (*d).clone(),

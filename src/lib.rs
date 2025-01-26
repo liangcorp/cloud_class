@@ -1,7 +1,7 @@
 pub mod admin; // 管理员页
 pub mod app;
 pub mod courses;
-pub mod error_template;
+// pub mod error_template;
 pub mod header;
 pub mod home; // 主页
 pub mod session;

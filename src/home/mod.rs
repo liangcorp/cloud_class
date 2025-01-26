@@ -4,7 +4,6 @@ pub mod contact;
 pub mod instructor_list;
 
 use cfg_if::cfg_if;
-use leptos::*;
 use leptos::prelude::*;
 use leptos_meta::Title;
 use serde::{Deserialize, Serialize};
@@ -80,7 +79,7 @@ pub fn HomePage() -> impl IntoView {
         <img src="images/banners/default_home.jpg" style="width:100%" />
 
         <div class="contents">
-            <div align="center">
+            <div style="align:center">
                 <h3>"受到全球 16,000 多家公司和数百万学习者的信赖"</h3>
 
                 <SponsorsPanel />
@@ -94,7 +93,7 @@ pub fn HomePage() -> impl IntoView {
 #[component]
 pub fn SponsorsPanel() -> impl IntoView {
     view! {
-        <Await future=get_sponsor_icons let:data>
+        <Await future=get_sponsor_icons() let:data>
             {
                 let content = match data.as_ref() {
                     Ok(d) => (*d).clone(),

@@ -1,5 +1,4 @@
 use cfg_if::cfg_if;
-use leptos::*;
 use leptos::prelude::*;
 use leptos::task::spawn_local;
 use serde::{Deserialize, Serialize};
@@ -175,7 +174,7 @@ pub async fn get_instructor(course_id: String) -> Result<Vec<CourseInstructor>, 
 #[component]
 pub fn CourseContentPage(user: String) -> impl IntoView {
     view! {
-        <Await future=move || get_user_courses(user.clone()) let:data>
+        <Await future=get_user_courses(user.clone()) let:data>
             {
                 let course_contents = match data.as_ref() {
                     Ok(d) => (*d).clone(),
@@ -204,40 +203,40 @@ fn CourseContentPanel(course_contents: Vec<CourseContent>) -> impl IntoView {
                         />
                     </div>
                     <div style="display: inline-block; width:60%">
-                        <table width="100%">
+                        <table style="width:100%">
                             <tr>
-                                <td align="left">
+                                <td style="align:left">
                                     <h3>{single_content.title}</h3>
                                 </td>
-                                <td style="padding-left:300px" align="right">
+                                <td style="padding-left:300px;align:right">
                                     <b>"¥" {single_content.price}" (CNY)"</b>
                                 </td>
                             </tr>
                             <tr>
-                                <td align="left">
+                                <td style="align:left">
                                     <p>{single_content.tag_line}</p>
                                 </td>
-                                <td align="right"></td>
+                                <td style="align:right"></td>
                             </tr>
                             <tr>
-                                <td align="left" style="color:gray;">
+                                <td style="align:left;color:gray;">
                                     "教师: "
                                     <InstructorsNamePanel course_id=single_content
                                         .course_id
                                         .clone() />
                                 </td>
-                                <td align="right"></td>
+                                <td style="align:right"></td>
                             </tr>
                             <tr>
-                                <td align="left">"面对: "{single_content.target_level}</td>
-                                <td align="right"></td>
+                                <td style="align:left">"面对: "{single_content.target_level}</td>
+                                <td style="align:right"></td>
                             </tr>
                             <tr>
-                                <td align="left">"语言: "{single_content.course_language}</td>
-                                <td align="right"></td>
+                                <td style="align:left">"语言: "{single_content.course_language}</td>
+                                <td style="align:right"></td>
                             </tr>
                             <tr>
-                                <td align="left">
+                                <td style="align:left">
                                     <span>
                                         {(0..single_content.rating)
                                             .map(|_| view! { <span style="color:red;">"★"</span> })
@@ -249,20 +248,20 @@ fn CourseContentPanel(course_contents: Vec<CourseContent>) -> impl IntoView {
                                             .collect_view()}
                                     </span>
                                 </td>
-                                <td align="right"></td>
+                                <td style="align:right"></td>
                             </tr>
                             <tr>
-                                <td align="left">
+                                <td style="align:left">
                                     "时间: "{single_content.duration_minutes} "分钟"
                                 </td>
-                                <td align="right"></td>
+                                <td style="align:right"></td>
                             </tr>
                             <tr>
-                                <td align="left" style="color:#1e6055;">
+                                <td style="align:left;color:#1e6055;">
                                     "更新日: "
                                     <b>{single_content.update_date}</b>
                                 </td>
-                                <td align="right"></td>
+                                <td style="align:right"></td>
                             </tr>
                         </table>
                     </div>

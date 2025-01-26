@@ -2,7 +2,6 @@ pub mod mobile;
 pub mod qr;
 pub mod username;
 
-use leptos::*;
 use leptos::prelude::*;
 use leptos_meta::*;
 
@@ -35,7 +34,7 @@ pub fn LoginPage() -> impl IntoView {
         <Title text="学员登陆" />
 
         <div class="full-height">
-            <div class="login-div" align="center">
+            <div class="login-div" style="align:center">
                 <div>
                     <img class="login-register" src="images/users/authentication_page_logo.jpg" />
                     <hr class="login-register" />
@@ -46,7 +45,7 @@ pub fn LoginPage() -> impl IntoView {
                             <td>
                                 <LoginLayer />
                             </td>
-                            <td align="center">
+                            <td style="align:center">
                                 <QRLayer />
                             </td>
                         </tr>

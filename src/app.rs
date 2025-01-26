@@ -3,7 +3,7 @@ use crate::admin::{
     AdminLoginPage, AdminPage, AdminRedirectPage,
 };
 use crate::courses::{content::ContentPagePortal, CoursesPage, NoCoursePage};
-use crate::error_template::{AppError, ErrorTemplate};
+// use crate::error_template::{AppError, ErrorTemplate};
 use crate::home::{
     about::AboutPage, collaboration::CollaborationPage, contact::ContactPage,
     instructor_list::InstructorListPage, HomePage,
@@ -14,10 +14,30 @@ use crate::student::{
 };
 use crate::tutorials::TutorialPagePortal;
 
-use leptos::*;
 use leptos::prelude::*;
 use leptos_meta::*;
-use leptos_router::components::{Router, Routes, Route};
+use leptos_router::{
+    components::{Route, Router, Routes},
+    StaticSegment,
+};
+
+pub fn shell(options: LeptosOptions) -> impl IntoView {
+    view! {
+        <!DOCTYPE html>
+        <html lang="en">
+            <head>
+                <meta charset="utf-8"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1"/>
+                <AutoReload options=options.clone() />
+                <HydrationScripts options/>
+                <MetaTags/>
+            </head>
+            <body>
+                <App/>
+            </body>
+        </html>
+    }
+}
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -32,14 +52,10 @@ pub fn App() -> impl IntoView {
         <Title text="云学院" />
 
         // content for this welcome page
-        <Router fallback=|| {
-            let mut outside_errors = Errors::default();
-            outside_errors.insert_with_default_key(AppError::NotFound);
-            view! { <ErrorTemplate outside_errors /> }
-        }>
+        <Router>
             <main>
                 <Routes>
-                    <Route path="/" view=HomePage />
+                    <Route path=StaticSegment("") view=HomePage />
                     <Route path="/about" view=AboutPage />
                     <Route path="/collaboration" view=CollaborationPage />
                     <Route path="/contact" view=ContactPage />

@@ -2,12 +2,10 @@
 #[tokio::main]
 async fn main() {
     use axum::Router;
-    use cloud_class::app::*;
-    use cloud_class::fileserv::file_and_error_handler;
-    use leptos::logging:log;
+    use leptos::logging::log;
     use leptos::prelude::*;
-    use leptos::*;
     use leptos_axum::{generate_route_list, LeptosRoutes};
+    use cloud_class::app::*;
 
     use cloud_class::state::AppState;
     use cloud_class::utils::db::*;
@@ -18,7 +16,7 @@ async fn main() {
     // <https://github.com/leptos-rs/start-axum#executing-a-server-on-a-remote-machine-without-the-toolchain>
     // Alternately a file can be specified such as Some("Cargo.toml")
     // The file would need to be included with the executable when moved to deployment
-    let conf = get_configuration(None).await.unwrap();
+    let conf = get_configuration(None).unwrap();
     let leptos_options = conf.leptos_options;
     let addr = leptos_options.site_addr;
     let routes = generate_route_list(App);
@@ -36,27 +34,12 @@ async fn main() {
         validation_regex: regex,
     };
 
-    // files smaller than 1501 bytes are not compressed, since
-    // the MTU (Maximum Transmission Unit) of a TCP packet is 1500 bytes
-    let predicate = SizeAbove::new(1500)
-        .and(NotForContentType::GRPC)
-        .and(NotForContentType::IMAGES)
-        // prevent compressing assets that are already statically compressed
-        .and(NotForContentType::const_new("application/javascript"))
-        .and(NotForContentType::const_new("application/wasm"))
-        .and(NotForContentType::const_new("text/css"));
-
     // build our application with a route
     let app = Router::new()
         .leptos_routes(&app_state, routes, {
             let leptos_options = leptos_options.clone();
             move || shell(leptos_options.clone())
         })
-        .layer(
-            CompressionLayer::new()
-                .quality(CompressionLevel::Fastest)
-                .compress_when(predicate),
-        )
         .fallback(leptos_axum::file_and_error_handler(shell))
         .with_state(app_state);
 

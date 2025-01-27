@@ -299,8 +299,7 @@ fn ChapterSelectionBox(course_id: String) -> impl IntoView {
             prop:chapter_number=move || chapter_number.get().to_string()
         >
             <For each=move || chapter_list.get() key=|state| (state.chapter_id.clone()) let:chapter>
-                <option chapter_number=chapter
-                    .chapter_number>{chapter.chapter_number}". "{chapter.title}</option>
+                <option>{chapter.chapter_number}". "{chapter.title}</option>
             </For>
         </select>
     }

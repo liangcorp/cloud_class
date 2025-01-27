@@ -17,8 +17,9 @@ use crate::tutorials::TutorialPagePortal;
 use leptos::prelude::*;
 use leptos_meta::*;
 use leptos_router::{
-    components::{Route, Router, Routes},
+    components::{Route, Router, Routes, ParentRoute},
     StaticSegment,
+    path,
 };
 
 pub fn shell(options: LeptosOptions) -> impl IntoView {
@@ -54,30 +55,30 @@ pub fn App() -> impl IntoView {
         // content for this welcome page
         <Router>
             <main>
-                <Routes>
+                <Routes fallback=|| "Page not found.">
                     <Route path=StaticSegment("") view=HomePage />
-                    <Route path="/about" view=AboutPage />
-                    <Route path="/collaboration" view=CollaborationPage />
-                    <Route path="/contact" view=ContactPage />
-                    <Route path="/login" view=LoginPage />
-                    <Route path="/logout" view=LogoutPage />
-                    <Route path="/register" view=RegistrationPage />
-                    <Route path="/instructor" view=InstructorListPage />
-                    <Route path="/profile" view=ProfilePagePortal />
-                    <Route path="/tutorials/:course_id" view=TutorialPagePortal />
-                    <Route path="/courses" view=CoursesPage>
-                        <Route path=":course_id" view=ContentPagePortal />
-                        <Route path="" view=NoCoursePage />
-                    </Route>
-                    <Route path="/admin" view=AdminPage>
-                        <Route path="/control" view=ControlPanel>
-                            <Route path="/instructors" view=AdminInstructorPortal />
-                            <Route path="" view=ControlPanelPortal />
-                        </Route>
+                    <Route path=path!("/about") view=AboutPage />
+                    <Route path=path!("/collaboration") view=CollaborationPage />
+                    <Route path=path!("/contact") view=ContactPage />
+                    <Route path=path!("/login") view=LoginPage />
+                    <Route path=path!("/logout") view=LogoutPage />
+                    <Route path=path!("/register") view=RegistrationPage />
+                    <Route path=path!("/instructor") view=InstructorListPage />
+                    <Route path=path!("/profile") view=ProfilePagePortal />
+                    <Route path=path!("/tutorials/:course_id") view=TutorialPagePortal />
+                    <ParentRoute path=path!("/courses") view=CoursesPage>
+                        <Route path=path!(":course_id") view=ContentPagePortal />
+                        <Route path=path!("") view=NoCoursePage />
+                    </ParentRoute>
+                    <ParentRoute path=path!("/admin") view=AdminPage>
+                        <ParentRoute path=path!("/control") view=ControlPanel>
+                            <Route path=path!("/instructors") view=AdminInstructorPortal />
+                            <Route path=path!("") view=ControlPanelPortal />
+                        </ParentRoute>
 
-                        <Route path="/login" view=AdminLoginPage />
-                        <Route path="" view=AdminRedirectPage />
-                    </Route>
+                        <Route path=path!("/login") view=AdminLoginPage />
+                        <Route path=path!("") view=AdminRedirectPage />
+                    </ParentRoute>
                 </Routes>
             </main>
         </Router>

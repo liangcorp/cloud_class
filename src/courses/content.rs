@@ -205,7 +205,7 @@ fn CourseContentPortal(username: String) -> impl IntoView {
         {match course_id() {
             Some(c_id) => {
                 if c_id.is_empty() {
-                    return vec![view! { <Redirect path="/courses" /> }];
+                    view! { <Redirect path="/courses" /> };
                 }
                 spawn_local(async move {
                     match check_user_courses(username_clone, c_id).await {
@@ -214,7 +214,7 @@ fn CourseContentPortal(username: String) -> impl IntoView {
                     }
                 })
             }
-            None => return vec![view! { <Redirect path="/courses" /> }],
+            None => (),
         }}
 
         <div class:display=move || disable.get()>

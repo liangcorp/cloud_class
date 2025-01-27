@@ -446,8 +446,7 @@ fn AdminInstructorPage() -> impl IntoView {
                                                     key=|_| ()
                                                     let:instructor_username
                                                 >
-                                                    <option username=instructor_username
-                                                        .clone()>{instructor_username.clone()}</option>
+                                                    <option>{instructor_username.clone()}</option>
                                                 </For>
                                             </select>
                                         </td>
